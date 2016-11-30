@@ -1,0 +1,39 @@
+*.pydevproject
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+# Maven
+*/target/*
+dependency-reduced-pom.xml
+
+# Log files
+*.log
+
+# Eclipse
+.project
+.classpath
+
+# Idea
+.idea
+*.iml

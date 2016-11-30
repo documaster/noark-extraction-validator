@@ -1,0 +1,194 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.documaster.validation</groupId>
+    <artifactId>noark-extraction-validator-parent</artifactId>
+    <version>0.1.0</version>
+    <packaging>pom</packaging>
+
+    <organization>
+        <name>Documaster AS</name>
+        <url>http://www.documaster.no</url>
+    </organization>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Properties used to specify artifact versions -->
+        <version.slf4j>1.7.5</version.slf4j>
+        <version.log4j>2.0-rc1</version.log4j>
+        <version.commons-io>2.4</version.commons-io>
+        <version.commons-configuration>1.8</version.commons-configuration>
+        <version.commons-codec>1.9</version.commons-codec>
+        <version.tika>1.6</version.tika>
+        <version.jaxb>2.2.11</version.jaxb>
+        <version.apache-poi>3.14</version.apache-poi>
+        <version.pdfbox>2.0.2</version.pdfbox>
+        <version.bouncy-castle>1.54</version.bouncy-castle>
+        <version.hsqldb>1.8.0.10</version.hsqldb>
+        <version.jcommander>1.48</version.jcommander>
+    </properties>
+
+    <modules>
+        <module>noark-extraction-validator</module>
+    </modules>
+
+	<dependencyManagement>
+
+		<dependencies>
+
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${version.slf4j}</version>
+			</dependency>
+
+			<dependency><!-- Replaces commons-logging -->
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${version.slf4j}</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<dependency><!-- Replaces log4j ver. 1.2, but not ver. 2 -->
+				<groupId>org.slf4j</groupId>
+				<artifactId>log4j-over-slf4j</artifactId>
+				<version>${version.slf4j}</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<dependency><!-- Redirect java.util.logging to slf4j -->
+				<groupId>org.slf4j</groupId>
+				<artifactId>jul-to-slf4j</artifactId>
+				<version>${version.slf4j}</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-slf4j-impl</artifactId>
+				<version>${version.log4j}</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${version.log4j}</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<!-- XJC (XSD schema converter) -->
+
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-xjc</artifactId>
+				<version>${version.jaxb}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-core</artifactId>
+				<version>${version.jaxb}</version>
+			</dependency>
+
+			<!-- Apache Commons libraries -->
+
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${version.commons-io}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-configuration</groupId>
+				<artifactId>commons-configuration</artifactId>
+				<version>${version.commons-configuration}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>commons-logging</artifactId>
+						<groupId>commons-logging</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>${version.commons-codec}</version>
+			</dependency>
+
+			<!-- Tika content type detection -->
+
+			<dependency>
+				<groupId>org.apache.tika</groupId>
+				<artifactId>tika-core</artifactId>
+				<version>${version.tika}</version>
+			</dependency>
+
+			<!-- Apache POI -->
+
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>${version.apache-poi}</version>
+			</dependency>
+
+			<!--- Apache PDFBox (Preflight dependencies) -->
+
+			<dependency>
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>xmpbox</artifactId>
+				<version>${version.pdfbox}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>pdfbox</artifactId>
+				<version>${version.pdfbox}</version>
+			</dependency>
+
+			<!--- Apache Preflight -->
+
+			<dependency>
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>preflight</artifactId>
+				<version>${version.pdfbox}</version>
+			</dependency>
+
+			<!--- Bouncy Castle -->
+
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk15on</artifactId>
+				<version>${version.bouncy-castle}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcmail-jdk15on</artifactId>
+				<version>${version.bouncy-castle}</version>
+			</dependency>
+
+			<!--  HSQLDB -->
+
+			<dependency>
+				<groupId>hsqldb</groupId>
+				<artifactId>hsqldb</artifactId>
+				<version>${version.hsqldb}</version>
+			</dependency>
+
+			<!-- Argument Parser -->
+
+			<dependency>
+				<groupId>com.beust</groupId>
+				<artifactId>jcommander</artifactId>
+				<version>${version.jcommander}</version>
+			</dependency>
+
+		</dependencies>
+
+	</dependencyManagement>
+
+</project>
