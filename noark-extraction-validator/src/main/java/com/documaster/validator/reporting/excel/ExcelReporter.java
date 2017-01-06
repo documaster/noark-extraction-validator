@@ -82,7 +82,7 @@ public class ExcelReporter implements Reporter {
 
 			boolean isXlsx = type == ReporterType.EXCEL_XLSX;
 
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss");
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
 			String now = dateFormat.format(new Date());
 
 			String filename = !StringUtils.isBlank(title) ? title : "Documaster validation report";
