@@ -20,13 +20,12 @@ package com.documaster.validator.validation.noark53;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -51,6 +50,8 @@ import com.documaster.validator.validation.noark53.provider.ValidationData;
 import com.documaster.validator.validation.noark53.provider.ValidationGroup;
 import com.documaster.validator.validation.noark53.provider.ValidationProvider;
 import com.documaster.validator.validation.noark53.provider.ValidationRule;
+import com.documaster.validator.validation.noark53.model.Noark53PackageEntity;
+import com.documaster.validator.validation.noark53.model.Noark53PackageStructure;
 import com.documaster.validator.validation.noark53.validators.XMLValidator;
 import com.documaster.validator.validation.noark53.validators.XSDValidator;
 import com.documaster.validator.validation.utils.ChecksumCalculator;
@@ -67,7 +68,7 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Noark53Validator.class);
 
-	private Map<String, File> tempXsdSchemas;
+	private Noark53PackageStructure structure;
 
 	private XsdConverter converter;
 
@@ -82,9 +83,8 @@ public class Noark53Validator extends Validator<Noark53Command> {
 		LOGGER.info("Executing Noark 5.3 extraction validation ...");
 
 		try {
-			// Validate the extraction package structure
-			createTempSchemas();
-			validateArchiveStructure();
+			prepareStructure();
+			validateStructure();
 
 			// Init storage
 			Storage.init(getCommand().getStorageDelegate(), getCommand().getProperties().getUniqueFieldsMap());
@@ -118,67 +118,64 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 		} finally {
 
+			FileUtils.deleteQuietly(structure.getNoarkSchemasDirectory());
+
 			ReporterFactory.createReporter(getCommand().getReporterDelegate(), getArchiveTitle()).createReport();
 
 			if (Storage.get() != null) {
 				Storage.get().stopWriter();
 				Storage.get().destroy();
 			}
-
-			cleanUpTempSchemas();
 		}
 	}
 
 	/**
-	 * Creates temporary files from the archive schemas distributed with the tool.
+	 * Prepares the {@link Noark53PackageStructure}.
 	 */
-	private void createTempSchemas() throws Exception {
+	private void prepareStructure() throws IOException {
 
-		tempXsdSchemas = new HashMap<>();
+		// Temporary directory for storing the original Noark 5.3 schemas
+		File tempNoarkSchemasDirectory = Files.createTempDirectory("noark-extraction-validator-").toFile();
 
-		for (String xsdFileName : getCommand().getProperties().getPackageStructure().getAllXSDFiles()) {
+		// Initialize the package structure
+		structure = new Noark53PackageStructure(getCommand().getExtractionDirectory(), tempNoarkSchemasDirectory);
 
-			String xsdFileLocation = Noark53Command.COMMAND_NAME + "/" + xsdFileName;
+		// Create temporary files containing the original Noark 5.3 schemas
+		for (Noark53PackageEntity entity : structure.values()) {
 
-			String tempDir = System.getProperty("java.io.tmpdir");
+			for (String xsdSchemaName : entity.getXsdShemasNames()) {
 
-			File tempXsdFile = new File(tempDir, xsdFileName);
+				String noarkSchemaLocation = Noark53Command.COMMAND_NAME + "/" + xsdSchemaName;
+				File tempXsdFile = new File(tempNoarkSchemasDirectory, xsdSchemaName);
 
-			FileUtils.copyInputStreamToFile(
-					getClass().getClassLoader().getResourceAsStream(xsdFileLocation),
-					tempXsdFile);
-
-			tempXsdSchemas.put(xsdFileName, tempXsdFile);
+				FileUtils.copyInputStreamToFile(
+						getClass().getClassLoader().getResourceAsStream(noarkSchemaLocation),
+						tempXsdFile);
+			}
 		}
 	}
 
 	/**
-	 * Validates the integrity of the archive structure.
+	 * Validates the integrity of the extraction package structure.
 	 */
-	private void validateArchiveStructure() throws Exception {
-
-		// Validate the schemas in the extraction package
-		for (String xsdSchemaName : getCommand().getProperties().getPackageStructure().getAllXSDFiles()) {
-			File xsdSchema = new File(getCommand().getExtractionDirectory(), xsdSchemaName);
-			XSDValidator.validate(xsdSchema, getCommand().getProperties().getChecksumFor(xsdSchemaName));
-		}
+	private void validateStructure() throws Exception {
 
 		boolean stopValidation = false;
 
-		// Validate the XML files in the package against the bundled XSD schemas
-		for (String xmlFileName : getCommand().getProperties().getPackageStructure().getAllXMLFiles()) {
+		for (Noark53PackageEntity entity : structure.values()) {
 
-			File xmlFile = new File(getCommand().getExtractionDirectory(), xmlFileName);
-			Set<String> xsdSchemaNames = getCommand().getProperties().getPackageStructure()
-					.getXSDSchemasFor(xmlFileName);
-
-			List<File> xsdSchemaFiles = new ArrayList<>();
-			for (String xsdSchemaName : xsdSchemaNames) {
-				xsdSchemaFiles.add(tempXsdSchemas.get(xsdSchemaName));
+			if (!entity.getXmlFile().isFile() && entity.isOptional()) {
+				LOGGER.info("Did not validate missing optional XML entity {}", entity.getXmlFileName());
+				continue;
 			}
 
-			boolean isXMLValid = XMLValidator
-					.validate(xmlFile, xsdSchemaFiles, getCommand().getIgnoreNonCompliantXML());
+			// Validate the extraction-distributed XSD schemas
+			for (File xsdSchema : entity.getPackageSchemas()) {
+				XSDValidator.validate(xsdSchema, getCommand().getProperties().getChecksumFor(xsdSchema.getName()));
+			}
+
+			// Validate the extraction-distributed XML files
+			boolean isXMLValid = XMLValidator.validate(entity, getCommand().getIgnoreNonCompliantXML());
 			stopValidation = stopValidation || !isXMLValid;
 		}
 
@@ -194,7 +191,7 @@ public class Noark53Validator extends Validator<Noark53Command> {
 	private void convertXSDSchemas() throws Exception {
 
 		converter = new XsdConverter();
-		converter.convert(new ArrayList<>(tempXsdSchemas.values()));
+		converter.convert(structure.getAllNoarkSchemaFiles());
 
 		// Add additional fields
 		for (ItemDef itemDef : converter.getItemDefs().values()) {
@@ -239,9 +236,12 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 		LOGGER.info("Storing XML data and extracting document information ...");
 
-		for (String xmlFilename : getCommand().getProperties().getPackageStructure().getAllXMLFiles()) {
+		for (Noark53PackageEntity entity : structure.values()) {
 
-			File xmlFile = new File(getCommand().getExtractionDirectory(), xmlFilename);
+			if (!entity.getXmlFile().isFile() && entity.isOptional()) {
+				LOGGER.info("Did not persist missing optional XML entity {}", entity.getXmlFileName());
+				continue;
+			}
 
 			ValidationErrorHandler errorHandler = new ValidationErrorHandler();
 			SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -249,13 +249,13 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 			XMLReader reader = saxParser.getXMLReader();
 
-			BaseHandler xmlHandler = HandlerFactory.createHandler(xmlFile, reader, converter.getItemDefs());
+			BaseHandler xmlHandler = HandlerFactory.createHandler(entity.getXmlFile(), reader, converter.getItemDefs());
 
 			reader.setContentHandler(xmlHandler);
 			reader.setErrorHandler(errorHandler);
 
 			try (
-					FileInputStream fis = new FileInputStream(xmlFile);
+					FileInputStream fis = new FileInputStream(entity.getXmlFile());
 					BufferedInputStream bis = new BufferedInputStream(fis)) {
 				reader.parse(new InputSource(bis));
 			}
@@ -269,34 +269,32 @@ public class Noark53Validator extends Validator<Noark53Command> {
 	}
 
 	/**
-	 * Retrieves the checksums of all documents in the extraction package and stores them in the addml.property {@link
+	 * Retrieves the checksums of all entities in the extraction package and stores them in the addml.property {@link
 	 * ItemDef}.
 	 */
 	private void storePackageChecksums() throws Exception {
 
-		// Store the checksums of all XSD files
-		for (String xsdSchemaName : getCommand().getProperties().getPackageStructure().getAllXSDFiles()) {
+		for (Noark53PackageEntity entity : structure.values()) {
 
-			File xsdSchema = new File(getCommand().getExtractionDirectory(), xsdSchemaName);
+			if (!entity.getXmlFile().isFile() && entity.isOptional()) {
+				LOGGER.info("Did not retrieve the checksum of missing optional XML entity {}", entity.getXmlFileName());
+			}
 
-			Item xsdSchemaChecksumItem = new Item(converter.getItemDefs().get("addml.property"));
-			xsdSchemaChecksumItem.add("name", xsdSchemaName);
-			xsdSchemaChecksumItem.add("value", ChecksumCalculator.getFileSha256Checksum(xsdSchema));
+			storePackageEntityChecksum(entity.getXmlFile());
 
-			Storage.get().write(xsdSchemaChecksumItem);
+			for (File schema : entity.getPackageSchemas()) {
+				storePackageEntityChecksum(schema);
+			}
 		}
+	}
 
-		// Store the checksums of all XML files
-		for (String xmlFileName : getCommand().getProperties().getPackageStructure().getAllXMLFiles()) {
+	private void storePackageEntityChecksum(File file) {
 
-			File xmlFile = new File(getCommand().getExtractionDirectory(), xmlFileName);
+		Item itemChecksum = new Item(converter.getItemDefs().get("addml.property"));
+		itemChecksum.add("name", file.getName());
+		itemChecksum.add("value", ChecksumCalculator.getFileSha256Checksum(file));
 
-			Item xmlFileChecksumItem = new Item(converter.getItemDefs().get("addml.property"));
-			xmlFileChecksumItem.add("name", xmlFileName);
-			xmlFileChecksumItem.add("value", ChecksumCalculator.getFileSha256Checksum(xmlFile));
-
-			Storage.get().write(xmlFileChecksumItem);
-		}
+		Storage.get().write(itemChecksum);
 	}
 
 	private void runValidationQueries() throws Exception {
@@ -354,14 +352,5 @@ public class Noark53Validator extends Validator<Noark53Command> {
 		}
 
 		return archiveTitle;
-	}
-
-	private void cleanUpTempSchemas() {
-
-		if (tempXsdSchemas != null) {
-			for (File xsdSchema : tempXsdSchemas.values()) {
-				FileUtils.deleteQuietly(xsdSchema);
-			}
-		}
 	}
 }
