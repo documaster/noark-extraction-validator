@@ -33,7 +33,7 @@ public class XSDValidator {
 
 	public static boolean validate(File xsdFile, String checksum) {
 
-		LOGGER.info("Validating XML File {} ...", xsdFile);
+		LOGGER.info("Validating XSD File {} ...", xsdFile);
 
 		ValidationCollector.ValidationResult result = new ValidationCollector.ValidationResult(
 				xsdFile.getName() + " integrity", ValidationGroup.COMMON);
@@ -77,11 +77,16 @@ public class XSDValidator {
 			File xsdFile, ValidationCollector.ValidationResult result, String checksum) {
 
 		if (!xsdFile.isFile() || !checksum.equalsIgnoreCase(ChecksumCalculator.getFileSha256Checksum(xsdFile))) {
-			result.addError(new BaseItem().add("Error", "Checksum does not match the one distributed with Noark 5"));
+			result.addWarning(
+					new BaseItem().add(
+							"Warning",
+							"Checksum does not match the checksum of the XSD schema distributed with Noark 5"));
 			return false;
 		} else {
 			result.addInformation(
-					new BaseItem().add("Information", "Checksum matches the one distributed with Noark 5"));
+					new BaseItem().add(
+							"Information",
+							"Checksum matches the checksum of the XSD schema distributed with Noark 5"));
 			return true;
 		}
 	}
