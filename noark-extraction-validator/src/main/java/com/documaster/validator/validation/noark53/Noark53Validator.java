@@ -171,11 +171,11 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 			// Validate the extraction-distributed XSD schemas
 			for (File xsdSchema : entity.getPackageSchemas()) {
-				XSDValidator.validate(xsdSchema, getCommand().getProperties().getChecksumFor(xsdSchema.getName()));
+				XSDValidator.isValid(xsdSchema, getCommand().getProperties().getChecksumFor(xsdSchema.getName()));
 			}
 
 			// Validate the extraction-distributed XML files
-			boolean isXMLValid = XMLValidator.validate(entity, getCommand().getIgnoreNonCompliantXML());
+			boolean isXMLValid = XMLValidator.isValid(entity, getCommand().getIgnoreNonCompliantXML());
 			stopValidation = stopValidation || !isXMLValid;
 		}
 

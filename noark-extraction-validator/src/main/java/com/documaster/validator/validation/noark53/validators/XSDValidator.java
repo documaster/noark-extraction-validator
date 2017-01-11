@@ -31,7 +31,7 @@ public class XSDValidator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(XSDValidator.class);
 
-	public static boolean validate(File xsdFile, String checksum) {
+	public static boolean isValid(File xsdFile, String checksum) {
 
 		LOGGER.info("Validating XSD File {} ...", xsdFile);
 
