@@ -422,9 +422,13 @@
                             UNION ALL
                                 SELECT systemid
                                 FROM arkivstruktur.klassifikasjonssystem
+                                GROUP BY systemid, avsluttetdato, avsluttetav, opprettetdato, _dtype, tittel,
+                                    klassifikasjonstype, opprettetav, beskrivelse
                             UNION ALL
                                 SELECT systemid
                                 FROM arkivstruktur.klasse
+                                GROUP BY _ref_klasse, systemid, avsluttetdato, _dtype, tittel, klasseid,
+                                    noekkelord, avsluttetav, opprettetdato, opprettetav, beskrivelse
                             UNION ALL
                                 SELECT systemid
                                 FROM arkivstruktur.mappe
@@ -451,9 +455,13 @@
                         UNION ALL
                             SELECT 'klassifikasjonssystem' entity, systemid
                             FROM arkivstruktur.klassifikasjonssystem
+                            GROUP BY systemid, avsluttetdato, avsluttetav, opprettetdato, _dtype, tittel,
+                                klassifikasjonstype, opprettetav, beskrivelse
                         UNION ALL
                             SELECT 'klasse' entity, systemid
                             FROM arkivstruktur.klasse
+                            GROUP BY _ref_klasse, systemid, avsluttetdato, _dtype, tittel, klasseid,
+                                noekkelord, avsluttetav, opprettetdato, opprettetav, beskrivelse
                         UNION ALL
                             SELECT 'mappe' entity, systemid
                             FROM arkivstruktur.mappe
