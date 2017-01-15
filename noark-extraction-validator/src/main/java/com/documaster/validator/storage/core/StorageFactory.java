@@ -19,7 +19,7 @@ package com.documaster.validator.storage.core;
 
 import java.text.MessageFormat;
 
-import com.documaster.validator.config.delegates.StorageDelegate;
+import com.documaster.validator.config.delegates.StorageConfiguration;
 import com.documaster.validator.exceptions.StorageException;
 import com.documaster.validator.storage.database.DatabaseStorage;
 
@@ -29,7 +29,7 @@ public final class StorageFactory {
 		// Prevent instantiation
 	}
 
-	public static Storage createPersistence(StorageDelegate config) {
+	public static Storage createPersistence(StorageConfiguration config) {
 
 		switch (config.getStorageType()) {
 

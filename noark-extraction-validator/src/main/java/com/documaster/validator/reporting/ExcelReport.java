@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.reporting.excel;
+package com.documaster.validator.reporting;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -29,8 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.documaster.validator.exceptions.ReportingException;
-import com.documaster.validator.reporting.core.Reporter;
-import com.documaster.validator.reporting.core.ReporterType;
+import com.documaster.validator.reporting.excel.BorderPosition;
+import com.documaster.validator.reporting.excel.ExcelUtils;
+import com.documaster.validator.reporting.excel.StyleName;
 import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.validation.collector.ValidationCollector;
 import com.documaster.validator.validation.collector.ValidationCollector.ValidationResult;
@@ -45,16 +47,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class ExcelReporter implements Reporter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ExcelReporter.class);
+public class ExcelReport implements Report {
 
 	private File outputDir;
 
-	private ReporterType type;
+	private ReportType type;
 
 	private String title;
 
@@ -66,7 +64,7 @@ public class ExcelReporter implements Reporter {
 
 	private Map<StyleName, CellStyle> styles;
 
-	public ExcelReporter(File outputDir, ReporterType type, String title) {
+	ExcelReport(File outputDir, ReportType type, String title) {
 
 		this.outputDir = outputDir;
 		this.type = type;
@@ -74,36 +72,27 @@ public class ExcelReporter implements Reporter {
 	}
 
 	@Override
-	public void createReport() {
+	public void generate() throws IOException {
 
-		LOGGER.info(MessageFormat.format("Generating {0} report ...", type));
+		boolean isXlsx = type == ReportType.EXCEL_XLSX;
 
-		try {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+		String now = dateFormat.format(new Date());
 
-			boolean isXlsx = type == ReporterType.EXCEL_XLSX;
+		String filename = !StringUtils.isBlank(title) ? title : "Documaster validation report";
+		filename += " " + now;
+		filename += isXlsx ? ".xlsx" : ".xls";
 
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
-			String now = dateFormat.format(new Date());
+		try (
+				Workbook wb = isXlsx ? new XSSFWorkbook() : new HSSFWorkbook();
+				FileOutputStream out = new FileOutputStream(new File(outputDir, filename))) {
 
-			String filename = !StringUtils.isBlank(title) ? title : "Documaster validation report";
-			filename += " " + now;
-			filename += isXlsx ? ".xlsx" : ".xls";
+			workbook = wb;
 
-			try (
-					Workbook wb = isXlsx ? new XSSFWorkbook() : new HSSFWorkbook();
-					FileOutputStream out = new FileOutputStream(new File(outputDir, filename))) {
+			createStyles();
+			createSheets();
 
-				workbook = wb;
-
-				createStyles();
-				createSheets();
-
-				wb.write(out);
-			}
-
-			LOGGER.info("Report generated.");
-		} catch (Exception ex) {
-			LOGGER.error("Could not generate Excel report", ex);
+			wb.write(out);
 		}
 	}
 

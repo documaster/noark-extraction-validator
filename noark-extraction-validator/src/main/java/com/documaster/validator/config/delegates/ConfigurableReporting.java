@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.reporting.core;
+package com.documaster.validator.config.delegates;
 
-public enum ReporterType {
+public interface ConfigurableReporting {
 
-	EXCEL_XLS, EXCEL_XLSX
+	ReportConfiguration getReportConfiguration();
 }

@@ -30,24 +30,24 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-class ExcelUtils {
+public class ExcelUtils {
 
 	private ExcelUtils() {
 		// Prevent instantiation
 	}
 
-	static Row createRow(Sheet sheet) {
+	public static Row createRow(Sheet sheet) {
 
 		return createRow(null, sheet);
 	}
 
-	static Row createRow(Integer rowHeight, Sheet sheet) {
+	public static Row createRow(Integer rowHeight, Sheet sheet) {
 
 		int rowIndex = sheet.getLastRowNum() == 0 && sheet.getRow(0) == null ? 0 : sheet.getLastRowNum() + 1;
 		return createRow(rowIndex, rowHeight, sheet);
 	}
 
-	static Row createRow(int rowIndex, Integer rowHeightInPoints, Sheet sheet) {
+	public static Row createRow(int rowIndex, Integer rowHeightInPoints, Sheet sheet) {
 
 		Row row = sheet.createRow(rowIndex);
 
@@ -58,17 +58,17 @@ class ExcelUtils {
 		return row;
 	}
 
-	static Cell createCell(Object cellValue, int cellIndex, Row row) {
+	public static Cell createCell(Object cellValue, int cellIndex, Row row) {
 
 		return createCell(cellValue, cellIndex, null, row);
 	}
 
-	static Cell createCell(Object cellValue, int cellIndex, CellStyle style, Row row) {
+	public static Cell createCell(Object cellValue, int cellIndex, CellStyle style, Row row) {
 
 		return createCell(cellValue, cellIndex, style, row, null);
 	}
 
-	static Cell createCell(Object cellValue, int cellIndex, CellStyle style, Row row, Cell linkTo) {
+	public static Cell createCell(Object cellValue, int cellIndex, CellStyle style, Row row, Cell linkTo) {
 
 		Cell cell = row.createCell(cellIndex);
 		cell.setCellValue(cellValue.toString());
@@ -86,7 +86,7 @@ class ExcelUtils {
 		return cell;
 	}
 
-	static void addHyperLink(Cell fromCell, Cell toCell) {
+	public static void addHyperLink(Cell fromCell, Cell toCell) {
 
 		Hyperlink link = createHyperLinkTo(toCell);
 
@@ -101,7 +101,7 @@ class ExcelUtils {
 		return link;
 	}
 
-	static CellStyle createDefaultCellStyle(Workbook wb) {
+	public static CellStyle createDefaultCellStyle(Workbook wb) {
 
 		CellStyle style = wb.createCellStyle();
 
@@ -111,7 +111,7 @@ class ExcelUtils {
 		return style;
 	}
 
-	static void addBorderToStyle(EnumSet<BorderPosition> borderPositions, IndexedColors color, CellStyle style) {
+	public static void addBorderToStyle(EnumSet<BorderPosition> borderPositions, IndexedColors color, CellStyle style) {
 
 		for (BorderPosition position : borderPositions) {
 
@@ -139,13 +139,13 @@ class ExcelUtils {
 		}
 	}
 
-	static void addSolidFillToStyle(CellStyle style, IndexedColors color) {
+	public static void addSolidFillToStyle(CellStyle style, IndexedColors color) {
 
 		style.setFillForegroundColor(color.getIndex());
 		style.setFillPattern(CellStyle.SOLID_FOREGROUND);
 	}
 
-	static Font createDefaultFont(Workbook wb, short size, boolean bold) {
+	public static Font createDefaultFont(Workbook wb, short size, boolean bold) {
 
 		Font font = wb.createFont();
 
@@ -156,14 +156,14 @@ class ExcelUtils {
 		return font;
 	}
 
-	static void autoSizeColumns(Sheet sheet, int startCol, int endCol) {
+	public static void autoSizeColumns(Sheet sheet, int startCol, int endCol) {
 
 		for (int i = startCol; i <= endCol; i++) {
 			sheet.autoSizeColumn(i);
 		}
 	}
 
-	static void freezePanes(Sheet sheet, int numberOfRows, int numberOfColumns) {
+	public static void freezePanes(Sheet sheet, int numberOfRows, int numberOfColumns) {
 
 		sheet.createFreezePane(numberOfColumns, numberOfRows);
 	}

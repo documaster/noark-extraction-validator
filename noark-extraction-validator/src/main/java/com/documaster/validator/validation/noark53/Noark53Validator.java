@@ -35,7 +35,7 @@ import javax.xml.parsers.SAXParserFactory;
 import com.documaster.validator.config.commands.Noark53Command;
 import com.documaster.validator.converters.xsd.XsdConverter;
 import com.documaster.validator.exceptions.ValidationException;
-import com.documaster.validator.reporting.core.ReporterFactory;
+import com.documaster.validator.reporting.ReportFactory;
 import com.documaster.validator.storage.core.Storage;
 import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.storage.model.Field;
@@ -87,7 +87,7 @@ public class Noark53Validator extends Validator<Noark53Command> {
 			validateStructure();
 
 			// Init storage
-			Storage.init(getCommand().getStorageDelegate(), getCommand().getProperties().getUniqueFieldsMap());
+			Storage.init(getCommand().getStorageConfiguration(), getCommand().getProperties().getUniqueFieldsMap());
 			Storage.get().connect();
 			Storage.get().startWriter();
 
@@ -120,7 +120,7 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 			FileUtils.deleteQuietly(structure.getNoarkSchemasDirectory());
 
-			ReporterFactory.createReporter(getCommand().getReporterDelegate(), getArchiveTitle()).createReport();
+			ReportFactory.generateReports(getCommand().getReportConfiguration(), getArchiveTitle());
 
 			if (Storage.get() != null) {
 				Storage.get().stopWriter();
