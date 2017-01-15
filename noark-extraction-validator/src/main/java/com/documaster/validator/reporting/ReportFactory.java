@@ -48,6 +48,9 @@ public class ReportFactory {
 					case EXCEL_XLSX:
 						new ExcelReport<>(config, outputType, title).generate();
 						break;
+					case XML:
+						new XMLReport<>(config, title).generate();
+						break;
 					default:
 						throw new ReportingException("Unknown report type: " + outputType);
 				}

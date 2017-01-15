@@ -20,10 +20,7 @@ package com.documaster.validator.reporting;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -49,12 +46,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends Report<T> {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ExcelReport.class);
 
 	private ReportType reportType;
 
@@ -77,17 +70,12 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 
 		boolean isXlsx = reportType == ReportType.EXCEL_XLSX;
 
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
-		String now = dateFormat.format(new Date());
-
-		String filename = !StringUtils.isBlank(getTitle()) ? getTitle() : "Documaster validation report";
-		filename += " " + now;
-		filename += isXlsx ? ".xlsx" : ".xls";
+		String extension = isXlsx ? ".xlsx" : ".xls";
+		File report = new File(getConfig().getReportConfiguration().getOutputDir(), getDefaultReportName() + extension);
 
 		try (
 				Workbook wb = isXlsx ? new XSSFWorkbook() : new HSSFWorkbook();
-				FileOutputStream out = new FileOutputStream(
-						new File(getConfig().getReportConfiguration().getOutputDir(), filename))) {
+				FileOutputStream out = new FileOutputStream(report)) {
 
 			workbook = wb;
 

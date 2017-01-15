@@ -19,5 +19,5 @@ package com.documaster.validator.reporting;
 
 public enum ReportType {
 
-	EXCEL_XLS, EXCEL_XLSX
+	EXCEL_XLS, EXCEL_XLSX, XML
 }

@@ -41,7 +41,8 @@ public class ReportConfiguration implements Delegate {
 	private File outputDir;
 
 	private static final String OUTPUT_TYPE = "-output-type";
-	@Parameter(names = OUTPUT_TYPE, description = "The output type of the validation report")
+	@Parameter(names = OUTPUT_TYPE,
+			description = "The output type of the validation report. Possible values: XML, EXCEL_XLS, EXCEL_XLSX")
 	private List<ReportType> outputTypes = defaultReportTypes;
 
 	static {
@@ -66,6 +67,7 @@ public class ReportConfiguration implements Delegate {
 			switch (reportType) {
 				case EXCEL_XLS:
 				case EXCEL_XLSX:
+				case XML:
 					if (outputDir == null) {
 						throw new ParameterException(OUTPUT_DIR + " must be specified for " + reportType);
 					}
