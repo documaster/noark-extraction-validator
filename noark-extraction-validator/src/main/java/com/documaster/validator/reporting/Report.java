@@ -17,10 +17,33 @@
  */
 package com.documaster.validator.reporting;
 
-public interface Report {
+import com.documaster.validator.config.commands.Command;
+import com.documaster.validator.config.delegates.ConfigurableReporting;
+
+public abstract class Report<T extends Command<?> & ConfigurableReporting> {
+
+	private T config;
+
+	private String title;
+
+	Report(T config, String title) {
+
+		this.config = config;
+		this.title = title;
+	}
+
+	protected T getConfig() {
+
+		return config;
+	}
+
+	protected String getTitle() {
+
+		return title;
+	}
 
 	/**
 	 * Generates the report.
 	 */
-	void generate() throws Exception;
+	abstract void generate() throws Exception;
 }

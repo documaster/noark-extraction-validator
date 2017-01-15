@@ -120,7 +120,7 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 			FileUtils.deleteQuietly(structure.getNoarkSchemasDirectory());
 
-			ReportFactory.generateReports(getCommand().getReportConfiguration(), getArchiveTitle());
+			ReportFactory.generateReports(getCommand(), getArchiveTitle());
 
 			if (Storage.get() != null) {
 				Storage.get().stopWriter();

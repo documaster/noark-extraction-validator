@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.documaster.validator.config.commands.Command;
+import com.documaster.validator.config.delegates.ConfigurableReporting;
 import com.documaster.validator.exceptions.ReportingException;
 import com.documaster.validator.reporting.excel.BorderPosition;
 import com.documaster.validator.reporting.excel.ExcelUtils;
@@ -47,14 +49,14 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ExcelReport implements Report {
+public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends Report<T> {
 
-	private File outputDir;
+	private static final Logger LOGGER = LoggerFactory.getLogger(ExcelReport.class);
 
-	private ReportType type;
-
-	private String title;
+	private ReportType reportType;
 
 	private Workbook workbook;
 
@@ -64,28 +66,28 @@ public class ExcelReport implements Report {
 
 	private Map<StyleName, CellStyle> styles;
 
-	ExcelReport(File outputDir, ReportType type, String title) {
+	ExcelReport(T config, ReportType reportType, String title) {
 
-		this.outputDir = outputDir;
-		this.type = type;
-		this.title = title;
+		super(config, title);
+		this.reportType = reportType;
 	}
 
 	@Override
 	public void generate() throws IOException {
 
-		boolean isXlsx = type == ReportType.EXCEL_XLSX;
+		boolean isXlsx = reportType == ReportType.EXCEL_XLSX;
 
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
 		String now = dateFormat.format(new Date());
 
-		String filename = !StringUtils.isBlank(title) ? title : "Documaster validation report";
+		String filename = !StringUtils.isBlank(getTitle()) ? getTitle() : "Documaster validation report";
 		filename += " " + now;
 		filename += isXlsx ? ".xlsx" : ".xls";
 
 		try (
 				Workbook wb = isXlsx ? new XSSFWorkbook() : new HSSFWorkbook();
-				FileOutputStream out = new FileOutputStream(new File(outputDir, filename))) {
+				FileOutputStream out = new FileOutputStream(
+						new File(getConfig().getReportConfiguration().getOutputDir(), filename))) {
 
 			workbook = wb;
 
@@ -97,6 +99,8 @@ public class ExcelReport implements Report {
 	}
 
 	private void createSheets() {
+
+		createExecutionInfoSheet();
 
 		summary = createSummarySheet();
 
@@ -112,6 +116,56 @@ public class ExcelReport implements Report {
 		summary.setColumnWidth(0, 256);
 
 		ExcelUtils.freezePanes(summary, summaryTableRowIndex + 1, 0);
+	}
+
+	private void createExecutionInfoSheet() {
+
+		Sheet executionInfoSheet = workbook.createSheet("Execution");
+
+		// Information section row
+		Row infoSectionRow = ExcelUtils.createRow(25, executionInfoSheet);
+		ExcelUtils.createCell("Information", 0, styles.get(StyleName.GROUP), infoSectionRow);
+
+		// General Info
+		for (Map.Entry<String, Object> generalInfoEntry : getConfig().getExecutionInfo().getGeneralInfo().entrySet()) {
+			String key = !StringUtils.isBlank(generalInfoEntry.getKey()) ? generalInfoEntry.getKey() : "-";
+			Object value = generalInfoEntry.getValue() != null ? generalInfoEntry.getValue() : "-";
+
+			Row row = ExcelUtils.createRow(executionInfoSheet);
+			ExcelUtils.createCell(key, 0, row);
+			ExcelUtils.createCell(value, 1, row);
+		}
+
+		// Empty row
+		ExcelUtils.createRow(executionInfoSheet);
+
+		// Parameters section row
+		Row parametersSectionRow = ExcelUtils.createRow(25, executionInfoSheet);
+		ExcelUtils.createCell("Parameters", 0, styles.get(StyleName.GROUP), parametersSectionRow);
+
+		// Parameters headers
+		Row parametersHeaderRow = ExcelUtils.createRow(executionInfoSheet);
+		ExcelUtils.createCell("Name", 0, styles.get(StyleName.RESULT_HEADER_ROW), parametersHeaderRow);
+		ExcelUtils.createCell("Value", 1, styles.get(StyleName.RESULT_HEADER_ROW), parametersHeaderRow);
+		ExcelUtils.createCell("Description", 2, styles.get(StyleName.RESULT_HEADER_ROW), parametersHeaderRow);
+		ExcelUtils.createCell("Required", 3, styles.get(StyleName.RESULT_HEADER_ROW), parametersHeaderRow);
+
+		// Parameters
+		for (Command.ParameterInfo parameter : getConfig().getExecutionInfo().getParameterInfo()) {
+			if (parameter.isDefault()) {
+				// Skip default parameters
+				continue;
+			}
+			Row row = ExcelUtils.createRow(executionInfoSheet);
+			ExcelUtils.createCell(parameter.getName(), 0, row);
+			ExcelUtils.createCell(parameter.getSpecifiedValue(), 1, row);
+			ExcelUtils
+					.createCell(!StringUtils.isBlank(parameter.getDescription()) ? parameter.getDescription() : "-", 2,
+							row);
+			ExcelUtils.createCell(parameter.isRequired(), 3, row);
+		}
+
+		ExcelUtils.autoSizeColumns(executionInfoSheet, 0, 4);
 	}
 
 	private Sheet createSummarySheet() {

@@ -19,6 +19,7 @@ package com.documaster.validator.config.commands;
 
 import java.io.File;
 
+import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
@@ -55,6 +56,11 @@ public class Noark53Command extends Command<Noark53Properties> implements Config
 	private StorageConfiguration storageConfiguration = new StorageConfiguration();
 
 	private Noark53Properties properties;
+
+	public Noark53Command(JCommander argParser) {
+
+		super(argParser);
+	}
 
 	public File getExtractionDirectory() {
 

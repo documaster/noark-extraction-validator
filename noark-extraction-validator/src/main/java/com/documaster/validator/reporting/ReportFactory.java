@@ -19,7 +19,8 @@ package com.documaster.validator.reporting;
 
 import java.util.EnumSet;
 
-import com.documaster.validator.config.delegates.ReportConfiguration;
+import com.documaster.validator.config.commands.Command;
+import com.documaster.validator.config.delegates.ConfigurableReporting;
 import com.documaster.validator.exceptions.ReportingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +33,10 @@ public class ReportFactory {
 		// Prevent instantiation
 	}
 
-	public static void generateReports(ReportConfiguration config, String title) {
+	public static <T extends Command<?> & ConfigurableReporting> void generateReports(T config, String title) {
 
 		EnumSet<ReportType> reportTypes = EnumSet.noneOf(ReportType.class);
-		reportTypes.addAll(config.getOutputTypes());
+		reportTypes.addAll(config.getReportConfiguration().getOutputTypes());
 
 		for (ReportType outputType : reportTypes) {
 			try {
@@ -45,7 +46,7 @@ public class ReportFactory {
 				switch (outputType) {
 					case EXCEL_XLS:
 					case EXCEL_XLSX:
-						new ExcelReport(config.getOutputDir(), outputType, title).generate();
+						new ExcelReport<>(config, outputType, title).generate();
 						break;
 					default:
 						throw new ReportingException("Unknown report type: " + outputType);
@@ -54,7 +55,7 @@ public class ReportFactory {
 				LOGGER.info("{} report generated.", outputType);
 
 			} catch (Exception ex) {
-				LOGGER.warn("Could not generate report " + outputType, ex);
+				LOGGER.error("Could not generate report " + outputType, ex);
 			}
 		}
 	}
