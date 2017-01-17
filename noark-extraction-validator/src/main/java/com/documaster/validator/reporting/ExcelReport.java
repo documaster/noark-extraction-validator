@@ -348,7 +348,7 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 		ExcelUtils.addHyperLink(indexErrorsCell, errorsTitleCell);
 		ExcelUtils.createRow(resultSheet); // empty row
 
-		ExcelUtils.autoSizeColumns(resultSheet, 0, 7);
+		ExcelUtils.autoSizeColumns(resultSheet, 0, 11);
 		ExcelUtils.freezePanes(resultSheet, 5, 0);
 
 		return headerCells;

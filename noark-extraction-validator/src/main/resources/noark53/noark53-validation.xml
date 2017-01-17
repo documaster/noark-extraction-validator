@@ -446,33 +446,26 @@
             </info>
             <errors>
                 <![CDATA[
-                    SELECT entity, systemid, count(*) total FROM (
-                            SELECT 'fonds' entity, systemid
-                            FROM arkivstruktur.arkiv
+                    SELECT systemid, count(*) total FROM (
+                            SELECT systemid FROM arkivstruktur.arkiv
                         UNION ALL
-                            SELECT 'series' entity, systemid
-                            FROM arkivstruktur.arkivdel
+                            SELECT systemid FROM arkivstruktur.arkivdel
                         UNION ALL
-                            SELECT 'klassifikasjonssystem' entity, systemid
-                            FROM arkivstruktur.klassifikasjonssystem
+                            SELECT systemid FROM arkivstruktur.klassifikasjonssystem
                             GROUP BY systemid, avsluttetdato, avsluttetav, opprettetdato, _dtype, tittel,
                                 klassifikasjonstype, opprettetav, beskrivelse
                         UNION ALL
-                            SELECT 'klasse' entity, systemid
-                            FROM arkivstruktur.klasse
+                            SELECT systemid FROM arkivstruktur.klasse
                             GROUP BY _ref_klasse, systemid, avsluttetdato, _dtype, tittel, klasseid,
                                 noekkelord, avsluttetav, opprettetdato, opprettetav, beskrivelse
                         UNION ALL
-                            SELECT 'mappe' entity, systemid
-                            FROM arkivstruktur.mappe
+                            SELECT systemid FROM arkivstruktur.mappe
                         UNION ALL
-                            SELECT 'registrering' entity, systemid
-                            FROM arkivstruktur.registrering
+                            SELECT systemid FROM arkivstruktur.registrering
                         UNION ALL
-                            SELECT 'dokumentbeskrivelse' entity, systemid
-                            FROM arkivstruktur.dokumentbeskrivelse
+                            SELECT systemid FROM arkivstruktur.dokumentbeskrivelse
                     )
-                    GROUP BY entity, systemid
+                    GROUP BY systemid
                     HAVING COUNT(*) > 1 OR systemid IS NULL
                 ]]>
             </errors>
@@ -875,7 +868,7 @@
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT f._ref_arkivdel series_system_id, f.systemid file_system_id, CAST(f.opprettetdato AS DATE) created_date, CAST(f.avsluttetdato AS DATE) finalized_date,
+                    SELECT f._ref_arkivdel series_system_id, f.systemid file_system_id, f.mappeid file_id, CAST(f.opprettetdato AS DATE) created_date, CAST(f.avsluttetdato AS DATE) finalized_date,
                         (
                             SELECT CAST(property.value AS DATE)
                             FROM addml.property property
@@ -1013,7 +1006,7 @@
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT f._ref_arkivdel series_system_id, COALESCE(f._dtype, 'mappe') file_type, f.systemid file_system_id, f.avsluttetdato finalized_date, f.avsluttetav finalized_by, f.saksstatus file_status
+                    SELECT f._ref_arkivdel series_system_id, COALESCE(f._dtype, 'mappe') file_type, f.systemid file_system_id, f.mappeid file_id, f.avsluttetdato finalized_date, f.avsluttetav finalized_by, f.saksstatus file_status
                     FROM arkivstruktur.mappe f
                     WHERE f.avsluttetdato IS NULL
                         OR f.avsluttetav IS NULL
@@ -1149,7 +1142,7 @@
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, r.systemid record_system_id, CAST(r.opprettetdato AS DATE) created_date, CAST(r.arkivertdato AS DATE) finalized_date,
+                    SELECT r._ref_arkivdel series_system_id, f.mappeid file_id, r.systemid record_system_id, r.registreringsid record_id, CAST(r.opprettetdato AS DATE) created_date, CAST(r.arkivertdato AS DATE) finalized_date,
                         (
                             SELECT CAST(property.value AS DATE)
                             FROM addml.property property
@@ -1168,6 +1161,7 @@
                         ) period_end_date
                     FROM arkivstruktur.registrering r
                     JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                    LEFT JOIN arkivstruktur.mappe f ON f._id = r._parent_id
                     WHERE
                         ( CAST(r.opprettetdato AS DATE) < period_start_date AND s.arkivdelstatus <> 'Overlappingsperiode' ) OR CAST(r.arkivertdato AS DATE) > period_end_date
                         OR r.opprettetdato IS NULL OR r.arkivertdato IS NULL OR period_start_date IS NULL OR period_end_date IS NULL;
@@ -1286,8 +1280,9 @@
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, COALESCE(r._dtype, 'registrering') record_type, r.systemid record_system_id, r.arkivertdato finalized_date, r.arkivertav finalized_by, journalstatus record_status
+                    SELECT r._ref_arkivdel series_system_id, f.mappeid file_id, COALESCE(r._dtype, 'registrering') record_type, r.systemid record_system_id, r.registreringsid record_id, r.arkivertdato finalized_date, r.arkivertav finalized_by, journalstatus record_status
                     FROM arkivstruktur.registrering r
+                    LEFT JOIN arkivstruktur.mappe f ON f._id = r._parent_id
                     WHERE r.arkivertdato IS NULL
                         OR r.arkivertav IS NULL
                         OR (_dtype = 'journalpost' AND journalstatus <> 'Arkivert' AND journalstatus <> 'Utgår');
@@ -1364,9 +1359,10 @@
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, d.systemid document_description_system_id, dokumentstatus document_status
+                    SELECT r._ref_arkivdel series_system_id, f.mappeid file_id, r.registreringsid record_id, d.systemid document_description_system_id, dokumentstatus document_status
                     FROM arkivstruktur.dokumentbeskrivelse d
                     JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                    LEFT JOIN arkivstruktur.mappe f ON f._id = r._parent_id
                     WHERE dokumentstatus <> 'Dokumentet er ferdigstilt';
                 ]]>
             </warnings>
@@ -1421,7 +1417,9 @@
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, d.systemid document_description_system_id, CAST(d.opprettetdato AS DATE) created_date,
+                    SELECT r._ref_arkivdel series_system_id, f.mappeid file_id,
+                        r.registreringsid record_id, d.systemid document_description_system_id,
+                        CAST(d.opprettetdato AS DATE) created_date,
                         (
                             SELECT CAST(property.value AS DATE)
                             FROM addml.property property
@@ -1433,6 +1431,7 @@
                     FROM arkivstruktur.dokumentbeskrivelse d
                     JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
                     JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                    LEFT JOIN arkivstruktur.mappe f ON f._id = r._parent_id
                     WHERE ( CAST(d.opprettetdato AS DATE) < period_start_date AND s.arkivdelstatus <> 'Overlappingsperiode' ) OR d.opprettetdato IS NULL OR period_start_date IS NULL;
                 ]]>
             </warnings>
@@ -1641,8 +1640,9 @@
             </info>
             <errors>
                 <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, r.systemid record_system_id
+                    SELECT r._ref_arkivdel series_system_id, f.mappeid file_id, r.systemid record_system_id, r.registreringsid record_id
                     FROM arkivstruktur.registrering r
+                    LEFT JOIN arkivstruktur.mappe f ON f._id = r._parent_id
                     WHERE r._dtype = 'journalpost'
                         AND  r.systemid NOT IN (SELECT _ref_registrering FROM arkivstruktur.korrespondansepart WHERE _ref_registrering IS NOT NULL GROUP BY _ref_registrering);
                 ]]>
@@ -2219,7 +2219,9 @@
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT s.systemid series_system_id, j.systemid registry_entry_system_id, CAST(journaldato AS DATE) registry_entry_date,
+                    SELECT s.systemid series_system_id, j.systemid registry_entry_system_id,
+                        COALESCE(NULLIF(j.journalaar || '/' || j.journalsekvensnummer, '/'), 'N/A') record_id,
+                        CAST(journaldato AS DATE) registry_entry_date,
                         (SELECT CAST(property.value AS DATE)
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
@@ -2393,7 +2395,9 @@
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT s.systemid series_system_id, j.systemid registry_entry_system_id, CAST(journaldato AS DATE) registry_entry_date,
+                    SELECT s.systemid series_system_id, j.systemid registry_entry_system_id,
+                        COALESCE(NULLIF(j.journalaar || '/' || j.journalsekvensnummer, '/'), 'N/A') record_id,
+                        CAST(journaldato AS DATE) registry_entry_date,
                         (SELECT CAST(property.value AS DATE)
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id

@@ -23,6 +23,7 @@ import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.validation.collector.ValidationCollector;
 import com.documaster.validator.validation.noark53.provider.ValidationGroup;
 import com.documaster.validator.validation.utils.ChecksumCalculator;
+import com.documaster.validator.validation.utils.DefaultXMLHandler;
 import com.documaster.validator.validation.utils.WellFormedXmlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,12 +61,10 @@ public class XSDValidator {
 
 	private static boolean validateIntegrity(File xsdFile, ValidationCollector.ValidationResult result) {
 
-		WellFormedXmlValidator xmlIntegrityValidator = new WellFormedXmlValidator();
+		WellFormedXmlValidator xmlIntegrityValidator = new WellFormedXmlValidator<>(new DefaultXMLHandler());
 
 		if (!xsdFile.isFile() || !xmlIntegrityValidator.isXmlWellFormed(xsdFile)) {
-			for (String error : xmlIntegrityValidator.getErrors()) {
-				result.addError(new BaseItem().add("Error", error));
-			}
+			result.addErrors(xmlIntegrityValidator.getExceptionHandler().getExceptionsAsItems());
 			return false;
 		} else {
 			result.addInformation(new BaseItem().add("Information", xsdFile.getName() + " is well-formed"));

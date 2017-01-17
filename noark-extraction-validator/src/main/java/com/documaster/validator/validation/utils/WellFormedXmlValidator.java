@@ -20,84 +20,51 @@ package com.documaster.validator.validation.utils;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
 
-public class WellFormedXmlValidator {
+public class WellFormedXmlValidator<T extends AbstractReusableXMLHandler> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WellFormedXmlValidator.class);
 
-	private ValidationErrorHandler validationErrorHandler;
+	private T handler;
 
-	private Set<String> errors = new HashSet<>();
+	public WellFormedXmlValidator(T handler) {
 
-	public Set<String> getErrors() {
+		Validate.notNull(handler);
 
-		return errors;
+		this.handler = handler;
 	}
 
-	private void buildErrorsSet(String parseError) {
+	public T getExceptionHandler() {
 
-		errors.clear();
-		if (!StringUtils.isBlank(parseError)) {
-			errors.add(parseError);
-		}
-		errors.addAll(getValidationErrors());
+		return handler;
 	}
 
 	public boolean isXmlWellFormed(File xmlFile) {
 
-		SAXParserFactory factory = SAXParserFactory.newInstance();
+		handler.reset();
 
-		factory.setNamespaceAware(true);
+		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+		saxParserFactory.setNamespaceAware(true);
 
-		String parseError = null;
 		try (
 				FileInputStream fis = new FileInputStream(xmlFile);
 				BufferedInputStream bis = new BufferedInputStream(fis)) {
 
-			SAXParser parser = factory.newSAXParser();
-
-			validationErrorHandler = new ValidationErrorHandler();
-
-			XMLReader reader = parser.getXMLReader();
-			reader.setErrorHandler(validationErrorHandler);
-			reader.parse(new InputSource(bis));
+			SAXParser parser = saxParserFactory.newSAXParser();
+			parser.parse(bis, handler);
 
 		} catch (Exception ex) {
-			parseError = "Could not parse XML File " + xmlFile;
-			LOGGER.warn(parseError, ex);
+			LOGGER.error("Well-formed XML validation failed with exception: ", ex);
+			handler.fatalError(new SAXParseException(ex.getMessage(), null));
 		}
 
-		buildErrorsSet(parseError);
-
-		return getErrors().size() == 0;
-	}
-
-	private Set<String> getValidationErrors() {
-
-		if (validationErrorHandler == null) {
-			return Collections.emptySet();
-		}
-
-		Set<String> validationErrors = new HashSet<>();
-
-		for (SAXParseException ex : validationErrorHandler.getExceptions()) {
-			validationErrors.add(MessageFormat
-					.format("Line {0}: Column {1}: {2}", ex.getLineNumber(), ex.getColumnNumber(), ex.getMessage()));
-		}
-
-		return validationErrors;
+		return !handler.hasExceptions();
 	}
 }

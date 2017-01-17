@@ -55,13 +55,12 @@ import com.documaster.validator.validation.noark53.model.Noark53PackageStructure
 import com.documaster.validator.validation.noark53.validators.XMLValidator;
 import com.documaster.validator.validation.noark53.validators.XSDValidator;
 import com.documaster.validator.validation.utils.ChecksumCalculator;
-import com.documaster.validator.validation.utils.ValidationErrorHandler;
+import com.documaster.validator.validation.utils.DefaultXMLHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 public class Noark53Validator extends Validator<Noark53Command> {
@@ -243,7 +242,7 @@ public class Noark53Validator extends Validator<Noark53Command> {
 				continue;
 			}
 
-			ValidationErrorHandler errorHandler = new ValidationErrorHandler();
+			DefaultXMLHandler exceptionHandler = new DefaultXMLHandler();
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			SAXParser saxParser = spf.newSAXParser();
 
@@ -252,7 +251,7 @@ public class Noark53Validator extends Validator<Noark53Command> {
 			BaseHandler xmlHandler = HandlerFactory.createHandler(entity.getXmlFile(), reader, converter.getItemDefs());
 
 			reader.setContentHandler(xmlHandler);
-			reader.setErrorHandler(errorHandler);
+			reader.setErrorHandler(exceptionHandler);
 
 			try (
 					FileInputStream fis = new FileInputStream(entity.getXmlFile());
@@ -260,10 +259,10 @@ public class Noark53Validator extends Validator<Noark53Command> {
 				reader.parse(new InputSource(bis));
 			}
 
-			for (SAXException ex : errorHandler.getExceptions()) {
-
-				ValidationCollector.get().collect(
-						new ValidationResult(ex.getMessage(), xmlHandler.getValidationGroup()));
+			if (exceptionHandler.hasExceptions()) {
+				ValidationResult errorResult = new ValidationResult("Parse errors", xmlHandler.getValidationGroup());
+				errorResult.addErrors(exceptionHandler.getExceptionsAsItems());
+				ValidationCollector.get().collect(errorResult);
 			}
 		}
 	}
