@@ -23,6 +23,7 @@ import java.util.List;
 import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.validation.collector.ValidationCollector;
 import com.documaster.validator.validation.noark53.provider.ValidationGroup;
+import com.documaster.validator.validation.noark53.model.Noark53PackageEntity;
 import com.documaster.validator.validation.utils.SchemaValidator;
 import com.documaster.validator.validation.utils.WellFormedXmlValidator;
 import org.slf4j.Logger;
@@ -32,16 +33,16 @@ public class XMLValidator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(XMLValidator.class);
 
-	public static boolean validate(File xmlFile, List<File> xsdSchemas, boolean ignoreNonComplianceToSchema) {
+	public static boolean validate(Noark53PackageEntity entity, boolean ignoreNonComplianceToSchema) {
 
-		LOGGER.info("Validating XML File {} ...", xmlFile);
+		LOGGER.info("Validating XML File {} ...", entity.getXmlFile());
 
 		ValidationCollector.ValidationResult result = new ValidationCollector.ValidationResult(
-				xmlFile.getName() + " integrity", ValidationGroup.COMMON);
+				entity.getXmlFileName() + " integrity", ValidationGroup.COMMON);
 
-		boolean exists = validateExistence(xmlFile, result);
-		boolean isWellFormed = validateIntegrity(xmlFile, result);
-		boolean compliesWithSchemas = validateSchemaCompliance(xmlFile, result, xsdSchemas);
+		boolean exists = validateExistence(entity.getXmlFile(), result);
+		boolean isWellFormed = validateIntegrity(entity.getXmlFile(), result);
+		boolean compliesWithSchemas = validateSchemaCompliance(entity.getXmlFile(), result, entity.getNoarkSchemas());
 
 		ValidationCollector.get().collect(result);
 

@@ -2140,7 +2140,8 @@
                         FROM arkivstruktur.registrering
                         WHERE _dtype = 'journalpost'
                     ) struktur
-                    WHERE running.value <> arkivuttrekk_count OR arkivuttrekk_count IS NULL;
+                    WHERE (arkivuttrekk_count IS NULL AND running.value > 0) OR
+                        (arkivuttrekk_count IS NOT NULL AND running.value <> arkivuttrekk_count);
                 ]]>
             </errors>
         </queries>
@@ -2313,7 +2314,8 @@
                         FROM arkivstruktur.registrering
                         WHERE _dtype = 'journalpost'
                     ) struktur
-                    WHERE running.value <> arkivuttrekk_count OR arkivuttrekk_count IS NULL;
+                    WHERE (arkivuttrekk_count IS NULL AND running.value > 0) OR
+                        (arkivuttrekk_count IS NOT NULL AND running.value <> arkivuttrekk_count);
                 ]]>
             </errors>
         </queries>

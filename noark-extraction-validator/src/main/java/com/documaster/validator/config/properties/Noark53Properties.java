@@ -29,8 +29,6 @@ import org.apache.commons.configuration.ConfigurationException;
 
 public class Noark53Properties extends InternalProperties {
 
-	private Noark5PackageStructure packageStructure = new Noark5PackageStructure();
-
 	private Map<String, Set<String>> uniqueFieldsMap = new HashMap<>();
 
 	private Map<String, Set<String>> extraFieldsMap = new HashMap<>();
@@ -44,14 +42,6 @@ public class Noark53Properties extends InternalProperties {
 		setUniqueFieldsPerTable();
 		setExtraFieldsPerTable();
 		setChecksums();
-	}
-
-	/**
-	 * Retrieves the Noark 5 package structure.
-	 */
-	public Noark5PackageStructure getPackageStructure() {
-
-		return packageStructure;
 	}
 
 	/**
@@ -162,59 +152,5 @@ public class Noark53Properties extends InternalProperties {
 		}
 
 		return map;
-	}
-
-	public static class Noark5PackageStructure {
-
-		private Map<String, Set<String>> structure;
-
-		Noark5PackageStructure() {
-
-			init();
-		}
-
-		public Set<String> getXSDSchemasFor(String xmlFileName) {
-
-			return structure.get(xmlFileName);
-		}
-
-		public Set<String> getAllXMLFiles() {
-
-			return structure.keySet();
-		}
-
-		public Set<String> getAllXSDFiles() {
-
-			Set<String> xsdSchemas = new HashSet<>();
-
-			for (String xmlFile : getAllXMLFiles()) {
-				xsdSchemas.addAll(getXSDSchemasFor(xmlFile));
-			}
-
-			return xsdSchemas;
-		}
-
-		/**
-		 * < xml file name , set of associated XSD schemas file names >
-		 */
-		public Map<String, Set<String>> getPackageStructure() {
-
-			return Collections.unmodifiableMap(structure);
-		}
-
-		private void init() {
-
-			structure = new HashMap<>();
-
-			Set<String> archiveStructureXSDs = new HashSet<>();
-			archiveStructureXSDs.add("arkivstruktur.xsd");
-			archiveStructureXSDs.add("metadatakatalog.xsd");
-
-			structure.put("arkivstruktur.xml", Collections.unmodifiableSet(archiveStructureXSDs));
-			structure.put("arkivuttrekk.xml", Collections.singleton("addml.xsd"));
-			structure.put("endringslogg.xml", Collections.singleton("endringslogg.xsd"));
-			structure.put("loependeJournal.xml", Collections.singleton("loependeJournal.xsd"));
-			structure.put("offentligJournal.xml", Collections.singleton("offentligJournal.xsd"));
-		}
 	}
 }
