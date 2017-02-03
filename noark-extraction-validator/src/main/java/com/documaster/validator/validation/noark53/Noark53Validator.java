@@ -318,12 +318,17 @@ public class Noark53Validator extends Validator<Noark53Command> {
 			LOGGER.info(MessageFormat.format("Validating {0} ...", rule.getTitle()));
 
 			String informationRequest = rule.getData().getInformationRequest();
+			String warningsRequest = rule.getData().getWarningsRequest();
 			String errorRequest = rule.getData().getErrorsRequest();
 
 			ValidationResult result = new ValidationResult(rule.getTitle(), rule.getGroup());
 
 			if (informationRequest != null && !StringUtils.isBlank(informationRequest)) {
 				result.addInformation(Storage.get().fetch(informationRequest));
+			}
+
+			if (warningsRequest != null && !StringUtils.isBlank(warningsRequest)) {
+				result.addWarnings(Storage.get().fetch(warningsRequest));
 			}
 
 			if (errorRequest != null && !StringUtils.isBlank(errorRequest)) {

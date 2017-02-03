@@ -376,12 +376,12 @@ public class ExcelReporter implements Reporter {
 		createSummaryGroupStyle();
 		createSummaryTitleStyle();
 		createSummaryStatusStyle(IndexedColors.BRIGHT_GREEN, StyleName.RESULT_SUCCESS);
-		createSummaryStatusStyle(IndexedColors.ORANGE, StyleName.RESULT_WARNING);
+		createSummaryStatusStyle(IndexedColors.LIGHT_ORANGE, StyleName.RESULT_WARNING);
 		createSummaryStatusStyle(IndexedColors.RED, StyleName.RESULT_FAILURE);
 
 		// Validation result sheets styles
 		createDetailedTitleStyle(IndexedColors.BRIGHT_GREEN, StyleName.RESULT_TITLE_SUCCESS);
-		createDetailedTitleStyle(IndexedColors.ORANGE, StyleName.RESULT_TITLE_WARNING);
+		createDetailedTitleStyle(IndexedColors.LIGHT_ORANGE, StyleName.RESULT_TITLE_WARNING);
 		createDetailedTitleStyle(IndexedColors.RED, StyleName.RESULT_TITLE_FAILURE);
 		createDetailedTypeStyle();
 		createDetailedHeaderRowStyle();

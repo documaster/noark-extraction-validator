@@ -29,8 +29,8 @@ public class ValidationData {
 	@XmlElement(required = true, name = "info")
 	private String informationRequest;
 
-	@XmlElement(name = "control")
-	private String statusRequest;
+	@XmlElement(name = "warnings")
+	private String warningsRequest;
 
 	@XmlElement(name = "errors")
 	private String errorsRequest;
@@ -44,9 +44,9 @@ public class ValidationData {
 		return informationRequest;
 	}
 
-	public String getStatusRequest() {
+	public String getWarningsRequest() {
 
-		return statusRequest;
+		return warningsRequest;
 	}
 
 	public String getErrorsRequest() {

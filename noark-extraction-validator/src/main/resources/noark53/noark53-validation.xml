@@ -94,7 +94,7 @@
                     ) detected;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT 'arkivstruktur.xsd' file_name, detected.value detected_checksum,
                         (
@@ -114,7 +114,7 @@
                     ) detected
                     WHERE detected.value <> arkivuttrekk_checksum OR arkivuttrekk_checksum IS NULL OR detected.value IS NULL;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -190,7 +190,7 @@
                     ) detected;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT 'loependeJournal.xsd' file_name, detected.value detected_checksum,
                         (
@@ -210,7 +210,7 @@
                     ) detected
                     WHERE detected.value <> arkivuttrekk_checksum OR arkivuttrekk_checksum IS NULL OR detected.value IS NULL;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -286,7 +286,7 @@
                     ) detected;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT 'offentligJournal.xsd' file_name, detected.value detected_checksum,
                         (
@@ -306,7 +306,7 @@
                     ) detected
                     WHERE detected.value <> arkivuttrekk_checksum OR arkivuttrekk_checksum IS NULL OR detected.value IS NULL;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -382,7 +382,7 @@
                     ) detected;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT 'endringslogg.xsd' file_name, detected.value detected_checksum,
                         (
@@ -402,7 +402,7 @@
                     ) detected
                     WHERE detected.value <> arkivuttrekk_checksum OR arkivuttrekk_checksum IS NULL OR detected.value IS NULL;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -571,7 +571,7 @@
                     ) inside_period;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT systemid system_id, CAST(opprettetdato AS DATE) created_date, CAST(avsluttetdato AS DATE) finalized_date,
                         (
@@ -594,7 +594,7 @@
                     WHERE CAST(opprettetdato AS DATE) < period_start_date OR CAST(avsluttetdato AS DATE) > period_end_date
                         OR opprettetdato IS NULL OR avsluttetdato IS NULL OR period_start_date IS NULL OR period_end_date IS NULL;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -654,7 +654,7 @@
                     ) inside_period;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT systemid system_id, CAST(opprettetdato AS DATE) created_date, CAST(avsluttetdato AS DATE) finalized_date,
                         (
@@ -677,7 +677,7 @@
                     WHERE CAST(opprettetdato AS DATE) < period_start_date OR CAST(avsluttetdato AS DATE) > period_end_date
                         OR opprettetdato IS NULL OR avsluttetdato IS NULL OR period_start_date IS NULL OR period_end_date IS NULL;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -702,13 +702,13 @@
                     ) closed;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT systemid system_id, arkivdelstatus status, avsluttetdato finalized_date, avsluttetav finalized_by
                     FROM arkivstruktur.arkivdel
                     WHERE arkivdelstatus <> 'Avsluttet periode' OR avsluttetdato IS NULL OR avsluttetav IS NULL;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -865,7 +865,7 @@
                     ) outside_period ON s.systemid = outside_period.series_system_id;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT f._ref_arkivdel series_system_id, f.systemid file_system_id, CAST(f.opprettetdato AS DATE) created_date, CAST(f.avsluttetdato AS DATE) finalized_date,
                         (
@@ -891,7 +891,7 @@
                         OR CAST(f.avsluttetdato AS DATE) > period_end_date
                         OR f.opprettetdato IS NULL OR f.avsluttetdato IS NULL OR period_start_date IS NULL OR period_end_date IS NULL;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -1003,7 +1003,7 @@
                     GROUP BY f._ref_arkivdel, f._dtype, not_closed_files, closed_files;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT f._ref_arkivdel series_system_id, COALESCE(f._dtype, 'mappe') file_type, f.systemid file_system_id, f.avsluttetdato finalized_date, f.avsluttetav finalized_by, f.saksstatus file_status
                     FROM arkivstruktur.mappe f
@@ -1011,7 +1011,7 @@
                         OR f.avsluttetav IS NULL
                         OR (f._dtype = 'saksmappe' AND f.saksstatus <> 'Utgår' AND f.saksstatus <> 'Avsluttet');
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -1139,7 +1139,7 @@
                     ) inside_period ON s.systemid = outside_period.series_system_id;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT r._ref_arkivdel series_system_id, r.systemid record_system_id, CAST(r.opprettetdato AS DATE) created_date, CAST(r.arkivertdato AS DATE) finalized_date,
                         (
@@ -1164,7 +1164,7 @@
                         ( CAST(r.opprettetdato AS DATE) < period_start_date AND s.arkivdelstatus <> 'Overlappingsperiode' ) OR CAST(r.arkivertdato AS DATE) > period_end_date
                         OR r.opprettetdato IS NULL OR r.arkivertdato IS NULL OR period_start_date IS NULL OR period_end_date IS NULL;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -1276,7 +1276,7 @@
                     GROUP BY r._ref_arkivdel, r._dtype, not_closed_records, closed_records;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT r._ref_arkivdel series_system_id, COALESCE(r._dtype, 'registrering') record_type, r.systemid record_system_id, r.arkivertdato finalized_date, r.arkivertav finalized_by, journalstatus record_status
                     FROM arkivstruktur.registrering r
@@ -1284,7 +1284,7 @@
                         OR r.arkivertav IS NULL
                         OR (_dtype = 'journalpost' AND journalstatus <> 'Arkivert' AND journalstatus <> 'Utgår');
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -1354,14 +1354,14 @@
                     GROUP BY r._ref_arkivdel, not_closed_documents, closed_documents;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT r._ref_arkivdel series_system_id, d.systemid document_description_system_id, dokumentstatus document_status
                     FROM arkivstruktur.dokumentbeskrivelse d
                     JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
                     WHERE dokumentstatus <> 'Dokumentet er ferdigstilt';
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -1411,7 +1411,7 @@
                     ) inside_period ON inside_period.series_system_id = s.systemid;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT r._ref_arkivdel series_system_id, d.systemid document_description_system_id, CAST(d.opprettetdato AS DATE) created_date,
                         (
@@ -1427,7 +1427,7 @@
                     JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
                     WHERE ( CAST(d.opprettetdato AS DATE) < period_start_date AND s.arkivdelstatus <> 'Overlappingsperiode' ) OR d.opprettetdato IS NULL OR period_start_date IS NULL;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -1729,7 +1729,7 @@
                     ) document ON document.series_system_id = s.systemid;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT s.systemid series_system_id,
                         COALESCE(series.val, 0) number_of_series_screenings,
@@ -1786,7 +1786,7 @@
                         (arkivuttrekk_has_screening = 'true' AND (series.val = 0 AND class.val = 0 AND file.val = 0 AND item.val = 0 AND document.val = 0))
                         OR arkivuttrekk_has_screening IS NULL;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -1901,7 +1901,7 @@
                     ) document ON document.series_system_id = s.systemid;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT s.systemid series_system_id,
                         COALESCE(series.val, 0) number_of_series_disposal_decisions,
@@ -1958,7 +1958,7 @@
                         (arkivuttrekk_has_disposal_decisions = 'true' AND (series.val = 0 AND class.val = 0 AND file.val = 0 AND item.val = 0 AND document.val = 0))
                         OR arkivuttrekk_has_disposal_decisions IS NULL;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -1994,7 +1994,7 @@
                     ) document ON document.series_system_id = s.systemid;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT s.systemid series_system_id,
                         COALESCE(series.val, 0) number_of_series_disposals,
@@ -2026,7 +2026,7 @@
                         (arkivuttrekk_has_disposals = 'true' AND (series.val = 0 AND document.val = 0))
                         OR arkivuttrekk_has_disposals IS NULL;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -2111,7 +2111,7 @@
                     ) struktur;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT running.value running_journal, struktur.value arkivstruktur_count,
                         (
@@ -2143,7 +2143,7 @@
                     WHERE (arkivuttrekk_count IS NULL AND running.value > 0) OR
                         (arkivuttrekk_count IS NOT NULL AND running.value <> arkivuttrekk_count);
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -2209,7 +2209,7 @@
                     ) inside_period ON inside_period.series_systemid = s.systemid;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT s.systemid series_system_id, j.systemid registry_entry_system_id, CAST(journaldato AS DATE) registry_entry_date,
                         (SELECT CAST(property.value AS DATE)
@@ -2233,7 +2233,7 @@
                         OR period_start_date IS NULL OR period_end_date IS NULL OR s.systemid IS NULL
                     ORDER BY journaldato;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -2256,7 +2256,7 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT running.value running_journal, struktur.value arkivstruktur_count,
+                    SELECT running.value public_journal, struktur.value arkivstruktur_count,
                         (
                             SELECT property.value value
                             FROM addml.property property
@@ -2285,9 +2285,9 @@
                     ) struktur;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
-                    SELECT running.value running_journal, struktur.value arkivstruktur_count,
+                    SELECT running.value public_journal, struktur.value arkivstruktur_count,
                         (
                             SELECT property.value value
                             FROM addml.property property
@@ -2317,7 +2317,7 @@
                     WHERE (arkivuttrekk_count IS NULL AND running.value > 0) OR
                         (arkivuttrekk_count IS NOT NULL AND running.value <> arkivuttrekk_count);
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -2383,7 +2383,7 @@
                     ) inside_period ON inside_period.series_systemid = s.systemid;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT s.systemid series_system_id, j.systemid registry_entry_system_id, CAST(journaldato AS DATE) registry_entry_date,
                         (SELECT CAST(property.value AS DATE)
@@ -2407,7 +2407,7 @@
                         OR s.systemid IS NULL OR period_start_date IS NULL OR period_end_date IS NULL
                     ORDER BY journaldato;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
@@ -2471,7 +2471,7 @@
                     WHERE all_system_ids.systemid IS NULL;
                 ]]>
             </info>
-            <errors>
+            <warnings>
                 <![CDATA[
                     SELECT e.referansearkivenhet systemids_not_found_in_arkivstruktur
                     FROM endringslogg.endring e
@@ -2512,7 +2512,7 @@
                     ) all_system_ids ON all_system_ids.systemid = e.referansearkivenhet
                     WHERE all_system_ids.systemid IS NULL;
                 ]]>
-            </errors>
+            </warnings>
         </queries>
     </rule>
 
