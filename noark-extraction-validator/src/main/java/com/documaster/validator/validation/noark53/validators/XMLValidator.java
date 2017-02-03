@@ -33,7 +33,7 @@ public class XMLValidator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(XMLValidator.class);
 
-	public static boolean validate(Noark53PackageEntity entity, boolean ignoreNonComplianceToSchema) {
+	public static boolean isValid(Noark53PackageEntity entity, boolean ignoreNonComplianceToSchema) {
 
 		LOGGER.info("Validating XML File {} ...", entity.getXmlFile());
 
@@ -42,11 +42,13 @@ public class XMLValidator {
 
 		boolean exists = validateExistence(entity.getXmlFile(), result);
 		boolean isWellFormed = validateIntegrity(entity.getXmlFile(), result);
-		boolean compliesWithSchemas = validateSchemaCompliance(entity.getXmlFile(), result, entity.getNoarkSchemas());
+		validateAgainstPackageSchemas(entity.getXmlFile(), result, entity.getPackageSchemas());
+		boolean compliesWithNoarkSchemas = validateAgainstNoarkSchemas(
+				entity.getXmlFile(), result, entity.getNoarkSchemas());
 
 		ValidationCollector.get().collect(result);
 
-		return exists && isWellFormed && (compliesWithSchemas || ignoreNonComplianceToSchema);
+		return exists && isWellFormed && (compliesWithNoarkSchemas || ignoreNonComplianceToSchema);
 	}
 
 	private static boolean validateExistence(File xmlFile, ValidationCollector.ValidationResult result) {
@@ -75,18 +77,36 @@ public class XMLValidator {
 		}
 	}
 
-	private static boolean validateSchemaCompliance(
+	private static boolean validateAgainstPackageSchemas(
 			File xmlFile, ValidationCollector.ValidationResult result, List<File> xsdSchemas) {
 
 		SchemaValidator schemaValidator = new SchemaValidator();
 
 		if (!xmlFile.isFile() || !schemaValidator.isXmlFileValid(xmlFile, xsdSchemas)) {
 			for (String error : schemaValidator.getErrors()) {
-				result.addError(new BaseItem().add("Error", error));
+				result.addWarning(new BaseItem().add("Warnings", "Package schema: " + 	error));
 			}
 			return false;
 		} else {
-			result.addInformation(new BaseItem().add("Information", xmlFile.getName() + " validates against schema"));
+			result.addInformation(
+					new BaseItem().add("Information", xmlFile.getName() + " validates against package schemas"));
+			return true;
+		}
+	}
+
+	private static boolean validateAgainstNoarkSchemas(
+			File xmlFile, ValidationCollector.ValidationResult result, List<File> xsdSchemas) {
+
+		SchemaValidator schemaValidator = new SchemaValidator();
+
+		if (!xmlFile.isFile() || !schemaValidator.isXmlFileValid(xmlFile, xsdSchemas)) {
+			for (String error : schemaValidator.getErrors()) {
+				result.addError(new BaseItem().add("Errors", "Noark schema: " + error));
+			}
+			return false;
+		} else {
+			result.addInformation(
+					new BaseItem().add("Information", xmlFile.getName() + " validates against Noark schemas"));
 			return true;
 		}
 	}
