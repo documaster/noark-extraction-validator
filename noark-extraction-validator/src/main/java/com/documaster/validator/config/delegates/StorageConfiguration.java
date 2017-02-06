@@ -22,7 +22,7 @@ import com.beust.jcommander.ParameterException;
 import com.documaster.validator.exceptions.ReportingException;
 import com.documaster.validator.storage.core.Storage;
 
-public class StorageDelegate implements Delegate {
+public class StorageConfiguration implements Delegate {
 
 	private static final String STORAGE = "-storage";
 	@Parameter(names = STORAGE, description = "The storage type")

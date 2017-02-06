@@ -64,28 +64,23 @@ public class Run {
 	private static Command initConfiguration(String... args) throws ConfigurationException, IOException {
 
 		GlobalConfiguration globalConfig = new GlobalConfiguration();
-
-		Noark53Command noark53Command = new Noark53Command();
-
-		Map<String, Command> commands = new HashMap<>();
-		commands.put(Noark53Command.COMMAND_NAME, noark53Command);
-
 		JCommander argParser = new JCommander(globalConfig);
 
-		argParser.addCommand(noark53Command);
+		Map<String, Command> commands = new HashMap<>();
+		commands.put(Noark53Command.COMMAND_NAME, new Noark53Command(argParser));
+		for (Command command : commands.values()) {
+			argParser.addCommand(command);
+		}
 
 		argParser.parse(args);
-
 		if (args.length == 0 || globalConfig.showHelp()) {
-
 			argParser.usage();
 			System.exit(0);
 		}
 
-		String parsedCommandName = argParser.getParsedCommand();
+		Command command = commands.get(argParser.getParsedCommand());
+		command.validate();
 
-		commands.get(parsedCommandName).validate();
-
-		return commands.get(parsedCommandName);
+		return command;
 	}
 }

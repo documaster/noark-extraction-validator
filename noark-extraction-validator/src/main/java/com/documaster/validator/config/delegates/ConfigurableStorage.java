@@ -1,6 +1,6 @@
 /**
  * Noark Extraction Validator
- * Copyright (C) 2016, Documaster AS
+ * Copyright (C) 2017, Documaster AS
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -15,12 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.reporting.core;
+package com.documaster.validator.config.delegates;
 
-public interface Reporter {
+public interface ConfigurableStorage {
 
-	/**
-	 * Generates a report for the execution.
-	 */
-	void createReport();
+	StorageConfiguration getStorageConfiguration();
 }

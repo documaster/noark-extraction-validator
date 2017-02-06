@@ -19,18 +19,21 @@ package com.documaster.validator.config.commands;
 
 import java.io.File;
 
+import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 import com.beust.jcommander.converters.FileConverter;
-import com.documaster.validator.config.delegates.ReporterDelegate;
-import com.documaster.validator.config.delegates.StorageDelegate;
+import com.documaster.validator.config.delegates.ConfigurableReporting;
+import com.documaster.validator.config.delegates.ConfigurableStorage;
+import com.documaster.validator.config.delegates.ReportConfiguration;
+import com.documaster.validator.config.delegates.StorageConfiguration;
 import com.documaster.validator.config.properties.Noark53Properties;
 import com.documaster.validator.config.validators.DirectoryValidator;
 
 @Parameters(commandNames = Noark53Command.COMMAND_NAME,
 		commandDescription = "Validates a Noark 5.3 extraction package.")
-public class Noark53Command extends Command<Noark53Properties> {
+public class Noark53Command extends Command<Noark53Properties> implements ConfigurableReporting, ConfigurableStorage {
 
 	public static final String COMMAND_NAME = "noark53";
 
@@ -47,12 +50,17 @@ public class Noark53Command extends Command<Noark53Properties> {
 	private boolean ignoreNonCompliantXML = false;
 
 	@ParametersDelegate
-	private ReporterDelegate reporterDelegate = new ReporterDelegate();
+	private ReportConfiguration reportConfiguration = new ReportConfiguration();
 
 	@ParametersDelegate
-	private StorageDelegate storageDelegate = new StorageDelegate();
+	private StorageConfiguration storageConfiguration = new StorageConfiguration();
 
 	private Noark53Properties properties;
+
+	public Noark53Command(JCommander argParser) {
+
+		super(argParser);
+	}
 
 	public File getExtractionDirectory() {
 
@@ -64,14 +72,16 @@ public class Noark53Command extends Command<Noark53Properties> {
 		return ignoreNonCompliantXML;
 	}
 
-	public ReporterDelegate getReporterDelegate() {
+	@Override
+	public ReportConfiguration getReportConfiguration() {
 
-		return reporterDelegate;
+		return reportConfiguration;
 	}
 
-	public StorageDelegate getStorageDelegate() {
+	@Override
+	public StorageConfiguration getStorageConfiguration() {
 
-		return storageDelegate;
+		return storageConfiguration;
 	}
 
 	@Override

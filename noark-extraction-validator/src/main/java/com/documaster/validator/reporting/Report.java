@@ -15,26 +15,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.reporting.core;
+package com.documaster.validator.reporting;
 
-import com.documaster.validator.config.delegates.ReporterDelegate;
-import com.documaster.validator.exceptions.ReportingException;
-import com.documaster.validator.reporting.excel.ExcelReporter;
+import com.documaster.validator.config.commands.Command;
+import com.documaster.validator.config.delegates.ConfigurableReporting;
 
-public class ReporterFactory {
+public abstract class Report<T extends Command<?> & ConfigurableReporting> {
 
-	private ReporterFactory() {
-		// Prevent instantiation
+	private T config;
+
+	private String title;
+
+	Report(T config, String title) {
+
+		this.config = config;
+		this.title = title;
 	}
 
-	public static Reporter createReporter(ReporterDelegate config, String title) {
+	protected T getConfig() {
 
-		switch (config.getOutputType()) {
-			case EXCEL_XLS:
-			case EXCEL_XLSX:
-				return new ExcelReporter(config.getOutputDir(), config.getOutputType(), title);
-			default:
-				throw new ReportingException("Unknown report type: " + config.getOutputType());
-		}
+		return config;
 	}
+
+	protected String getTitle() {
+
+		return title;
+	}
+
+	/**
+	 * Generates the report.
+	 */
+	abstract void generate() throws Exception;
 }

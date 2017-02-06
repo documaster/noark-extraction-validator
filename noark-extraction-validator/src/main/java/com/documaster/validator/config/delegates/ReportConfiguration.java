@@ -18,15 +18,21 @@
 package com.documaster.validator.config.delegates;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 import com.documaster.validator.config.validators.DirectoryValidator;
 import com.documaster.validator.exceptions.ReportingException;
-import com.documaster.validator.reporting.core.ReporterType;
+import com.documaster.validator.reporting.ReportType;
 
-public class ReporterDelegate implements Delegate {
+import static com.documaster.validator.reporting.ReportType.EXCEL_XLSX;
+
+public class ReportConfiguration implements Delegate {
+
+	private static List<ReportType> defaultReportTypes;
 
 	private static final String OUTPUT_DIR = "-output-dir";
 	@Parameter(
@@ -36,36 +42,37 @@ public class ReporterDelegate implements Delegate {
 
 	private static final String OUTPUT_TYPE = "-output-type";
 	@Parameter(names = OUTPUT_TYPE, description = "The output type of the validation report")
-	private ReporterType reportType = ReporterType.EXCEL_XLSX;
+	private List<ReportType> outputTypes = defaultReportTypes;
+
+	static {
+		defaultReportTypes = new ArrayList<>();
+		defaultReportTypes.add(EXCEL_XLSX);
+	}
 
 	public File getOutputDir() {
 
 		return outputDir;
 	}
 
-	public ReporterType getOutputType() {
+	public List<ReportType> getOutputTypes() {
 
-		return reportType;
+		return outputTypes;
 	}
 
 	@Override
 	public void validate() {
 
-		if (reportType == null) {
-
-			throw new ParameterException(OUTPUT_TYPE + " must be specified.");
+		for (ReportType reportType : outputTypes) {
+			switch (reportType) {
+				case EXCEL_XLS:
+				case EXCEL_XLSX:
+					if (outputDir == null) {
+						throw new ParameterException(OUTPUT_DIR + " must be specified for " + reportType);
+					}
+					break;
+				default:
+					throw new ReportingException("Unknown report type: " + reportType);
+			}
 		}
-
-		switch (reportType) {
-			case EXCEL_XLS:
-			case EXCEL_XLSX:
-				if (outputDir == null) {
-					throw new ParameterException(OUTPUT_DIR + " must be specified");
-				}
-				break;
-			default:
-				throw new ReportingException("Unknown report type: " + reportType);
-		}
-
 	}
 }
