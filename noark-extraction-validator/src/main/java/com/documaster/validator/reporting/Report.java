@@ -17,8 +17,13 @@
  */
 package com.documaster.validator.reporting;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.documaster.validator.config.commands.Command;
 import com.documaster.validator.config.delegates.ConfigurableReporting;
+import org.apache.commons.lang.StringUtils;
 
 public abstract class Report<T extends Command<?> & ConfigurableReporting> {
 
@@ -40,6 +45,17 @@ public abstract class Report<T extends Command<?> & ConfigurableReporting> {
 	protected String getTitle() {
 
 		return title;
+	}
+
+	protected String getDefaultReportName() {
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+		String now = dateFormat.format(new Date());
+
+		String reportName = !StringUtils.isBlank(getTitle()) ? getTitle() : "Documaster validation report";
+		reportName += " " + now;
+
+		return reportName;
 	}
 
 	/**
