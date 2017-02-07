@@ -24,6 +24,7 @@ import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.validation.collector.ValidationCollector;
 import com.documaster.validator.validation.noark53.provider.ValidationGroup;
 import com.documaster.validator.validation.noark53.model.Noark53PackageEntity;
+import com.documaster.validator.validation.utils.DefaultXMLHandler;
 import com.documaster.validator.validation.utils.SchemaValidator;
 import com.documaster.validator.validation.utils.WellFormedXmlValidator;
 import org.slf4j.Logger;
@@ -64,12 +65,10 @@ public class XMLValidator {
 
 	private static boolean validateIntegrity(File xmlFile, ValidationCollector.ValidationResult result) {
 
-		WellFormedXmlValidator xmlIntegrityValidator = new WellFormedXmlValidator();
+		WellFormedXmlValidator xmlIntegrityValidator = new WellFormedXmlValidator<>(new DefaultXMLHandler());
 
 		if (!xmlFile.isFile() || !xmlIntegrityValidator.isXmlWellFormed(xmlFile)) {
-			for (String error : xmlIntegrityValidator.getErrors()) {
-				result.addError(new BaseItem().add("Error", error));
-			}
+			result.addErrors(xmlIntegrityValidator.getExceptionHandler().getExceptionsAsItems());
 			return false;
 		} else {
 			result.addInformation(new BaseItem().add("Information", xmlFile.getName() + " is well-formed"));
@@ -80,12 +79,10 @@ public class XMLValidator {
 	private static boolean validateAgainstPackageSchemas(
 			File xmlFile, ValidationCollector.ValidationResult result, List<File> xsdSchemas) {
 
-		SchemaValidator schemaValidator = new SchemaValidator();
+		SchemaValidator schemaValidator = new SchemaValidator<>(new NoarkXMLHandler(NoarkXMLHandler.Schema.PACKAGE));
 
 		if (!xmlFile.isFile() || !schemaValidator.isXmlFileValid(xmlFile, xsdSchemas)) {
-			for (String error : schemaValidator.getErrors()) {
-				result.addWarning(new BaseItem().add("Warnings", "Package schema: " + 	error));
-			}
+			result.addWarnings(schemaValidator.getHandler().getExceptionsAsItems());
 			return false;
 		} else {
 			result.addInformation(
@@ -97,12 +94,10 @@ public class XMLValidator {
 	private static boolean validateAgainstNoarkSchemas(
 			File xmlFile, ValidationCollector.ValidationResult result, List<File> xsdSchemas) {
 
-		SchemaValidator schemaValidator = new SchemaValidator();
+		SchemaValidator schemaValidator = new SchemaValidator<>(new NoarkXMLHandler(NoarkXMLHandler.Schema.NOARK));
 
 		if (!xmlFile.isFile() || !schemaValidator.isXmlFileValid(xmlFile, xsdSchemas)) {
-			for (String error : schemaValidator.getErrors()) {
-				result.addError(new BaseItem().add("Errors", "Noark schema: " + error));
-			}
+			result.addErrors(schemaValidator.getHandler().getExceptionsAsItems());
 			return false;
 		} else {
 			result.addInformation(
