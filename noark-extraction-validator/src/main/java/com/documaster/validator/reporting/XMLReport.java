@@ -31,6 +31,7 @@ import com.documaster.validator.config.commands.Command;
 import com.documaster.validator.config.delegates.ConfigurableReporting;
 import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.validation.collector.ValidationCollector;
+import com.documaster.validator.validation.utils.DefaultXMLHandler;
 import com.documaster.validator.validation.utils.SchemaValidator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -180,12 +181,12 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 
 	private void validateReport(File report, File schema) {
 
-		SchemaValidator schemaValidator = new SchemaValidator();
+		SchemaValidator schemaValidator = new SchemaValidator<>(new DefaultXMLHandler());
 
 		if (!schemaValidator.isXmlFileValid(report, Collections.singletonList(schema))) {
 			LOGGER.warn("The generated XML report does not validate against the bundled schema:");
-			for (String error : schemaValidator.getErrors()) {
-				LOGGER.warn(error);
+			for (BaseItem error : schemaValidator.getHandler().getExceptionsAsItems()) {
+				LOGGER.warn(error.toString());
 			}
 		}
 	}
