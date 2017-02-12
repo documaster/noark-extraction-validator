@@ -17,63 +17,58 @@
  */
 package com.documaster.validator.validation.noark53.provider;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
+
+import com.documaster.validator.validation.collector.ValidationCollector;
 
 @XmlType(name = "group")
 @XmlEnum
 public enum ValidationGroup {
 
 	@XmlEnumValue("arkivstruktur")
-	ARCHIVE_STRUCTURE("arkivstruktur"),
+	ARCHIVE_STRUCTURE("arkivstruktur", "AS"),
 
 	@XmlEnumValue("loependejournal")
-	RUNNING_JOURNAL("loependejournal"),
+	RUNNING_JOURNAL("loependejournal", "LJ"),
 
 	@XmlEnumValue("offentligjournal")
-	PUBLIC_JOURNAL("offentligjournal"),
+	PUBLIC_JOURNAL("offentligjournal", "OJ"),
 
 	@XmlEnumValue("arkivuttrekk")
-	TRANSFER_EXPORTS("addml"),
+	TRANSFER_EXPORTS("addml", "AU"),
 
 	@XmlEnumValue("endringslogg")
-	CHANGE_LOG("endringslogg"),
+	CHANGE_LOG("endringslogg", "EL"),
 
-	@XmlEnumValue("common")
-	COMMON("common");
+	@XmlEnumValue("package")
+	PACKAGE("package", "P"),
 
-	private final String value;
+	@XmlEnumValue("exceptions")
+	EXCEPTIONS("exceptions", "E");
 
-	private static Map<String, String> identifierMap;
+	private final String name;
+	private final String prefix;
 
-	static {
+	ValidationGroup(String name, String prefix) {
 
-		identifierMap = new HashMap<>();
-
-		identifierMap.put(ARCHIVE_STRUCTURE.value(), "AS");
-		identifierMap.put(RUNNING_JOURNAL.value(), "LJ");
-		identifierMap.put(PUBLIC_JOURNAL.value(), "OJ");
-		identifierMap.put(TRANSFER_EXPORTS.value(), "AU");
-		identifierMap.put(CHANGE_LOG.value(), "EL");
-		identifierMap.put(COMMON.value(), "C");
+		this.name = name;
+		this.prefix = prefix;
 	}
 
-	ValidationGroup(String v) {
+	public String getName() {
 
-		value = v;
+		return name;
 	}
 
-	public String value() {
+	public String getGroupPrefix() {
 
-		return value;
+		return prefix;
 	}
 
-	public static String getIdentifierOf(ValidationGroup group) {
+	public String getNextGroupId() {
 
-		return identifierMap.get(group.value());
+		return prefix + (ValidationCollector.get().getTotalResultCountIn(name) + 1);
 	}
 }

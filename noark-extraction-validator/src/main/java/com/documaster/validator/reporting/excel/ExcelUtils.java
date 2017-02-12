@@ -36,6 +36,13 @@ public class ExcelUtils {
 		// Prevent instantiation
 	}
 
+	public static Row createStyledRow(Sheet sheet, CellStyle style) {
+
+		Row row = createRow(sheet);
+		row.setRowStyle(style);
+		return row;
+	}
+
 	public static Row createRow(Sheet sheet) {
 
 		return createRow(null, sheet);

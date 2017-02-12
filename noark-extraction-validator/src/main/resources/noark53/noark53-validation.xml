@@ -22,9 +22,17 @@
     <!-- View the associated xsd for more information on the structure of the file. -->
     <!-- Note that there is a limitation on the possible values of the group element -->
 
-    <rule>
+    <!--
+    ============================================================================================================
+    ARKIVUTTREKK
+    ============================================================================================================
+    -->
+    <!-- Tests -->
+
+    <test id="AUT1">
         <title>arkivstruktur.xml checksum</title>
-        <group>common</group>
+        <description>Tests whether the checksum of arkivstruktur.xml matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
         <queries>
             <info>
                 <![CDATA[
@@ -68,11 +76,12 @@
                 ]]>
             </errors>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
+    <test id="AUT2">
         <title>arkivstruktur.xsd checksum</title>
-        <group>common</group>
+        <description>Tests whether the checksum of arkivstruktur.xsd matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
         <queries>
             <info>
                 <![CDATA[
@@ -116,11 +125,12 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>loependejournal.xml checksum</title>
-        <group>common</group>
+    <test id="AUT3">
+        <title>loependeJournal.xml checksum</title>
+        <description>Tests whether the checksum of loependeJournal.xml matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
         <queries>
             <info>
                 <![CDATA[
@@ -160,15 +170,16 @@
                         FROM addml.property
                         WHERE name = 'loependeJournal.xml'
                     ) detected
-                    WHERE detected.value <> arkivuttrekk_checksum OR arkivuttrekk_checksum IS NULL OR detected.value IS NULL;
+                    WHERE detected.value <> arkivuttrekk_checksum;
                 ]]>
             </errors>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>loependejournal.xsd checksum</title>
-        <group>common</group>
+    <test id="AUT4">
+        <title>loependeJournal.xsd checksum</title>
+        <description>Tests whether the checksum of loependeJournal.xsd matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
         <queries>
             <info>
                 <![CDATA[
@@ -208,15 +219,16 @@
                         FROM addml.property
                         WHERE name = 'loependeJournal.xsd'
                     ) detected
-                    WHERE detected.value <> arkivuttrekk_checksum OR arkivuttrekk_checksum IS NULL OR detected.value IS NULL;
+                    WHERE detected.value <> arkivuttrekk_checksum AND arkivuttrekk_checksum IS NOT NULL AND detected.value IS NOT NULL;
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
+    <test id="AUT5">
         <title>offentligJournal.xml checksum</title>
-        <group>common</group>
+        <description>Tests whether the checksum of offentligJournal.xml matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
         <queries>
             <info>
                 <![CDATA[
@@ -256,15 +268,16 @@
                         FROM addml.property
                         WHERE name = 'offentligJournal.xml'
                     ) detected
-                    WHERE detected.value <> arkivuttrekk_checksum OR arkivuttrekk_checksum IS NULL OR detected.value IS NULL;
+                    WHERE detected.value <> arkivuttrekk_checksum;
                 ]]>
             </errors>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
+    <test id="AUT6">
         <title>offentligJournal.xsd checksum</title>
-        <group>common</group>
+        <description>Tests whether the checksum of offentligJournal.xsd matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
         <queries>
             <info>
                 <![CDATA[
@@ -304,15 +317,16 @@
                         FROM addml.property
                         WHERE name = 'offentligJournal.xsd'
                     ) detected
-                    WHERE detected.value <> arkivuttrekk_checksum OR arkivuttrekk_checksum IS NULL OR detected.value IS NULL;
+                    WHERE detected.value <> arkivuttrekk_checksum AND arkivuttrekk_checksum IS NOT NULL AND detected.value IS NOT NULL;
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
+    <test id="AUT7">
         <title>endringslogg.xml checksum</title>
-        <group>common</group>
+        <description>Tests whether the checksum of endringslogg.xml matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
         <queries>
             <info>
                 <![CDATA[
@@ -356,11 +370,12 @@
                 ]]>
             </errors>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
+    <test id="AUT8">
         <title>endringslogg.xsd checksum</title>
-        <group>common</group>
+        <description>Tests whether the checksum of endringslogg.xsd matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
         <queries>
             <info>
                 <![CDATA[
@@ -404,10 +419,507 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Extraction-wide systemid field uniqueness</title>
+    <!--
+    ============================================================================================================
+    ARKIVSTRUKTUR
+    ============================================================================================================
+    -->
+    <!-- Checks -->
+    <check id="ASC1">
+        <title>Fonds</title>
+        <description>Number of fonds</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT
+                        a.systemid system_id,
+                        a.tittel title,
+                        (_ref_arkiv IS NULL) is_root,
+                        (COUNT(*) - 1) children_count
+                    FROM arkivstruktur.arkiv a
+                    LEFT JOIN arkivstruktur.arkiv b ON a._id = b._parent_id
+                    GROUP BY system_id, title, is_root
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC2">
+        <title>Classification systems</title>
+        <description>Number of classification systems grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT s.systemid series_system_id, COUNT(*) ks_count
+                    FROM arkivstruktur.arkivdel s
+                    JOIN arkivstruktur.klassifikasjonssystem ks ON ks._parent_id = s._id
+                    GROUP BY s.systemid
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC3">
+        <title>Classes</title>
+        <description>Number of classes grouped by classification system</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT ks.systemid ks_system_id, parent.systemid parent_system_id, COUNT(*) number_of_classes
+                    FROM arkivstruktur.klasse k
+                    LEFT JOIN arkivstruktur.klasse parent ON parent.systemid = k._ref_klasse
+                    LEFT JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                    GROUP BY ks.systemid, parent.systemid;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC4">
+        <title>Classes without subclasses, files, or records</title>
+        <description>Number of classes without children of any type, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT ks._ref_arkivdel series_system_id, COUNT(DISTINCT(k.systemid)) classes_without_children
+                    FROM arkivstruktur.klasse k
+                    JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                    WHERE k.systemid NOT IN (SELECT _ref_klasse FROM arkivstruktur.klasse WHERE _ref_klasse IS NOT NULL GROUP BY _ref_klasse)
+                        AND k.systemid NOT IN (SELECT _ref_klasse FROM arkivstruktur.mappe WHERE _ref_klasse IS NOT NULL)
+                        AND k.systemid NOT IN (SELECT _ref_klasse FROM arkivstruktur.registrering WHERE _ref_klasse IS NOT NULL GROUP BY _ref_klasse)
+                    GROUP BY ks._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC5">
+        <title>Files with classes</title>
+        <description>Number of files grouped by class and series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT f._ref_arkivdel series_system_id, f._ref_klasse class_system_id, COUNT(*) number_of_files
+                    FROM arkivstruktur.mappe f
+                    GROUP BY f._ref_arkivdel, f._ref_klasse;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC6">
+        <title>Files without subfiles or records</title>
+        <description>Number of files without children of any type, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT f._ref_arkivdel series_system_id, COUNT(*) empty_file_count
+                    FROM arkivstruktur.mappe f
+                    WHERE f.systemid NOT IN (SELECT _ref_mappe FROM arkivstruktur.mappe WHERE _ref_mappe IS NOT NULL GROUP BY _ref_mappe)
+                        AND f.systemid NOT IN (SELECT _ref_mappe FROM arkivstruktur.registrering WHERE _ref_mappe IS NOT NULL GROUP BY _ref_mappe)
+                    GROUP BY f._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC7">
+        <title>Registry entries without a main document</title>
+        <description>Number of registry entries without a main document, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, r._dtype registry_entry_type, COUNT(*) registry_entries_without_a_main_document
+                    FROM arkivstruktur.registrering r
+                    WHERE r._dtype = 'journalpost' AND r.systemid NOT IN (
+                        SELECT _ref_registrering
+                        FROM arkivstruktur.dokumentbeskrivelse
+                        WHERE tilknyttetregistreringsom = 'Hoveddokument' AND _ref_registrering IS NOT NULL
+                        GROUP BY _ref_registrering
+                    )
+                    GROUP BY r._ref_arkivdel, r._dtype;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC8">
+        <title>Records with classes</title>
+        <description>Number of records with classes, grouped by class and series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, r._ref_klasse class_system_id, COUNT(*) number_of_records
+                    FROM arkivstruktur.registrering r
+                    WHERE r._ref_mappe IS NULL
+                    GROUP BY r._ref_arkivdel, r._ref_klasse;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC9">
+        <title>Records without document descriptions</title>
+        <description>Number of records without document descriptions, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, COUNT(*) records_without_documents
+                    FROM arkivstruktur.registrering r
+                    WHERE r.systemid NOT IN (SELECT _ref_registrering FROM arkivstruktur.dokumentbeskrivelse WHERE _ref_registrering IS NOT NULL GROUP BY _ref_registrering)
+                    GROUP BY r._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC10">
+        <title>Document descriptions</title>
+        <description>Number of document descriptions grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, count(*) number_of_document_description
+                    FROM arkivstruktur.dokumentbeskrivelse d
+                    JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                    GROUP BY r._ref_arkivdel
+
+                    UNION ALL
+
+                    SELECT 'total', count(*)
+                    FROM arkivstruktur.dokumentbeskrivelse;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC11">
+        <title>Document descriptions without document objects</title>
+        <description>Number of document descriptions without document objects, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, COUNT(*) document_descriptions_without_document_objects
+                    FROM arkivstruktur.dokumentbeskrivelse d
+                    JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                    WHERE d.systemid NOT IN (
+                        SELECT _ref_dokumentbeskrivelse
+                        FROM arkivstruktur.dokumentobjekt
+                        WHERE _ref_dokumentbeskrivelse IS NOT NULL
+                        GROUP BY _ref_dokumentbeskrivelse
+                    )
+                    GROUP BY r._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC12">
+        <title>Document objects</title>
+        <description>Number of document objects grouped by series and parent (document description or record)</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT
+                        r._ref_arkivdel series_system_id,
+                        COUNT(*) document_objects,
+                        (d._ref_dokumentbeskrivelse IS NOT NULL) in_document_description,
+                        (d._ref_dokumentbeskrivelse IS NULL) in_record
+                    FROM arkivstruktur.dokumentobjekt d
+                    LEFT JOIN arkivstruktur.dokumentbeskrivelse dd ON dd._id = d._parent_id
+                    LEFT JOIN arkivstruktur.registrering r ON r._id = d._parent_id
+                    GROUP BY series_system_id, in_document_description, in_record
+
+                    UNION ALL
+
+                    SELECT 'total', count(*), TRUE in_document_description, TRUE in_record
+                    FROM arkivstruktur.dokumentobjekt;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC13">
+        <title>Case parties</title>
+        <description>Number of case parties grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT f._ref_arkivdel series_system_id, COUNT(*) number_of_case_parties
+                    FROM arkivstruktur.sakspart cp
+                    JOIN arkivstruktur.mappe f ON f.systemid = cp._ref_mappe
+                    GROUP BY f._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC14">
+        <title>Notes</title>
+        <description>Number of notes associated with files, records, or document descriptions, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT s.systemid series_system_id,
+                        COALESCE(f.val, 0) number_of_file_notes,
+                        COALESCE(r.val, 0) number_of_record_notes,
+                        COALESCE(d.val, 0) number_of_document_notes
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN
+                    (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.merknad n
+                        JOIN arkivstruktur.mappe f ON f.systemid = n._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ) f ON f.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.merknad n
+                        JOIN arkivstruktur.registrering r ON r.systemid = n._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ) r ON r.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.merknad n
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = n._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ) d ON d.series_system_id = s.systemid;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC15">
+        <title>Cross references</title>
+        <description>Number of cross references associated with classes, files, or records, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT s.systemid series_system_id,
+                        COALESCE(k.val, 0) number_of_klass_cross_references,
+                        COALESCE(f.val, 0) number_of_file_cross_references,
+                        COALESCE(r.val, 0) number_of_record_cross_references
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN
+                    (
+                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kryssreferanse cr
+                        JOIN arkivstruktur.klasse k ON k.systemid = cr._ref_klasse
+                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                        GROUP BY ks._ref_arkivdel
+                    ) k ON k.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kryssreferanse cr
+                        JOIN arkivstruktur.mappe f ON f.systemid =  cr._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ) f ON f.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kryssreferanse cr
+                        JOIN arkivstruktur.registrering r ON r.systemid = cr._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ) r ON r.series_system_id = s.systemid;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC16">
+        <title>Precedents</title>
+        <description>Number of precedents associated with files or records, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT s.systemid series_system_id,
+                        COALESCE(f.val, 0) number_of_file_precedents,
+                        COALESCE(r.val, 0) number_of_record_precedents
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN
+                    (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.presedens p
+                        JOIN arkivstruktur.mappe f ON f.systemid = p._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ) f ON f.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.presedens p
+                        JOIN arkivstruktur.registrering r ON r.systemid = p._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ) r ON r.series_system_id = s.systemid;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC17">
+        <title>Sign-offs</title>
+        <description>Number of sign-offs grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, COUNT(*) number_of_sign_offs
+                    FROM arkivstruktur.registrering r
+                    WHERE r._dtype = 'journalpost' AND r.systemid in (SELECT _ref_registrering FROM arkivstruktur.avskrivning WHERE _ref_registrering IS NOT NULL GROUP BY _ref_registrering)
+                    GROUP BY r._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC18">
+        <title>Document flows</title>
+        <description>Number of document flows grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, COUNT(*) number_of_document_flows
+                    FROM arkivstruktur.registrering r
+                    WHERE r._dtype = 'journalpost' AND r.systemid in (SELECT _ref_registrering FROM arkivstruktur.dokumentflyt WHERE _ref_registrering IS NOT NULL GROUP BY _ref_registrering)
+                    GROUP BY r._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC19">
+        <title>Gradings</title>
+        <description>
+            Number of gradings associated with series, classes,
+            files, records, or document descriptions
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT s.systemid series_system_id,
+                        COALESCE(series.val, 0) number_of_series_gradings,
+                        COALESCE(class.val, 0) number_of_class_gradings,
+                        COALESCE(file.val, 0) number_of_file_gradings,
+                        COALESCE(item.val, 0) number_of_record_gradings,
+                        COALESCE(document.val, 0) number_of_document_descriptions_gradings
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN
+                    (
+                        SELECT g._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.gradering g
+                        GROUP BY g._ref_arkivdel
+                    ) series ON series.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.gradering g
+                        JOIN arkivstruktur.klasse k ON k.systemid = g._ref_klasse
+                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                        GROUP BY ks._ref_arkivdel
+                    ) class ON class.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.gradering g
+                        JOIN arkivstruktur.mappe f ON f.systemid = g._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ) file ON file.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.gradering g
+                        JOIN arkivstruktur.registrering r ON r.systemid = g._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ) item ON item.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.gradering g
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = g._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ) document ON document.series_system_id = s.systemid;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC20">
+        <title>Conversions</title>
+        <description>Number of conversions grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, COUNT(*) number_of_conversions
+                    FROM arkivstruktur.konvertering k
+                    JOIN arkivstruktur.dokumentobjekt d ON k._parent_id = d._id
+                    JOIN arkivstruktur.dokumentbeskrivelse dd ON dd.systemid = d._ref_dokumentbeskrivelse
+                    JOIN arkivstruktur.registrering r ON r.systemid = dd._ref_registrering
+                    GROUP BY r._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC21">
+        <title>Deletions (apart from disposals)</title>
+        <description>Number of deletions (apart from disposals)</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT s.systemid series_system_id,
+                        COALESCE(series.val, 0) number_of_series_deletions_apart_from_disposals,
+                        COALESCE(document.val, 0) number_of_document_descriptions_deletions_apart_from_disposals
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN
+                    (
+                        SELECT sl._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.sletting sl
+                        GROUP BY sl._ref_arkivdel
+                    ) series ON series.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.sletting sl
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = sl._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ) document ON document.series_system_id = s.systemid;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <!-- Tests -->
+
+    <test id="AST1">
+        <title>Extraction-wide systemID uniqueness</title>
+        <description>Tests whether the same systemID has been used for more than one object in the archive.</description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -470,29 +982,14 @@
                 ]]>
             </errors>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Fonds count</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT
-                        a.systemid system_id,
-                        a.tittel title,
-                        (_ref_arkiv IS NULL) is_root,
-                        (COUNT(*) - 1) children_count
-                    FROM arkivstruktur.arkiv a
-                    LEFT JOIN arkivstruktur.arkiv b ON a._id = b._parent_id
-                    GROUP BY system_id, title, is_root
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
-        <title>Series count</title>
+    <test id="AST2">
+        <title>Series</title>
+        <description>
+            Provides information about the number of series in the archive,
+            and tests whether a fonds without any series exists.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -513,10 +1010,14 @@
                 ]]>
             </errors>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
+    <test id="AST3">
         <title>Fonds period containment</title>
+        <description>
+            Tests whether the created and finalized dates of all fonds
+            are within the archival period specified in arkivuttrekk.xml.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -597,10 +1098,14 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
+    <test id="AST4">
         <title>Series period containment</title>
+        <description>
+            Tests whether the created and finalized dates of all series
+            are within the archival period specified in arkivuttrekk.xml.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -680,10 +1185,15 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
+    <test id="AST5">
         <title>Series status</title>
+        <description>
+            Tests whether non-finalized series exist in the archive.
+            A series is considered non-finalized if a finalized date or
+            a finalizing party is not specified, or if the series status is not 'Avsluttet periode'.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -711,59 +1221,14 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Classification Systems count</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT s.systemid series_system_id, COUNT(*) ks_count
-                    FROM arkivstruktur.arkivdel s
-                    JOIN arkivstruktur.klassifikasjonssystem ks ON ks._parent_id = s._id
-                    GROUP BY s.systemid
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
-        <title>Class count</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT ks.systemid ks_system_id, parent.systemid parent_system_id, COUNT(*) number_of_classes
-                    FROM arkivstruktur.klasse k
-                    LEFT JOIN arkivstruktur.klasse parent ON parent.systemid = k._ref_klasse
-                    LEFT JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
-                    GROUP BY ks.systemid, parent.systemid;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
-        <title>Classes without subclasses, files, or records</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT ks._ref_arkivdel series_system_id, COUNT(DISTINCT(k.systemid)) classes_without_children
-                    FROM arkivstruktur.klasse k
-                    JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
-                    WHERE k.systemid NOT IN (SELECT _ref_klasse FROM arkivstruktur.klasse WHERE _ref_klasse IS NOT NULL GROUP BY _ref_klasse)
-                        AND k.systemid NOT IN (SELECT _ref_klasse FROM arkivstruktur.mappe WHERE _ref_klasse IS NOT NULL)
-                        AND k.systemid NOT IN (SELECT _ref_klasse FROM arkivstruktur.registrering WHERE _ref_klasse IS NOT NULL GROUP BY _ref_klasse)
-                    GROUP BY ks._ref_arkivdel;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
+    <test id="AST6">
         <title>File count</title>
+        <description>
+            Provides information about the number of files per series and
+            tests whether the corresponding number specified in arkivuttrekk.xml is correct.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -802,10 +1267,14 @@
                 ]]>
             </errors>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
+    <test id="AST7">
         <title>File period containment</title>
+        <description>
+            Tests whether the created and finalized dates of all files
+            are within the archival period specified in arkivuttrekk.xml.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -894,10 +1363,15 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Files within leaf classes</title>
+    <test id="AST8">
+        <title>Files in leaf classes</title>
+        <description>
+            Provides information about the number of files per series and class,
+            and tests whether any file belongs to a class which has other classes
+            as children (i.e. the file has a class sibling).
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -945,40 +1419,15 @@
                 ]]>
             </errors>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Files within classes</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT f._ref_arkivdel series_system_id, f._ref_klasse class_system_id, COUNT(*) number_of_files
-                    FROM arkivstruktur.mappe f
-                    GROUP BY f._ref_arkivdel, f._ref_klasse;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
-        <title>Files without subfolders or records.</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT f._ref_arkivdel series_system_id, COUNT(*) empty_file_count
-                    FROM arkivstruktur.mappe f
-                    WHERE f.systemid NOT IN (SELECT _ref_mappe FROM arkivstruktur.mappe WHERE _ref_mappe IS NOT NULL GROUP BY _ref_mappe)
-                        AND f.systemid NOT IN (SELECT _ref_mappe FROM arkivstruktur.registrering WHERE _ref_mappe IS NOT NULL GROUP BY _ref_mappe)
-                    GROUP BY f._ref_arkivdel;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
+    <test id="AST9">
         <title>File status</title>
+        <description>
+            Tests whether non-finalized files exists in the archive.
+            A file is considered non-finalized if a finalized date or
+            a finalizing party is not specified, or if the file status is not 'Avsluttet'.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -1014,10 +1463,14 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Record count</title>
+    <test id="AST10">
+        <title>Records</title>
+        <description>
+            Provides information about the number of records per series
+            and tests whether the corresponding number specified in arkivuttrekk.xml is correct.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -1056,30 +1509,14 @@
                 ]]>
             </errors>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Registry entries without a main document</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, r._dtype registry_entry_type, COUNT(*) registry_entries_without_a_main_document
-                    FROM arkivstruktur.registrering r
-                    WHERE r._dtype = 'journalpost' AND r.systemid NOT IN (
-                        SELECT _ref_registrering
-                        FROM arkivstruktur.dokumentbeskrivelse
-                        WHERE tilknyttetregistreringsom = 'Hoveddokument' AND _ref_registrering IS NOT NULL
-                        GROUP BY _ref_registrering
-                    )
-                    GROUP BY r._ref_arkivdel, r._dtype;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
+    <test id="AST11">
         <title>Record period containment</title>
+        <description>
+            Tests whether the created and finalized dates of all records are
+            within the archival period specified in arkivuttrekk.xml.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -1168,10 +1605,15 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Records within leaf classes</title>
+    <test id="AST12">
+        <title>Records in leaf classes</title>
+        <description>
+            Provides information about the number of records per series and class,
+            and tests whether any record belongs to a class which has other
+            classes as children (i.e. the record has a class sibling).
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -1219,40 +1661,15 @@
                 ]]>
             </errors>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Records within classes</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, r._ref_klasse class_system_id, COUNT(*) number_of_files
-                    FROM arkivstruktur.registrering r
-                    WHERE r._ref_mappe IS NULL
-                    GROUP BY r._ref_arkivdel, r._ref_klasse;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
-        <title>Records without document descriptions</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, COUNT(*) records_without_documents
-                    FROM arkivstruktur.registrering r
-                    WHERE r.systemid NOT IN (SELECT _ref_registrering FROM arkivstruktur.dokumentbeskrivelse WHERE _ref_registrering IS NOT NULL GROUP BY _ref_registrering)
-                    GROUP BY r._ref_arkivdel;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
+    <test id="AST13">
         <title>Record status</title>
+        <description>
+            Tests whether non-finalized records exist in the archive.
+            A record is considered non-finalized if a finalized date or a
+            finalizing party is not specified, or if the record status is not 'Arkivert' or 'Utgår'.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -1289,51 +1706,16 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Document Description count</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, count(*) number_of_document_description
-                    FROM arkivstruktur.dokumentbeskrivelse d
-                    JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
-                    GROUP BY r._ref_arkivdel
-
-                    UNION ALL
-
-                    SELECT 'total', count(*)
-                    FROM arkivstruktur.dokumentbeskrivelse;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
-        <title>Document Descriptions without Document Objects</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, COUNT(*) document_descriptions_without_document_objects
-                    FROM arkivstruktur.dokumentbeskrivelse d
-                    JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
-                    WHERE d.systemid NOT IN (
-                        SELECT _ref_dokumentbeskrivelse
-                        FROM arkivstruktur.dokumentobjekt
-                        WHERE _ref_dokumentbeskrivelse IS NOT NULL
-                        GROUP BY _ref_dokumentbeskrivelse
-                    )
-                    GROUP BY r._ref_arkivdel;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
-        <title>Document Description status</title>
+    <test id="AST14">
+        <title>Document description status</title>
+        <description>
+            Tests whether non-finalized document descriptions exist in the archive.
+            A document description is considered non-finalized if a finalized date
+            or a finalizing party is not specified, or if the document description
+            status is not 'Dokumentet er ferdigstilt'.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -1367,10 +1749,14 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Document Description period containment</title>
+    <test id="AST15">
+        <title>Document description period containment</title>
+        <description>
+            Tests whether the created and finalized dates of all document descriptions
+            are within the archival period specified in arkivuttrekk.xml.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -1436,35 +1822,14 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Document Object count</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT
-                        r._ref_arkivdel series_system_id,
-                        COUNT(*) document_objects,
-                        (d._ref_dokumentbeskrivelse IS NOT NULL) in_document_description,
-                        (d._ref_dokumentbeskrivelse IS NULL) in_record
-                    FROM arkivstruktur.dokumentobjekt d
-                    LEFT JOIN arkivstruktur.dokumentbeskrivelse dd ON dd._id = d._parent_id
-                    LEFT JOIN arkivstruktur.registrering r ON r._id = d._parent_id
-                    GROUP BY series_system_id, in_document_description, in_record
-
-                    UNION ALL
-
-                    SELECT 'total', count(*), TRUE in_document_description, TRUE in_record
-                    FROM arkivstruktur.dokumentobjekt;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
+    <test id="AST16">
         <title>Document object checksums</title>
+        <description>
+            Tests whether the document object checksums specified in arkivstruktur.xml
+            match the ones that the validator calculated using the SHA256 algorithm.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -1482,10 +1847,11 @@
                 ]]>
             </errors>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
+    <test id="AST17">
         <title>Document object file types</title>
+        <description>Tests whether all document objects are valid PDF/A1B documents.</description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -1503,130 +1869,14 @@
                 ]]>
             </errors>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Case Party count</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT f._ref_arkivdel series_system_id, COUNT(*) number_of_case_parties
-                    FROM arkivstruktur.sakspart cp
-                    JOIN arkivstruktur.mappe f ON f.systemid = cp._ref_mappe
-                    GROUP BY f._ref_arkivdel;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
-        <title>Note count</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT s.systemid series_system_id,
-                        COALESCE(f.val, 0) number_of_file_notes,
-                        COALESCE(r.val, 0) number_of_record_notes,
-                        COALESCE(d.val, 0) number_of_document_notes
-                    FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
-                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.merknad n
-                        JOIN arkivstruktur.mappe f ON f.systemid = n._ref_mappe
-                        GROUP BY f._ref_arkivdel
-                    ) f ON f.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.merknad n
-                        JOIN arkivstruktur.registrering r ON r.systemid = n._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) r ON r.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.merknad n
-                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = n._ref_dokumentbeskrivelse
-                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) d ON d.series_system_id = s.systemid;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
-        <title>Cross reference count</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT s.systemid series_system_id,
-                        COALESCE(k.val, 0) number_of_klass_cross_references,
-                        COALESCE(f.val, 0) number_of_file_cross_references,
-                        COALESCE(r.val, 0) number_of_record_cross_references
-                    FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
-                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.kryssreferanse cr
-                        JOIN arkivstruktur.klasse k ON k.systemid = cr._ref_klasse
-                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
-                        GROUP BY ks._ref_arkivdel
-                    ) k ON k.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.kryssreferanse cr
-                        JOIN arkivstruktur.mappe f ON f.systemid =  cr._ref_mappe
-                        GROUP BY f._ref_arkivdel
-                    ) f ON f.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.kryssreferanse cr
-                        JOIN arkivstruktur.registrering r ON r.systemid = cr._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) r ON r.series_system_id = s.systemid;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
-        <title>Precedent count</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT s.systemid series_system_id,
-                        COALESCE(f.val, 0) number_of_file_precedents,
-                        COALESCE(r.val, 0) number_of_record_precedents
-                    FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
-                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.presedens p
-                        JOIN arkivstruktur.mappe f ON f.systemid = p._ref_mappe
-                        GROUP BY f._ref_arkivdel
-                    ) f ON f.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.presedens p
-                        JOIN arkivstruktur.registrering r ON r.systemid = p._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) r ON r.series_system_id = s.systemid;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
-        <title>Correspondence Party count</title>
+    <test id="AST18">
+        <title>Correspondence parties</title>
+        <description>
+            Provides information about the number of correspondence parties grouped
+            by series and tests whether any registry entries without correspondence parties exist.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -1648,40 +1898,15 @@
                 ]]>
             </errors>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Sign Off count</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, COUNT(*) number_of_sign_offs
-                    FROM arkivstruktur.registrering r
-                    WHERE r._dtype = 'journalpost' AND r.systemid in (SELECT _ref_registrering FROM arkivstruktur.avskrivning WHERE _ref_registrering IS NOT NULL GROUP BY _ref_registrering)
-                    GROUP BY r._ref_arkivdel;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
-        <title>Document Flow count</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, COUNT(*) number_of_document_flows
-                    FROM arkivstruktur.registrering r
-                    WHERE r._dtype = 'journalpost' AND r.systemid in (SELECT _ref_registrering FROM arkivstruktur.dokumentflyt WHERE _ref_registrering IS NOT NULL GROUP BY _ref_registrering)
-                    GROUP BY r._ref_arkivdel;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
-        <title>Screening count</title>
+    <test id="AST19">
+        <title>Screenings</title>
+        <description>
+            Provides information about the number of screened series, classes,
+            files, records, and document descriptions, and tests whether the corresponding
+            number in arkivuttrekk.xml (inneholderSkjermetInformasjon) is correct.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -1796,64 +2021,15 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Grading count</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT s.systemid series_system_id,
-                        COALESCE(series.val, 0) number_of_series_gradings,
-                        COALESCE(class.val, 0) number_of_class_gradings,
-                        COALESCE(file.val, 0) number_of_file_gradings,
-                        COALESCE(item.val, 0) number_of_record_gradings,
-                        COALESCE(document.val, 0) number_of_document_descriptions_gradings
-                    FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
-                        SELECT g._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.gradering g
-                        GROUP BY g._ref_arkivdel
-                    ) series ON series.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.gradering g
-                        JOIN arkivstruktur.klasse k ON k.systemid = g._ref_klasse
-                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
-                        GROUP BY ks._ref_arkivdel
-                    ) class ON class.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.gradering g
-                        JOIN arkivstruktur.mappe f ON f.systemid = g._ref_mappe
-                        GROUP BY f._ref_arkivdel
-                    ) file ON file.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.gradering g
-                        JOIN arkivstruktur.registrering r ON r.systemid = g._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) item ON item.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.gradering g
-                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = g._ref_dokumentbeskrivelse
-                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) document ON document.series_system_id = s.systemid;
-                ]]>
-            </info>
-        </queries>
-    </rule>
-
-    <rule>
-        <title>Disposal decision count</title>
+    <test id="AST20">
+        <title>Disposal decisions</title>
+        <description>
+            Provides information about the number of disposal decisions related to series, classes,
+            files, records, and document descriptions, and tests whether the corresponding
+            number in arkivuttrekk.xml (inneholderDokumenterSomSkalKasseres) is correct.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -1968,10 +2144,15 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Disposal count</title>
+    <test id="AST21">
+        <title>Disposals</title>
+        <description>
+            Provides information about the number of disposals of series
+            and document descriptions, and tests whether the corresponding
+            number in arkivuttrekk.xml (omfatterDokumenterSomErKassert) is correct.
+        </description>
         <group>arkivstruktur</group>
         <queries>
             <info>
@@ -2036,56 +2217,37 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Conversion count</title>
-        <group>arkivstruktur</group>
+    <!--
+    ============================================================================================================
+    LOEPENDEJOURNAL
+    ============================================================================================================
+    -->
+    <!-- Checks -->
+
+    <check id="LJC1">
+        <title>Screened registry entries</title>
+        <description>Number of screened registry entries found in loependeJournal.xml</description>
+        <group>loependejournal</group>
         <queries>
             <info>
                 <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, COUNT(*) number_of_conversions
-                    FROM arkivstruktur.konvertering k
-                    JOIN arkivstruktur.dokumentobjekt d ON k._parent_id = d._id
-                    JOIN arkivstruktur.dokumentbeskrivelse dd ON dd.systemid = d._ref_dokumentbeskrivelse
-                    JOIN arkivstruktur.registrering r ON r.systemid = dd._ref_registrering
-                    GROUP BY r._ref_arkivdel;
+                    SELECT COUNT(tilgangsrestriksjon) screened_registry_entries
+                    FROM loependejournal.journalpost;
                 ]]>
             </info>
         </queries>
-    </rule>
+    </check>
 
-    <rule>
-        <title>Deletion apart from disposal count</title>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT s.systemid series_system_id,
-                        COALESCE(series.val, 0) number_of_series_deletions_apart_from_disposals,
-                        COALESCE(document.val, 0) number_of_document_descriptions_deletions_apart_from_disposals
-                    FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
-                        SELECT sl._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.sletting sl
-                        GROUP BY sl._ref_arkivdel
-                    ) series ON series.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.sletting sl
-                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = sl._ref_dokumentbeskrivelse
-                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) document ON document.series_system_id = s.systemid;
-                ]]>
-            </info>
-        </queries>
-    </rule>
+    <!-- Tests -->
 
-    <rule>
-        <title>Registry Entry count</title>
+    <test id="LJT1">
+        <title>Registry entries</title>
+        <description>
+            Provides information about the number of registry entries found in loependeJournal.xml
+            and tests whether it matches the number of registry entries found in arkivstruktur.xml.
+        </description>
         <group>loependejournal</group>
         <queries>
             <info>
@@ -2153,10 +2315,15 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
+    <test id="LJT2">
         <title>Period containment of registry entries</title>
+        <description>
+            Tests whether the created and finalized dates of all registry entries in loependeJournal.xml
+            are within the archival period specified in arkivuttrekk.xml, and whether the same registry entries
+            (same systemIDs) can be found in arkivstruktur.xml.
+        </description>
         <group>loependejournal</group>
         <queries>
             <info>
@@ -2245,23 +2412,21 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Number of screened registry entries</title>
-        <group>loependejournal</group>
-        <queries>
-            <info>
-                <![CDATA[
-                    SELECT COUNT(tilgangsrestriksjon) screened_registry_entries
-                    FROM loependejournal.journalpost;
-                ]]>
-            </info>
-        </queries>
-    </rule>
+    <!--
+    ============================================================================================================
+    OFFENTLIGJOURNAL
+    ============================================================================================================
+    -->
+    <!-- Tests -->
 
-    <rule>
-        <title>Registry Entry count</title>
+    <test id="OJT1">
+        <title>Registry entries</title>
+        <description>
+            Provides information about the number of registry entries found in offentligJournal.xml
+            and tests whether it matches the number of registry entries found in arkivstruktur.xml.
+        </description>
         <group>offentligjournal</group>
         <queries>
             <info>
@@ -2329,10 +2494,15 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
+    <test id="OJT2">
         <title>Period containment of registry entries</title>
+        <description>
+            Tests whether the created and finalized dates of all registry entries in offentligJournal.xml
+            are within the archival period specified in arkivuttrekk.xml, and whether the same registry entries
+            (same systemIDs) can be found in arkivstruktur.xml.
+        </description>
         <group>offentligjournal</group>
         <queries>
             <info>
@@ -2421,10 +2591,18 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
-    <rule>
-        <title>Number of changes in endringslogg</title>
+    <!--
+    ============================================================================================================
+    ENDRINGSLOGG
+    ============================================================================================================
+    -->
+    <!-- Checks -->
+
+    <check id="ELC1">
+        <title>Change log entries</title>
+        <description>Provides information about the number of change log entries in endringslogg.xml.</description>
         <group>endringslogg</group>
         <queries>
             <info>
@@ -2434,10 +2612,16 @@
                 ]]>
             </info>
         </queries>
-    </rule>
+    </check>
 
-    <rule>
-        <title>Check the references in endringslogg</title>
+    <!-- Tests -->
+
+    <test id="ELT1">
+        <title>Change log references</title>
+        <description>
+            Tests whether all objects referenced in the change log can be found
+            by their systemID in arkivstruktur.xml.
+        </description>
         <group>endringslogg</group>
         <queries>
             <info>
@@ -2526,6 +2710,6 @@
                 ]]>
             </warnings>
         </queries>
-    </rule>
+    </test>
 
 </validation>

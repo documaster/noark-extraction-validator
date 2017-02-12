@@ -1,6 +1,6 @@
 /**
  * Noark Extraction Validator
- * Copyright (C) 2016, Documaster AS
+ * Copyright (C) 2017, Documaster AS
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -15,45 +15,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.reporting.excel;
+package com.documaster.validator.validation.collector;
 
-public enum StyleName {
+/**
+ * Defines validation status codes. Status codes with higher severity have higher integer value. This is helpful when
+ * evaluating the severity of one status compared to another's.
+ */
+public enum ValidationStatus {
 
-	LINK("link"),
+	SUCCESS(0), WARNING(1), ERROR(2);
 
-	GROUP("summaryGroup"),
+	private int code;
 
-	RESULT_TITLE("summaryTitle"),
+	ValidationStatus(int code) {
 
-	RESULT_SUCCESS("summarySuccess"),
-
-	RESULT_WARNING("summaryWarning"),
-
-	RESULT_FAILURE("summaryFailure"),
-
-	RESULT_TITLE_SUCCESS("detailedTitleSuccess"),
-
-	RESULT_TITLE_WARNING("detailedTitleWarning"),
-
-	RESULT_TITLE_FAILURE("detailedTitleError"),
-
-	RESULT_DESCRIPTION("detailedDescription"),
-
-	RESULT_TYPE("detailedType"),
-
-	RESULT_HEADER_ROW("detailedHeaderRow"),
-
-	RESULT_ROW("detailedRow");
-
-	private String name;
-
-	private StyleName(String name) {
-
-		this.name = name;
+		this.code = code;
 	}
 
-	public String getName() {
+	public boolean isMoreSevereThan(ValidationStatus otherStatus) {
 
-		return name;
+		return code > otherStatus.code;
 	}
 }

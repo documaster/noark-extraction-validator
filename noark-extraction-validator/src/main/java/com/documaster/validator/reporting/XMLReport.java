@@ -31,6 +31,7 @@ import com.documaster.validator.config.commands.Command;
 import com.documaster.validator.config.delegates.ConfigurableReporting;
 import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.validation.collector.ValidationCollector;
+import com.documaster.validator.validation.collector.ValidationResult;
 import com.documaster.validator.validation.utils.DefaultXMLHandler;
 import com.documaster.validator.validation.utils.SchemaValidator;
 import org.apache.commons.io.FileUtils;
@@ -126,14 +127,13 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 		attr("warn", ValidationCollector.get().getTotalWarningCount());
 		attr("error", ValidationCollector.get().getTotalErrorCount());
 
-		for (Map.Entry<String, List<ValidationCollector.ValidationResult>> group : ValidationCollector.get()
+		for (Map.Entry<String, List<ValidationResult>> group : ValidationCollector.get()
 				.getAllResults().entrySet()) {
 
 			startGroup(group.getKey());
 
-			int testIndex = 0;
-			for (ValidationCollector.ValidationResult test : group.getValue()) {
-				startTest(test, ++testIndex);
+			for (ValidationResult test : group.getValue()) {
+				startTest(test);
 				end();
 			}
 			// End group
@@ -147,15 +147,13 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 
 		start("details");
 
-		for (Map.Entry<String, List<ValidationCollector.ValidationResult>> group : ValidationCollector.get()
-				.getAllResults().entrySet()) {
+		for (Map.Entry<String, List<ValidationResult>> group : ValidationCollector.get().getAllResults().entrySet()) {
 
 			startGroup(group.getKey());
 
-			int testIndex = 0;
-			for (ValidationCollector.ValidationResult test : group.getValue()) {
+			for (ValidationResult test : group.getValue()) {
 
-				startTest(test, ++testIndex);
+				startTest(test);
 
 				testDetails("info", test.getInformation());
 				testDetails("warn", test.getWarnings());
@@ -206,12 +204,13 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 		attr("error", ValidationCollector.get().getErrorCountIn(groupName));
 	}
 
-	private void startTest(ValidationCollector.ValidationResult test, int testIndex) throws XMLStreamException {
+	private void startTest(ValidationResult test) throws XMLStreamException {
 
 		start("test");
 
-		attr("id", test.getIdentifierPrefix() + testIndex);
+		attr("id", test.getId());
 		attr("name", test.getTitle());
+		attr("description", test.getDescription());
 		attr("info", test.getInformation().size());
 		attr("warn", test.getWarnings().size());
 		attr("error", test.getErrors().size());
