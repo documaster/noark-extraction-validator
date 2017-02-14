@@ -50,7 +50,7 @@ class TransferExportsHandler extends BaseHandler {
 		characters.setLength(0);
 		String elementName = qName.toLowerCase();
 
-		if (getItemDefs().containsKey(getValidationGroup().value() + "." + elementName)) {
+		if (getItemDefs().containsKey(getValidationGroup().getName() + "." + elementName)) {
 
 			Map<String, String> attributeMap = new HashMap<>();
 

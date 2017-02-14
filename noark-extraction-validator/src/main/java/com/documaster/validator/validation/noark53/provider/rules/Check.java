@@ -15,45 +15,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.reporting.excel;
+package com.documaster.validator.validation.noark53.provider.rules;
 
-public enum StyleName {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-	LINK("link"),
+import com.documaster.validator.validation.noark53.provider.data.Data;
 
-	GROUP("summaryGroup"),
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "check")
+public class Check extends Rule {
 
-	RESULT_TITLE("summaryTitle"),
+	@XmlElement(required = true, name = "queries")
+	protected Data data;
 
-	RESULT_SUCCESS("summarySuccess"),
+	public Data getData() {
 
-	RESULT_WARNING("summaryWarning"),
-
-	RESULT_FAILURE("summaryFailure"),
-
-	RESULT_TITLE_SUCCESS("detailedTitleSuccess"),
-
-	RESULT_TITLE_WARNING("detailedTitleWarning"),
-
-	RESULT_TITLE_FAILURE("detailedTitleError"),
-
-	RESULT_DESCRIPTION("detailedDescription"),
-
-	RESULT_TYPE("detailedType"),
-
-	RESULT_HEADER_ROW("detailedHeaderRow"),
-
-	RESULT_ROW("detailedRow");
-
-	private String name;
-
-	private StyleName(String name) {
-
-		this.name = name;
-	}
-
-	public String getName() {
-
-		return name;
+		return data;
 	}
 }

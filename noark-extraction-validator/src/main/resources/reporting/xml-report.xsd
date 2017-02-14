@@ -18,7 +18,7 @@
         <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element name="parameter" type="dm:parameter"/>
         </xs:choice>
-        <xs:attribute name="Version" type="xs:string" use="required"/>
+        <xs:attribute name="version" type="xs:string" use="required"/>
     </xs:complexType>
 
     <xs:complexType name="parameter">
@@ -61,6 +61,7 @@
         </xs:choice>
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="required"/>
         <xs:attribute name="info" type="xs:integer" use="required"/>
         <xs:attribute name="warn" type="xs:integer" use="required"/>
         <xs:attribute name="error" type="xs:integer" use="required"/>

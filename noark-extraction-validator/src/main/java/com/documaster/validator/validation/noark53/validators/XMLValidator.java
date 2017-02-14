@@ -22,8 +22,9 @@ import java.util.List;
 
 import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.validation.collector.ValidationCollector;
-import com.documaster.validator.validation.noark53.provider.ValidationGroup;
+import com.documaster.validator.validation.collector.ValidationResult;
 import com.documaster.validator.validation.noark53.model.Noark53PackageEntity;
+import com.documaster.validator.validation.noark53.provider.ValidationGroup;
 import com.documaster.validator.validation.utils.DefaultXMLHandler;
 import com.documaster.validator.validation.utils.SchemaValidator;
 import com.documaster.validator.validation.utils.WellFormedXmlValidator;
@@ -38,8 +39,10 @@ public class XMLValidator {
 
 		LOGGER.info("Validating XML File {} ...", entity.getXmlFile());
 
-		ValidationCollector.ValidationResult result = new ValidationCollector.ValidationResult(
-				entity.getXmlFileName() + " integrity", ValidationGroup.COMMON);
+		ValidationResult result = new ValidationResult(
+				ValidationGroup.PACKAGE.getNextGroupId(), entity.getXmlFileName() + " integrity",
+				"Tests whether the XML file 1) exists, 2) is valid XML, and 3) complies with the Noark schemas",
+				ValidationGroup.PACKAGE.getName());
 
 		boolean exists = validateExistence(entity.getXmlFile(), result);
 		boolean isWellFormed = validateIntegrity(entity.getXmlFile(), result);
@@ -52,7 +55,7 @@ public class XMLValidator {
 		return exists && isWellFormed && (compliesWithNoarkSchemas || ignoreNonComplianceToSchema);
 	}
 
-	private static boolean validateExistence(File xmlFile, ValidationCollector.ValidationResult result) {
+	private static boolean validateExistence(File xmlFile, ValidationResult result) {
 
 		if (!xmlFile.isFile()) {
 			result.addError(new BaseItem().add("Error", "Missing file: " + xmlFile.getName()));
@@ -63,7 +66,7 @@ public class XMLValidator {
 		}
 	}
 
-	private static boolean validateIntegrity(File xmlFile, ValidationCollector.ValidationResult result) {
+	private static boolean validateIntegrity(File xmlFile, ValidationResult result) {
 
 		WellFormedXmlValidator xmlIntegrityValidator = new WellFormedXmlValidator<>(new DefaultXMLHandler());
 
@@ -76,8 +79,7 @@ public class XMLValidator {
 		}
 	}
 
-	private static boolean validateAgainstPackageSchemas(
-			File xmlFile, ValidationCollector.ValidationResult result, List<File> xsdSchemas) {
+	private static boolean validateAgainstPackageSchemas(File xmlFile, ValidationResult result, List<File> xsdSchemas) {
 
 		SchemaValidator schemaValidator = new SchemaValidator<>(new NoarkXMLHandler(NoarkXMLHandler.Schema.PACKAGE));
 
@@ -91,8 +93,7 @@ public class XMLValidator {
 		}
 	}
 
-	private static boolean validateAgainstNoarkSchemas(
-			File xmlFile, ValidationCollector.ValidationResult result, List<File> xsdSchemas) {
+	private static boolean validateAgainstNoarkSchemas(File xmlFile, ValidationResult result, List<File> xsdSchemas) {
 
 		SchemaValidator schemaValidator = new SchemaValidator<>(new NoarkXMLHandler(NoarkXMLHandler.Schema.NOARK));
 

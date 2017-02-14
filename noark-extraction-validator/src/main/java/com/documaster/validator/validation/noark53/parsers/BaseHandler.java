@@ -172,6 +172,6 @@ public class BaseHandler extends DefaultHandler {
 
 	String getItemDefNameForElement(String elementName) {
 
-		return getValidationGroup().value() + "." + elementName.toLowerCase();
+		return getValidationGroup().getName() + "." + elementName.toLowerCase();
 	}
 }

@@ -34,8 +34,8 @@ import com.documaster.validator.reporting.excel.ExcelUtils;
 import com.documaster.validator.reporting.excel.StyleName;
 import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.validation.collector.ValidationCollector;
-import com.documaster.validator.validation.collector.ValidationCollector.ValidationResult;
-import com.documaster.validator.validation.collector.ValidationCollector.ValidationStatusCode;
+import com.documaster.validator.validation.collector.ValidationResult;
+import com.documaster.validator.validation.collector.ValidationStatus;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -180,12 +180,12 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 
 	private void updateSummaryTable(Cell groupTitleCell, String groupTitle) {
 
-		ValidationStatusCode groupStatus = ValidationCollector.get().getGroupStatus(groupTitle);
+		ValidationStatus groupStatus = ValidationCollector.get().getGroupStatus(groupTitle);
 
-		StyleName styleName = getResultStatusFromValidationStatus(groupStatus);
+		CellStyle style = getResultStatusStyleFromValidationStatus(groupStatus);
 
 		// Status column
-		ExcelUtils.createCell("", 0, styles.get(styleName), summary.getRow(summaryTableRowIndex));
+		ExcelUtils.createCell("", 0, style, summary.getRow(summaryTableRowIndex));
 
 		// Title column
 		ExcelUtils.createCell(
@@ -246,22 +246,18 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 		ExcelUtils.createCell("", 3, styles.get(StyleName.GROUP), groupRow);
 		ExcelUtils.createCell("", 4, styles.get(StyleName.GROUP), groupRow);
 
-		ValidationStatusCode groupStatusCode = ValidationStatusCode.SUCCESS;
-
-		int resultIndex = 0;
-
 		for (ValidationResult result : groupResults) {
 
 			Row resultRow = ExcelUtils.createRow(15, summary);
 
 			// Color-coded status
-			StyleName resultStyleName = getResultStatusFromValidationStatus(result.getStatusCode());
-			ExcelUtils.createCell("", 0, styles.get(resultStyleName), resultRow);
+			CellStyle resultStyle = getResultStatusStyleFromValidationStatus(result.getStatus());
+			ExcelUtils.createCell("", 0, resultStyle, resultRow);
 
 			// Title
 			Cell titleCell = ExcelUtils.createCell(result.getTitle(), 1, styles.get(StyleName.RESULT_TITLE), resultRow);
 
-			Map<String, Cell> cells = createDetailsSheet(result, ++resultIndex, titleCell);
+			Map<String, Cell> cells = createDetailsSheet(result, titleCell);
 
 			ExcelUtils.addHyperLink(titleCell, cells.get("firstRow"));
 
@@ -282,11 +278,6 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 					MessageFormat.format("Errors ({0})", result.getErrors().size()), 4, styles.get(StyleName.LINK),
 					resultRow);
 			ExcelUtils.addHyperLink(errorCell, cells.get("error"));
-
-			if (result.getStatusCode().getCode() > groupStatusCode.getCode()) {
-
-				groupStatusCode = result.getStatusCode();
-			}
 		}
 
 		return groupTitleCell;
@@ -296,13 +287,11 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 	 * Creates a new sheet from the specified {@link ValidationResult} and returns the row indices
 	 * of the "Information", "Warning", and "Error" entries.
 	 */
-	private Map<String, Cell> createDetailsSheet(ValidationResult result, int resultIndex, Cell referenceCell) {
+	private Map<String, Cell> createDetailsSheet(ValidationResult result, Cell referenceCell) {
 
 		Map<String, Cell> headerCells = new HashMap<>();
 
-		String sheetName = result.getIdentifierPrefix() + resultIndex;
-
-		Sheet resultSheet = workbook.createSheet(sheetName);
+		Sheet resultSheet = workbook.createSheet(result.getId());
 
 		// Go back link
 		Row goBackToSymmaryRow = ExcelUtils.createRow(25, resultSheet);
@@ -313,8 +302,8 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 
 		// Title
 		Row titleRow = ExcelUtils.createRow(25, resultSheet);
-		StyleName resultStyleName = getResultTitleFromValidationStatus(result.getStatusCode());
-		ExcelUtils.createCell("Title: " + result.getTitle(), 0, styles.get(resultStyleName), titleRow);
+		CellStyle resultStyle = getResultTitleStyleFromValidationStatus(result.getStatus());
+		ExcelUtils.createCell("Title: " + result.getTitle(), 0, resultStyle, titleRow);
 
 		// Index cells
 		int informationEntries = result.getInformation() == null ? 0 : result.getInformation().size();
@@ -332,6 +321,11 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 		Cell indexErrorsCell = ExcelUtils.createCell(
 				indexErrorsTitle, 0, styles.get(StyleName.LINK), ExcelUtils.createRow(resultSheet));
 
+		// Description
+		Row descriptionRow = ExcelUtils.createStyledRow(resultSheet, styles.get(StyleName.RESULT_DESCRIPTION));
+		descriptionRow.setHeightInPoints(50);
+		ExcelUtils.createCell(result.getDescription(), 0, styles.get(StyleName.RESULT_DESCRIPTION), descriptionRow);
+
 		// Entries
 		Cell informationTitleCell = writeDetailEntries(resultSheet, result.getInformation(), "Information");
 		headerCells.put("information", informationTitleCell);
@@ -348,8 +342,9 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 		ExcelUtils.addHyperLink(indexErrorsCell, errorsTitleCell);
 		ExcelUtils.createRow(resultSheet); // empty row
 
-		ExcelUtils.autoSizeColumns(resultSheet, 0, 11);
-		ExcelUtils.freezePanes(resultSheet, 5, 0);
+		resultSheet.setColumnWidth(0, 70 * 256);
+		ExcelUtils.autoSizeColumns(resultSheet, 1, 11);
+		ExcelUtils.freezePanes(resultSheet, 6, 0);
 
 		return headerCells;
 	}
@@ -414,6 +409,7 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 		createDetailedTitleStyle(IndexedColors.BRIGHT_GREEN, StyleName.RESULT_TITLE_SUCCESS);
 		createDetailedTitleStyle(IndexedColors.LIGHT_ORANGE, StyleName.RESULT_TITLE_WARNING);
 		createDetailedTitleStyle(IndexedColors.RED, StyleName.RESULT_TITLE_FAILURE);
+		createDetailedDescriptionStyle();
 		createDetailedTypeStyle();
 		createDetailedHeaderRowStyle();
 		createDetailedRowStyle();
@@ -477,6 +473,16 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 		styles.put(styleName, style);
 	}
 
+	private void createDetailedDescriptionStyle() {
+
+		CellStyle style = ExcelUtils.createDefaultCellStyle(workbook);
+
+		style.setFont(ExcelUtils.createDefaultFont(workbook, (short) 10, false));
+		style.setWrapText(true);
+
+		styles.put(StyleName.RESULT_DESCRIPTION, style);
+	}
+
 	private void createDetailedTypeStyle() {
 
 		CellStyle style = ExcelUtils.createDefaultCellStyle(workbook);
@@ -512,31 +518,31 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 		styles.put(StyleName.RESULT_ROW, style);
 	}
 
-	private static StyleName getResultStatusFromValidationStatus(ValidationStatusCode code) {
+	private CellStyle getResultStatusStyleFromValidationStatus(ValidationStatus status) {
 
-		switch (code) {
+		switch (status) {
 			case SUCCESS:
-				return StyleName.RESULT_SUCCESS;
+				return styles.get(StyleName.RESULT_SUCCESS);
 			case WARNING:
-				return StyleName.RESULT_WARNING;
+				return styles.get(StyleName.RESULT_WARNING);
 			case ERROR:
-				return StyleName.RESULT_FAILURE;
+				return styles.get(StyleName.RESULT_FAILURE);
 			default:
-				throw new ReportingException("Unknown validation status code: " + code);
+				throw new ReportingException("Unknown validation status: " + status);
 		}
 	}
 
-	private static StyleName getResultTitleFromValidationStatus(ValidationStatusCode code) {
+	private CellStyle getResultTitleStyleFromValidationStatus(ValidationStatus status) {
 
-		switch (code) {
+		switch (status) {
 			case SUCCESS:
-				return StyleName.RESULT_TITLE_SUCCESS;
+				return styles.get(StyleName.RESULT_TITLE_SUCCESS);
 			case WARNING:
-				return StyleName.RESULT_TITLE_WARNING;
+				return styles.get(StyleName.RESULT_TITLE_WARNING);
 			case ERROR:
-				return StyleName.RESULT_TITLE_FAILURE;
+				return styles.get(StyleName.RESULT_TITLE_FAILURE);
 			default:
-				throw new ReportingException("Unknown validation status code: " + code);
+				throw new ReportingException("Unknown validation status: " + status);
 		}
 	}
 }

@@ -21,6 +21,7 @@ import java.io.File;
 
 import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.validation.collector.ValidationCollector;
+import com.documaster.validator.validation.collector.ValidationResult;
 import com.documaster.validator.validation.noark53.provider.ValidationGroup;
 import com.documaster.validator.validation.utils.ChecksumCalculator;
 import com.documaster.validator.validation.utils.DefaultXMLHandler;
@@ -36,8 +37,11 @@ public class XSDValidator {
 
 		LOGGER.info("Validating XSD File {} ...", xsdFile);
 
-		ValidationCollector.ValidationResult result = new ValidationCollector.ValidationResult(
-				xsdFile.getName() + " integrity", ValidationGroup.COMMON);
+		ValidationResult result = new ValidationResult(
+				ValidationGroup.PACKAGE.getNextGroupId(), xsdFile.getName() + " integrity",
+				"Tests whether the XSD schema 1) exists, 2) is valid XML, and 3) its checksum "
+						+ "matches the checksum of its Noark counterpart",
+				ValidationGroup.PACKAGE.getName());
 
 		boolean exists = validateExistence(xsdFile, result);
 		boolean isWellFormed = validateIntegrity(xsdFile, result);
@@ -48,7 +52,7 @@ public class XSDValidator {
 		return exists && isWellFormed && checksumMatches;
 	}
 
-	private static boolean validateExistence(File xsdFile, ValidationCollector.ValidationResult result) {
+	private static boolean validateExistence(File xsdFile, ValidationResult result) {
 
 		if (!xsdFile.isFile()) {
 			result.addError(new BaseItem().add("Error", "Missing file: " + xsdFile.getName()));
@@ -59,7 +63,7 @@ public class XSDValidator {
 		}
 	}
 
-	private static boolean validateIntegrity(File xsdFile, ValidationCollector.ValidationResult result) {
+	private static boolean validateIntegrity(File xsdFile, ValidationResult result) {
 
 		WellFormedXmlValidator xmlIntegrityValidator = new WellFormedXmlValidator<>(new DefaultXMLHandler());
 
@@ -72,8 +76,7 @@ public class XSDValidator {
 		}
 	}
 
-	private static boolean validateChecksum(
-			File xsdFile, ValidationCollector.ValidationResult result, String checksum) {
+	private static boolean validateChecksum(File xsdFile, ValidationResult result, String checksum) {
 
 		if (!xsdFile.isFile() || !checksum.equalsIgnoreCase(ChecksumCalculator.getFileSha256Checksum(xsdFile))) {
 			result.addWarning(

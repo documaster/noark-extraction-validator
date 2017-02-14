@@ -17,13 +17,16 @@
  */
 package com.documaster.validator.validation.noark53.provider;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.documaster.validator.validation.noark53.provider.rules.Check;
+import com.documaster.validator.validation.noark53.provider.rules.Test;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "validation")
@@ -32,24 +35,33 @@ public class ValidationProvider {
 	@XmlElement(required = true, name = "target")
 	protected String target;
 
-	@XmlElement(required = true, name = "rule")
-	protected List<ValidationRule> rules;
+	@XmlElement(required = true, name = "test")
+	protected List<Test> tests;
 
-	public ValidationProvider() {
-
-	}
+	@XmlElement(required = true, name = "check")
+	protected List<Check> checks;
 
 	public String getTarget() {
 
 		return target;
 	}
 
-	public List<ValidationRule> getRules() {
+	public List<Test> getTests() {
 
-		if (rules == null) {
-			rules = new ArrayList<>();
+		if (tests == null) {
+			return Collections.emptyList();
 		}
 
-		return this.rules;
+		return this.tests;
 	}
+
+	public List<Check> getChecks() {
+
+		if (checks == null) {
+			return Collections.emptyList();
+		}
+
+		return this.checks;
+	}
+
 }

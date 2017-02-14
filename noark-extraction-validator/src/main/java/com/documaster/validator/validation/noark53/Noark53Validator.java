@@ -43,13 +43,15 @@ import com.documaster.validator.storage.model.Item;
 import com.documaster.validator.storage.model.ItemDef;
 import com.documaster.validator.validation.Validator;
 import com.documaster.validator.validation.collector.ValidationCollector;
-import com.documaster.validator.validation.collector.ValidationCollector.ValidationResult;
+import com.documaster.validator.validation.collector.ValidationResult;
 import com.documaster.validator.validation.noark53.parsers.BaseHandler;
 import com.documaster.validator.validation.noark53.parsers.HandlerFactory;
-import com.documaster.validator.validation.noark53.provider.ValidationData;
 import com.documaster.validator.validation.noark53.provider.ValidationGroup;
+import com.documaster.validator.validation.noark53.provider.data.Data;
+import com.documaster.validator.validation.noark53.provider.data.ValidationData;
 import com.documaster.validator.validation.noark53.provider.ValidationProvider;
-import com.documaster.validator.validation.noark53.provider.ValidationRule;
+import com.documaster.validator.validation.noark53.provider.rules.Check;
+import com.documaster.validator.validation.noark53.provider.rules.Test;
 import com.documaster.validator.validation.noark53.model.Noark53PackageEntity;
 import com.documaster.validator.validation.noark53.model.Noark53PackageStructure;
 import com.documaster.validator.validation.noark53.validators.XMLValidator;
@@ -110,7 +112,10 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 			LOGGER.error("Noark 5.3 validation failed.", ex);
 
-			ValidationResult error = new ValidationResult("Exceptions", ValidationGroup.COMMON);
+			ValidationResult error = new ValidationResult(
+					ValidationGroup.EXCEPTIONS.getNextGroupId(), "Exceptions",
+					"Unexpected errors that the validator could not recover from",
+					ValidationGroup.EXCEPTIONS.getName());
 			error.addError(new BaseItem().add("exception", ex.getMessage()));
 
 			ValidationCollector.get().collect(error);
@@ -260,7 +265,12 @@ public class Noark53Validator extends Validator<Noark53Command> {
 			}
 
 			if (exceptionHandler.hasExceptions()) {
-				ValidationResult errorResult = new ValidationResult("Parse errors", xmlHandler.getValidationGroup());
+				ValidationResult errorResult = new ValidationResult(
+						xmlHandler.getValidationGroup().getNextGroupId(), "Parse errors",
+						"Exceptions that occurred while parsing the package XML files. Such exceptions might "
+								+ "indicate an error in the validator itself and should be reported to its "
+								+ "developers. Test results cannot be trusted upon such errors.",
+						xmlHandler.getValidationGroup().getName());
 				errorResult.addErrors(exceptionHandler.getExceptionsAsItems());
 				ValidationCollector.get().collect(errorResult);
 			}
@@ -277,6 +287,7 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 			if (!entity.getXmlFile().isFile() && entity.isOptional()) {
 				LOGGER.info("Did not retrieve the checksum of missing optional XML entity {}", entity.getXmlFileName());
+				continue;
 			}
 
 			storePackageEntityChecksum(entity.getXmlFile());
@@ -302,8 +313,9 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 		String validationFileLocation = Noark53Command.COMMAND_NAME + "/noark53-validation.xml";
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(
-				ValidationProvider.class, ValidationData.class, ValidationGroup.class, ValidationRule.class);
+		JAXBContext jaxbContext = JAXBContext
+				.newInstance(ValidationProvider.class, Data.class, ValidationData.class, ValidationGroup.class,
+						Test.class, Check.class);
 
 		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
@@ -312,25 +324,42 @@ public class Noark53Validator extends Validator<Noark53Command> {
 			vp = (ValidationProvider) jaxbUnmarshaller.unmarshal(is);
 		}
 
-		for (ValidationRule rule : vp.getRules()) {
+		for (Check check : vp.getChecks()) {
 
-			LOGGER.info(MessageFormat.format("Validating {0} ...", rule.getTitle()));
+			LOGGER.info(MessageFormat.format("Checking: {0} ...", check.getTitle()));
 
-			String informationRequest = rule.getData().getInformationRequest();
-			String warningsRequest = rule.getData().getWarningsRequest();
-			String errorRequest = rule.getData().getErrorsRequest();
+			String informationRequest = check.getData().getInfoRequest();
 
-			ValidationResult result = new ValidationResult(rule.getTitle(), rule.getGroup());
+			ValidationResult result = new ValidationResult(
+					check.getId(), check.getTitle(), check.getDescription(), check.getGroup().getName());
 
-			if (informationRequest != null && !StringUtils.isBlank(informationRequest)) {
+			if (!StringUtils.isBlank(informationRequest)) {
 				result.addInformation(Storage.get().fetch(informationRequest));
 			}
 
-			if (warningsRequest != null && !StringUtils.isBlank(warningsRequest)) {
+			ValidationCollector.get().collect(result);
+		}
+
+		for (Test test : vp.getTests()) {
+
+			LOGGER.info(MessageFormat.format("Testing: {0} ...", test.getTitle()));
+
+			String informationRequest = test.getData().getInfoRequest();
+			String warningsRequest = test.getData().getWarningsRequest();
+			String errorRequest = test.getData().getErrorsRequest();
+
+			ValidationResult result = new ValidationResult(
+					test.getId(), test.getTitle(), test.getDescription(), test.getGroup().getName());
+
+			if (!StringUtils.isBlank(informationRequest)) {
+				result.addInformation(Storage.get().fetch(informationRequest));
+			}
+
+			if (!StringUtils.isBlank(warningsRequest)) {
 				result.addWarnings(Storage.get().fetch(warningsRequest));
 			}
 
-			if (errorRequest != null && !StringUtils.isBlank(errorRequest)) {
+			if (!StringUtils.isBlank(errorRequest)) {
 				result.addErrors(Storage.get().fetch(errorRequest));
 			}
 

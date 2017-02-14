@@ -109,7 +109,7 @@ public abstract class Command<T extends InternalProperties> {
 		public Map<String, Object> getGeneralInfo() {
 
 			Map<String, Object> generalInfo = new HashMap<>();
-			generalInfo.put("Version", getClass().getPackage().getImplementationVersion());
+			generalInfo.put("version", getClass().getPackage().getImplementationVersion());
 
 			return Collections.unmodifiableMap(generalInfo);
 		}
