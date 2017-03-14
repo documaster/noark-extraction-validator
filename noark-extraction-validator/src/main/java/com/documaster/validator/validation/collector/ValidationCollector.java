@@ -28,10 +28,12 @@ public class ValidationCollector {
 
 	private Map<String, List<ValidationResult>> results;
 
+	private int totalSummaryCount = 0;
 	private int totalInformationCount = 0;
 	private int totalWarningCount = 0;
 	private int totalErrorCount = 0;
 
+	private Map<String, Integer> summaryCount;
 	private Map<String, Integer> informationCount;
 	private Map<String, Integer> warningCount;
 	private Map<String, Integer> errorCount;
@@ -42,6 +44,7 @@ public class ValidationCollector {
 
 		results = new LinkedHashMap<>();
 
+		summaryCount = new HashMap<>();
 		informationCount = new HashMap<>();
 		warningCount = new HashMap<>();
 		errorCount = new HashMap<>();
@@ -62,6 +65,11 @@ public class ValidationCollector {
 		return results;
 	}
 
+	public int getTotalSummaryCount() {
+
+		return totalSummaryCount;
+	}
+
 	public int getTotalInformationCount() {
 
 		return totalInformationCount;
@@ -75,6 +83,11 @@ public class ValidationCollector {
 	public int getTotalErrorCount() {
 
 		return totalErrorCount;
+	}
+
+	public int getSummaryCountIn(String groupName) {
+
+		return summaryCount.containsKey(groupName) ? summaryCount.get(groupName) : 0;
 	}
 
 	public int getInformationCountIn(String groupName) {
@@ -115,10 +128,12 @@ public class ValidationCollector {
 			results.put(groupName, new ArrayList<>(Collections.singletonList(result)));
 		}
 
+		putOrIncrementMapCounter(summaryCount, groupName, result.getSummary().size());
 		putOrIncrementMapCounter(informationCount, groupName, result.getInformation().size());
 		putOrIncrementMapCounter(warningCount, groupName, result.getWarnings().size());
 		putOrIncrementMapCounter(errorCount, groupName, result.getErrors().size());
 
+		totalSummaryCount += result.getSummary().size();
 		totalInformationCount += result.getInformation().size();
 		totalWarningCount += result.getWarnings().size();
 		totalErrorCount += result.getErrors().size();

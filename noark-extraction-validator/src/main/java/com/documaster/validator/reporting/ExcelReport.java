@@ -25,6 +25,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import com.documaster.validator.config.commands.Command;
 import com.documaster.validator.config.delegates.ConfigurableReporting;
@@ -100,7 +101,7 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 
 		placeTotalsInSummaryTable();
 
-		ExcelUtils.autoSizeColumns(summary, 0, 4);
+		ExcelUtils.autoSizeColumns(summary, 0, 5);
 		summary.setColumnWidth(0, 256);
 
 		ExcelUtils.freezePanes(summary, summaryTableRowIndex + 1, 0);
@@ -162,11 +163,9 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 
 		// Place group-by-group summary table headers
 		Row summaryHeaderRow = ExcelUtils.createRow(25, summarySheet);
-		ExcelUtils.createCell("", 0, styles.get(StyleName.GROUP), summaryHeaderRow);
-		ExcelUtils.createCell("Group name", 1, styles.get(StyleName.GROUP), summaryHeaderRow);
-		ExcelUtils.createCell("Information", 2, styles.get(StyleName.GROUP), summaryHeaderRow);
-		ExcelUtils.createCell("Warnings", 3, styles.get(StyleName.GROUP), summaryHeaderRow);
-		ExcelUtils.createCell("Errors", 4, styles.get(StyleName.GROUP), summaryHeaderRow);
+		String[] headers = new String[] { "", "Group name", "Summary", "Information", "Warnings", "Errors" };
+		IntStream.range(0, headers.length)
+				.forEach(ix -> ExcelUtils.createCell(headers[ix], ix, styles.get(StyleName.GROUP), summaryHeaderRow));
 
 		summaryTableRowIndex = summarySheet.getLastRowNum() + 1;
 
@@ -192,19 +191,24 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 				groupTitle, 1, styles.get(StyleName.RESULT_TITLE), summary.getRow(summaryTableRowIndex),
 				groupTitleCell);
 
+		// Summary count column
+		ExcelUtils.createCell(
+				Integer.toString(ValidationCollector.get().getSummaryCountIn(groupTitle)), 2,
+				summary.getRow(summaryTableRowIndex));
+
 		// Information count column
 		ExcelUtils.createCell(
-				Integer.toString(ValidationCollector.get().getInformationCountIn(groupTitle)), 2,
+				Integer.toString(ValidationCollector.get().getInformationCountIn(groupTitle)), 3,
 				summary.getRow(summaryTableRowIndex));
 
 		// Warning count column
 		ExcelUtils.createCell(
-				Integer.toString(ValidationCollector.get().getWarningCountIn(groupTitle)), 3,
+				Integer.toString(ValidationCollector.get().getWarningCountIn(groupTitle)), 4,
 				summary.getRow(summaryTableRowIndex));
 
 		// Error count column
 		ExcelUtils.createCell(
-				Integer.toString(ValidationCollector.get().getErrorCountIn(groupTitle)), 4,
+				Integer.toString(ValidationCollector.get().getErrorCountIn(groupTitle)), 5,
 				summary.getRow(summaryTableRowIndex));
 
 		summaryTableRowIndex++;
@@ -218,19 +222,24 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 		// Title column
 		ExcelUtils.createCell("Total", 1, styles.get(StyleName.RESULT_TITLE), summary.getRow(summaryTableRowIndex));
 
+		// Summary count column
+		ExcelUtils.createCell(
+				Integer.toString(ValidationCollector.get().getTotalSummaryCount()), 2,
+				summary.getRow(summaryTableRowIndex));
+
 		// Information count column
 		ExcelUtils.createCell(
-				Integer.toString(ValidationCollector.get().getTotalInformationCount()), 2,
+				Integer.toString(ValidationCollector.get().getTotalInformationCount()), 3,
 				summary.getRow(summaryTableRowIndex));
 
 		// Warning count column
 		ExcelUtils.createCell(
-				Integer.toString(ValidationCollector.get().getTotalWarningCount()), 3,
+				Integer.toString(ValidationCollector.get().getTotalWarningCount()), 4,
 				summary.getRow(summaryTableRowIndex));
 
 		// Error count column
 		ExcelUtils.createCell(
-				Integer.toString(ValidationCollector.get().getTotalErrorCount()), 4,
+				Integer.toString(ValidationCollector.get().getTotalErrorCount()), 5,
 				summary.getRow(summaryTableRowIndex));
 
 		summaryTableRowIndex++;
@@ -240,11 +249,9 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 
 		Row groupRow = ExcelUtils.createRow(25, summary);
 
-		ExcelUtils.createCell("", 0, styles.get(StyleName.GROUP), groupRow);
-		Cell groupTitleCell = ExcelUtils.createCell(groupTitle, 1, styles.get(StyleName.GROUP), groupRow);
-		ExcelUtils.createCell("", 2, styles.get(StyleName.GROUP), groupRow);
-		ExcelUtils.createCell("", 3, styles.get(StyleName.GROUP), groupRow);
-		ExcelUtils.createCell("", 4, styles.get(StyleName.GROUP), groupRow);
+		// Create group header and place the group title in the second cell
+		IntStream.range(0, 6).forEach(
+				i -> ExcelUtils.createCell(i == 1 ? groupTitle : "", i, styles.get(StyleName.GROUP), groupRow));
 
 		for (ValidationResult result : groupResults) {
 
@@ -261,31 +268,37 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 
 			ExcelUtils.addHyperLink(titleCell, cells.get("firstRow"));
 
+			// Summary entries count
+			Cell summaryCell = ExcelUtils.createCell(
+					MessageFormat.format("Summary ({0})", result.getSummary().size()), 2,
+					styles.get(StyleName.LINK), resultRow);
+			ExcelUtils.addHyperLink(summaryCell, cells.get("summary"));
+
 			// Information entries count
 			Cell informationCell = ExcelUtils.createCell(
-					MessageFormat.format("Information ({0})", result.getInformation().size()), 2,
+					MessageFormat.format("Information ({0})", result.getInformation().size()), 3,
 					styles.get(StyleName.LINK), resultRow);
 			ExcelUtils.addHyperLink(informationCell, cells.get("information"));
 
 			// Warning entries count
 			Cell warningCell = ExcelUtils.createCell(
-					MessageFormat.format("Warnings ({0})", result.getWarnings().size()), 3, styles.get(StyleName.LINK),
+					MessageFormat.format("Warnings ({0})", result.getWarnings().size()), 4, styles.get(StyleName.LINK),
 					resultRow);
 			ExcelUtils.addHyperLink(warningCell, cells.get("warning"));
 
 			// Error entries count
 			Cell errorCell = ExcelUtils.createCell(
-					MessageFormat.format("Errors ({0})", result.getErrors().size()), 4, styles.get(StyleName.LINK),
+					MessageFormat.format("Errors ({0})", result.getErrors().size()), 5, styles.get(StyleName.LINK),
 					resultRow);
 			ExcelUtils.addHyperLink(errorCell, cells.get("error"));
 		}
 
-		return groupTitleCell;
+		return groupRow.getCell(1); // Title cell
 	}
 
 	/**
 	 * Creates a new sheet from the specified {@link ValidationResult} and returns the row indices
-	 * of the "Information", "Warning", and "Error" entries.
+	 * of the "Summary", "Information", "Warning", and "Error" entries.
 	 */
 	private Map<String, Cell> createDetailsSheet(ValidationResult result, Cell referenceCell) {
 
@@ -306,6 +319,11 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 		ExcelUtils.createCell("Title: " + result.getTitle(), 0, resultStyle, titleRow);
 
 		// Index cells
+		int summaryEntries = result.getSummary() == null ? 0 : result.getSummary().size();
+		String indexSummaryTitle = MessageFormat.format("Summary ({0})", summaryEntries);
+		Cell indexSummaryCell = ExcelUtils.createCell(
+				indexSummaryTitle, 0, styles.get(StyleName.LINK), ExcelUtils.createRow(resultSheet));
+
 		int informationEntries = result.getInformation() == null ? 0 : result.getInformation().size();
 		String indexInformationTitle = MessageFormat.format("Information ({0})", informationEntries);
 		Cell indexInformationCell = ExcelUtils.createCell(
@@ -327,6 +345,11 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 		ExcelUtils.createCell(result.getDescription(), 0, styles.get(StyleName.RESULT_DESCRIPTION), descriptionRow);
 
 		// Entries
+		Cell summaryTitleCell = writeDetailEntries(resultSheet, result.getSummary(), "Summary");
+		headerCells.put("summary", summaryTitleCell);
+		ExcelUtils.addHyperLink(indexSummaryCell, summaryTitleCell);
+		ExcelUtils.createRow(resultSheet); // empty row
+
 		Cell informationTitleCell = writeDetailEntries(resultSheet, result.getInformation(), "Information");
 		headerCells.put("information", informationTitleCell);
 		ExcelUtils.addHyperLink(indexInformationCell, informationTitleCell);

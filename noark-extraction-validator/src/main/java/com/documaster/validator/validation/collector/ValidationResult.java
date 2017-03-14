@@ -29,6 +29,7 @@ public class ValidationResult {
 	private String description;
 	private String groupName;
 
+	private List<BaseItem> summary = new ArrayList<>();
 	private List<BaseItem> information = new ArrayList<>();
 	private List<BaseItem> warnings = new ArrayList<>();
 	private List<BaseItem> errors = new ArrayList<>();
@@ -61,6 +62,21 @@ public class ValidationResult {
 	public String getGroupName() {
 
 		return groupName;
+	}
+
+	public List<BaseItem> getSummary() {
+
+		return summary;
+	}
+
+	public void addSummary(BaseItem summaryEntry) {
+
+		getSummary().add(summaryEntry);
+	}
+
+	public void addSummaries(List<BaseItem> summaryEntries) {
+
+		getSummary().addAll(summaryEntries);
 	}
 
 	public List<BaseItem> getInformation() {
