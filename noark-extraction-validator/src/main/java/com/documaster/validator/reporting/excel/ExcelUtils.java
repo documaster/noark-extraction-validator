@@ -165,8 +165,16 @@ public class ExcelUtils {
 
 	public static void autoSizeColumns(Sheet sheet, int startCol, int endCol) {
 
+		autoSizeColumns(sheet, startCol, endCol, null);
+	}
+
+	public static void autoSizeColumns(Sheet sheet, int startCol, int endCol, Integer maxWidth) {
+
 		for (int i = startCol; i <= endCol; i++) {
 			sheet.autoSizeColumn(i);
+			if (maxWidth != null && maxWidth > 0 && sheet.getColumnWidth(i) > maxWidth) {
+				sheet.setColumnWidth(i, maxWidth);
+			}
 		}
 	}
 

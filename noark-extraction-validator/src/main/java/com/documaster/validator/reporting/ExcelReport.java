@@ -20,7 +20,6 @@ package com.documaster.validator.reporting;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -54,10 +53,6 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 
 	private Workbook workbook;
 
-	private Sheet summary;
-
-	private int summaryTableRowIndex = 0;
-
 	private Map<StyleName, CellStyle> styles;
 
 	ExcelReport(T config, ReportType reportType, String title) {
@@ -90,23 +85,13 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 	private void createSheets() {
 
 		createExecutionInfoSheet();
-
-		summary = createSummarySheet();
-
-		for (Map.Entry<String, List<ValidationResult>> entry : ValidationCollector.get().getAllResults().entrySet()) {
-
-			Cell firstGroupCell = updateGroupTable(entry.getKey(), entry.getValue());
-			updateSummaryTable(firstGroupCell, entry.getKey());
-		}
-
-		placeTotalsInSummaryTable();
-
-		ExcelUtils.autoSizeColumns(summary, 0, 5);
-		summary.setColumnWidth(0, 256);
-
-		ExcelUtils.freezePanes(summary, summaryTableRowIndex + 1, 0);
+		Map<String, TotalsPerResultCells> totalsPerResultCellRefs = createSummarySheet();
+		createDetailsSheet(totalsPerResultCellRefs);
 	}
 
+	/**
+	 * Creates a sheet called "Execution" that contains information about the execution.
+	 */
 	private void createExecutionInfoSheet() {
 
 		Sheet executionInfoSheet = workbook.createSheet("Execution");
@@ -154,265 +139,440 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 			ExcelUtils.createCell(parameter.isRequired(), 3, row);
 		}
 
-		ExcelUtils.autoSizeColumns(executionInfoSheet, 0, 4);
+		ExcelUtils.autoSizeColumns(executionInfoSheet, 0, 4, 50);
 	}
 
-	private Sheet createSummarySheet() {
+	/**
+	 * Creates a sheet called "Summary" that contains two separate tables (one after the other):
+	 * <ul>
+	 * <li>one to hold "Totals per group" information</li>
+	 * <li>one to hold "Totals per result" information</li>
+	 * </ul>
+	 *
+	 * @return a map that holds references to the cells in the "Totals per result" table < Result ID, {@link
+	 * TotalsPerResultCells} >
+	 */
+	private Map<String, TotalsPerResultCells> createSummarySheet() {
 
 		Sheet summarySheet = workbook.createSheet("Summary");
 
-		// Place group-by-group summary table headers
+		// Store the group name cells so that we can later create hyperlinks
+		Map<String, Cell> totalsPerGroupRefCells = createTotalsPerGroupTable(summarySheet);
+
+		// Store the result cells so that we can later create hyperlinks
+		Map<String, TotalsPerResultCells> totalsPerResultCellRefs = createTotalsPerResultTable(
+				summarySheet, totalsPerGroupRefCells);
+
+		// Auto-size the columns in the "Summary" sheet
+		ExcelUtils.autoSizeColumns(summarySheet, 0, 5);
+
+		// Reduce the default width of the color-coded status column
+		summarySheet.setColumnWidth(0, 256);
+
+		return totalsPerResultCellRefs;
+	}
+
+	/**
+	 * Creates a "Totals per group" table in the "Summary" sheet.
+	 *
+	 * The table has the following structure:
+	 * <table>
+	 * <thead>
+	 * <th colspan=2>Group name</th><th>Summary</th><th>Information</th><th>Warnings</th><th>Errors</th>
+	 * </thead>
+	 * <tbody>
+	 * <tr>
+	 * <td>
+	 * Color-coded group status
+	 * </td>
+	 * <td>
+	 * Group name
+	 * </td>
+	 * <td>
+	 * Summary count for group
+	 * </td>
+	 * <td>
+	 * Info count for group
+	 * </td>
+	 * <td>
+	 * Warnings count for group
+	 * </td>
+	 * <td>
+	 * Errors count for group
+	 * </td>
+	 * </tr>
+	 * <tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+	 * <tr>
+	 * <td>-</td>
+	 * <td>
+	 * Total
+	 * </td>
+	 * <td>
+	 * Total summary count
+	 * </td>
+	 * <td>
+	 * Total info count
+	 * </td>
+	 * <td>
+	 * Total warnings count
+	 * </td>
+	 * <td>
+	 * Total errors count
+	 * </td>
+	 * </tr>
+	 * </tbody>
+	 * </table>
+	 *
+	 * @return a map holding references to the cells in which the group titles were placed
+	 */
+	private Map<String, Cell> createTotalsPerGroupTable(Sheet summarySheet) {
+
+		insertGroupTotalsHeaders(summarySheet);
+
+		Map<String, Cell> groupNameCells = insertGroupTotalsContent(summarySheet);
+
+		insertGroupTotalsFooter(summarySheet);
+
+		// Empty row after the "Totals per group" table
+		Row emptyRow = ExcelUtils.createRow(summarySheet);
+
+		// Freeze the rows containing the "Totals per group" table
+		ExcelUtils.freezePanes(summarySheet, emptyRow.getRowNum(), 0);
+
+		return groupNameCells;
+	}
+
+	/**
+	 * Inserts the "Totals per group" table headers.
+	 */
+	private void insertGroupTotalsHeaders(Sheet summarySheet) {
+
 		Row summaryHeaderRow = ExcelUtils.createRow(25, summarySheet);
 		String[] headers = new String[] { "", "Group name", "Summary", "Information", "Warnings", "Errors" };
 		IntStream.range(0, headers.length)
 				.forEach(ix -> ExcelUtils.createCell(headers[ix], ix, styles.get(StyleName.GROUP), summaryHeaderRow));
-
-		summaryTableRowIndex = summarySheet.getLastRowNum() + 1;
-
-		// Create rows for each group + 1 for total + 1 blank
-		for (int i = 0; i < ValidationCollector.get().getAllResults().size() + 2; i++) {
-			ExcelUtils.createRow(summarySheet);
-		}
-
-		return summarySheet;
-	}
-
-	private void updateSummaryTable(Cell groupTitleCell, String groupTitle) {
-
-		ValidationStatus groupStatus = ValidationCollector.get().getGroupStatus(groupTitle);
-
-		CellStyle style = getResultStatusStyleFromValidationStatus(groupStatus);
-
-		// Status column
-		ExcelUtils.createCell("", 0, style, summary.getRow(summaryTableRowIndex));
-
-		// Title column
-		ExcelUtils.createCell(
-				groupTitle, 1, styles.get(StyleName.RESULT_TITLE), summary.getRow(summaryTableRowIndex),
-				groupTitleCell);
-
-		// Summary count column
-		ExcelUtils.createCell(
-				Integer.toString(ValidationCollector.get().getSummaryCountIn(groupTitle)), 2,
-				summary.getRow(summaryTableRowIndex));
-
-		// Information count column
-		ExcelUtils.createCell(
-				Integer.toString(ValidationCollector.get().getInformationCountIn(groupTitle)), 3,
-				summary.getRow(summaryTableRowIndex));
-
-		// Warning count column
-		ExcelUtils.createCell(
-				Integer.toString(ValidationCollector.get().getWarningCountIn(groupTitle)), 4,
-				summary.getRow(summaryTableRowIndex));
-
-		// Error count column
-		ExcelUtils.createCell(
-				Integer.toString(ValidationCollector.get().getErrorCountIn(groupTitle)), 5,
-				summary.getRow(summaryTableRowIndex));
-
-		summaryTableRowIndex++;
-	}
-
-	private void placeTotalsInSummaryTable() {
-
-		// Status column
-		ExcelUtils.createCell("", 0, styles.get(StyleName.GROUP), summary.getRow(summaryTableRowIndex));
-
-		// Title column
-		ExcelUtils.createCell("Total", 1, styles.get(StyleName.RESULT_TITLE), summary.getRow(summaryTableRowIndex));
-
-		// Summary count column
-		ExcelUtils.createCell(
-				Integer.toString(ValidationCollector.get().getTotalSummaryCount()), 2,
-				summary.getRow(summaryTableRowIndex));
-
-		// Information count column
-		ExcelUtils.createCell(
-				Integer.toString(ValidationCollector.get().getTotalInformationCount()), 3,
-				summary.getRow(summaryTableRowIndex));
-
-		// Warning count column
-		ExcelUtils.createCell(
-				Integer.toString(ValidationCollector.get().getTotalWarningCount()), 4,
-				summary.getRow(summaryTableRowIndex));
-
-		// Error count column
-		ExcelUtils.createCell(
-				Integer.toString(ValidationCollector.get().getTotalErrorCount()), 5,
-				summary.getRow(summaryTableRowIndex));
-
-		summaryTableRowIndex++;
-	}
-
-	private Cell updateGroupTable(String groupTitle, List<ValidationResult> groupResults) {
-
-		Row groupRow = ExcelUtils.createRow(25, summary);
-
-		// Create group header and place the group title in the second cell
-		IntStream.range(0, 6).forEach(
-				i -> ExcelUtils.createCell(i == 1 ? groupTitle : "", i, styles.get(StyleName.GROUP), groupRow));
-
-		for (ValidationResult result : groupResults) {
-
-			Row resultRow = ExcelUtils.createRow(15, summary);
-
-			// Color-coded status
-			CellStyle resultStyle = getResultStatusStyleFromValidationStatus(result.getStatus());
-			ExcelUtils.createCell("", 0, resultStyle, resultRow);
-
-			// Title
-			Cell titleCell = ExcelUtils.createCell(result.getTitle(), 1, styles.get(StyleName.RESULT_TITLE), resultRow);
-
-			Map<String, Cell> cells = createDetailsSheet(result, titleCell);
-
-			ExcelUtils.addHyperLink(titleCell, cells.get("firstRow"));
-
-			// Summary entries count
-			Cell summaryCell = ExcelUtils.createCell(
-					MessageFormat.format("Summary ({0})", result.getSummary().size()), 2,
-					styles.get(StyleName.LINK), resultRow);
-			ExcelUtils.addHyperLink(summaryCell, cells.get("summary"));
-
-			// Information entries count
-			Cell informationCell = ExcelUtils.createCell(
-					MessageFormat.format("Information ({0})", result.getInformation().size()), 3,
-					styles.get(StyleName.LINK), resultRow);
-			ExcelUtils.addHyperLink(informationCell, cells.get("information"));
-
-			// Warning entries count
-			Cell warningCell = ExcelUtils.createCell(
-					MessageFormat.format("Warnings ({0})", result.getWarnings().size()), 4, styles.get(StyleName.LINK),
-					resultRow);
-			ExcelUtils.addHyperLink(warningCell, cells.get("warning"));
-
-			// Error entries count
-			Cell errorCell = ExcelUtils.createCell(
-					MessageFormat.format("Errors ({0})", result.getErrors().size()), 5, styles.get(StyleName.LINK),
-					resultRow);
-			ExcelUtils.addHyperLink(errorCell, cells.get("error"));
-		}
-
-		return groupRow.getCell(1); // Title cell
 	}
 
 	/**
-	 * Creates a new sheet from the specified {@link ValidationResult} and returns the row indices
-	 * of the "Summary", "Information", "Warning", and "Error" entries.
+	 * Inserts a new row in the "Totals per group" table for each group.
+	 *
+	 * @return a map that holds references to the group title cells in the table.
 	 */
-	private Map<String, Cell> createDetailsSheet(ValidationResult result, Cell referenceCell) {
+	private Map<String, Cell> insertGroupTotalsContent(Sheet summarySheet) {
 
-		Map<String, Cell> headerCells = new HashMap<>();
+		Map<String, Cell> groupNameCells = new HashMap<>();
 
-		Sheet resultSheet = workbook.createSheet(result.getId());
+		for (String groupTitle : ValidationCollector.get().getAllResults().keySet()) {
 
-		// Go back link
-		Row goBackToSymmaryRow = ExcelUtils.createRow(25, resultSheet);
-		Cell goBackToSummaryCell = ExcelUtils.createCell(
-				"<-- Back to Summary", 0, styles.get(StyleName.LINK), goBackToSymmaryRow);
-		ExcelUtils.addHyperLink(goBackToSummaryCell, referenceCell);
-		headerCells.put("firstRow", goBackToSummaryCell);
+			Row groupRow = ExcelUtils.createRow(summarySheet);
 
-		// Title
-		Row titleRow = ExcelUtils.createRow(25, resultSheet);
-		CellStyle resultStyle = getResultTitleStyleFromValidationStatus(result.getStatus());
-		ExcelUtils.createCell("Title: " + result.getTitle(), 0, resultStyle, titleRow);
+			ValidationStatus groupStatus = ValidationCollector.get().getGroupStatus(groupTitle);
+			CellStyle groupStatusStyle = getResultStatusStyleFromValidationStatus(groupStatus);
 
-		// Index cells
-		int summaryEntries = result.getSummary() == null ? 0 : result.getSummary().size();
-		String indexSummaryTitle = MessageFormat.format("Summary ({0})", summaryEntries);
-		Cell indexSummaryCell = ExcelUtils.createCell(
-				indexSummaryTitle, 0, styles.get(StyleName.LINK), ExcelUtils.createRow(resultSheet));
+			ExcelUtils.createCell("", 0, groupStatusStyle, groupRow); // Status
+			groupNameCells.put(
+					groupTitle,
+					ExcelUtils.createCell(groupTitle, 1, styles.get(StyleName.RESULT_TITLE), groupRow)); // Title
+			ExcelUtils.createCell(ValidationCollector.get().getSummaryCountIn(groupTitle), 2, groupRow); // Summary
+			ExcelUtils.createCell(ValidationCollector.get().getInformationCountIn(groupTitle), 3, groupRow); // Info
+			ExcelUtils.createCell(ValidationCollector.get().getWarningCountIn(groupTitle), 4, groupRow); // Warnings
+			ExcelUtils.createCell(ValidationCollector.get().getErrorCountIn(groupTitle), 5, groupRow); // Errors
+		}
 
-		int informationEntries = result.getInformation() == null ? 0 : result.getInformation().size();
-		String indexInformationTitle = MessageFormat.format("Information ({0})", informationEntries);
-		Cell indexInformationCell = ExcelUtils.createCell(
-				indexInformationTitle, 0, styles.get(StyleName.LINK), ExcelUtils.createRow(resultSheet));
-
-		int warningEntries = result.getWarnings() == null ? 0 : result.getWarnings().size();
-		String indexWarningsTitle = MessageFormat.format("Warnings ({0})", warningEntries);
-		Cell indexWarningsCell = ExcelUtils.createCell(
-				indexWarningsTitle, 0, styles.get(StyleName.LINK), ExcelUtils.createRow(resultSheet));
-
-		int errorEntries = result.getErrors() == null ? 0 : result.getErrors().size();
-		String indexErrorsTitle = MessageFormat.format("Errors ({0})", errorEntries);
-		Cell indexErrorsCell = ExcelUtils.createCell(
-				indexErrorsTitle, 0, styles.get(StyleName.LINK), ExcelUtils.createRow(resultSheet));
-
-		// Description
-		Row descriptionRow = ExcelUtils.createStyledRow(resultSheet, styles.get(StyleName.RESULT_DESCRIPTION));
-		descriptionRow.setHeightInPoints(50);
-		ExcelUtils.createCell(result.getDescription(), 0, styles.get(StyleName.RESULT_DESCRIPTION), descriptionRow);
-
-		// Entries
-		Cell summaryTitleCell = writeDetailEntries(resultSheet, result.getSummary(), "Summary");
-		headerCells.put("summary", summaryTitleCell);
-		ExcelUtils.addHyperLink(indexSummaryCell, summaryTitleCell);
-		ExcelUtils.createRow(resultSheet); // empty row
-
-		Cell informationTitleCell = writeDetailEntries(resultSheet, result.getInformation(), "Information");
-		headerCells.put("information", informationTitleCell);
-		ExcelUtils.addHyperLink(indexInformationCell, informationTitleCell);
-		ExcelUtils.createRow(resultSheet); // empty row
-
-		Cell warningsTitleCell = writeDetailEntries(resultSheet, result.getWarnings(), "Warnings");
-		headerCells.put("warning", warningsTitleCell);
-		ExcelUtils.addHyperLink(indexWarningsCell, warningsTitleCell);
-		ExcelUtils.createRow(resultSheet); // empty row
-
-		Cell errorsTitleCell = writeDetailEntries(resultSheet, result.getErrors(), "Errors");
-		headerCells.put("error", errorsTitleCell);
-		ExcelUtils.addHyperLink(indexErrorsCell, errorsTitleCell);
-		ExcelUtils.createRow(resultSheet); // empty row
-
-		resultSheet.setColumnWidth(0, 70 * 256);
-		ExcelUtils.autoSizeColumns(resultSheet, 1, 11);
-		ExcelUtils.freezePanes(resultSheet, 6, 0);
-
-		return headerCells;
+		return groupNameCells;
 	}
 
-	private Cell writeDetailEntries(Sheet resultSheet, List<BaseItem> entries, String entriesType) {
+	/**
+	 * Inserts a footer row in the "Totals per group" table containing an overall total.
+	 */
+	private void insertGroupTotalsFooter(Sheet summarySheet) {
 
-		// Entries type
-		int entriesCount = entries == null ? 0 : entries.size();
+		Row totalsRow = ExcelUtils.createRow(summarySheet);
 
-		Row typeRow = ExcelUtils.createRow(25, resultSheet);
+		ExcelUtils.createCell("", 0, styles.get(StyleName.GROUP), totalsRow); // Status
+		ExcelUtils.createCell("Total", 1, styles.get(StyleName.RESULT_TITLE), totalsRow); // Title
+		ExcelUtils.createCell(ValidationCollector.get().getTotalSummaryCount(), 2, totalsRow); // Summary count
+		ExcelUtils.createCell(ValidationCollector.get().getTotalInformationCount(), 3, totalsRow); // Information count
+		ExcelUtils.createCell(ValidationCollector.get().getTotalWarningCount(), 4, totalsRow); // Warnings count
+		ExcelUtils.createCell(ValidationCollector.get().getTotalErrorCount(), 5, totalsRow); // Errors count
+	}
 
-		String typeContent = MessageFormat.format("{0} ({1})", entriesType, entriesCount);
-		Cell typeCell = ExcelUtils.createCell(typeContent, 0, styles.get(StyleName.RESULT_TYPE), typeRow);
+	/**
+	 * Creates a "Totals per result" table right below the "Totals per group" table in the "Summary" sheet.
+	 * <p/>
+	 * The table has the following structure for each group:
+	 *
+	 * <table>
+	 * <thead>
+	 * <th colspan=6>Group name</th>
+	 * </thead>
+	 * <tbody>
+	 * <tr>
+	 * <td>Color-coded status</td>
+	 * <td>Result name</td>
+	 * <td>Summary count</td>
+	 * <td>Info count</td>
+	 * <td>Warnings count</td>
+	 * <td>Errors count</td>
+	 * </tr>
+	 * <tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+	 * </tbody>
+	 * </table>
+	 *
+	 * @return a map that holds references to the cells in the table < Result ID, {@link TotalsPerResultCells} >
+	 */
+	private Map<String, TotalsPerResultCells> createTotalsPerResultTable(
+			Sheet summarySheet, Map<String, Cell> totalsPerGroupRefCells) {
+
+		Map<String, TotalsPerResultCells> tableCells = new HashMap<>();
+
+		for (Map.Entry<String, List<ValidationResult>> group : ValidationCollector.get().getAllResults().entrySet()) {
+
+			String groupName = group.getKey();
+			List<ValidationResult> results = group.getValue();
+
+			// Group header (name)
+			Row groupHeaderRow = ExcelUtils.createRow(25, summarySheet);
+			String[] headerContent = new String[] { "", groupName, "", "", "", "" };
+			IntStream.range(0, 6).forEach(
+					i -> ExcelUtils.createCell(headerContent[i], i, styles.get(StyleName.GROUP), groupHeaderRow));
+
+			// Create a hyperlink from the group name in the "Totals per group" table
+			// to the group name in the "Totals per result" table
+			ExcelUtils.addHyperLink(totalsPerGroupRefCells.get(groupName), groupHeaderRow.getCell(1));
+
+			// Individual results
+			for (ValidationResult result : results) {
+
+				TotalsPerResultCells cells = new TotalsPerResultCells();
+				cells.setResultId(result.getId());
+
+				Row resultRow = ExcelUtils.createRow(15, summarySheet);
+
+				// Color-coded status
+				CellStyle resultStyle = getResultStatusStyleFromValidationStatus(result.getStatus());
+				ExcelUtils.createCell("", 0, resultStyle, resultRow);
+
+				// Title
+				cells.setTitleCell(ExcelUtils
+						.createCell(result.getTitle(), 1, styles.get(StyleName.RESULT_TITLE), resultRow));
+
+				CellStyle linkStyle = styles.get(StyleName.LINK);
+
+				// Summary entries count
+				String summaryText = String.format("Summary (%d)", result.getSummary().size());
+				cells.setSummaryCell(ExcelUtils.createCell(summaryText, 2, linkStyle, resultRow));
+
+				// Information entries count
+				String infoText = String.format("Information (%d)", result.getInformation().size());
+				cells.setInfoCell(ExcelUtils.createCell(infoText, 3, linkStyle, resultRow));
+
+				// Warning entries count
+				String warningsText = String.format("Warnings (%d)", result.getWarnings().size());
+				cells.setWarningsCell(ExcelUtils.createCell(warningsText, 4, linkStyle, resultRow));
+
+				// Error entries count
+				String errorsText = String.format("Errors (%d)", result.getErrors().size());
+				cells.setErrorsCell(ExcelUtils.createCell(errorsText, 5, linkStyle, resultRow));
+
+				tableCells.put(cells.getResultId(), cells);
+			}
+		}
+
+		return tableCells;
+	}
+
+	/**
+	 * Creates a new sheet with detailed result information for each {@link ValidationResult}.
+	 * <p/>
+	 * The content of the sheet is as follows:
+	 * <table>
+	 * <thead>
+	 * <tr><th><-- Back to summary (hyperlink to the "Summary" sheet)</th></tr>
+	 * <tr><th>Result title</th></tr>
+	 * <tr><th>Summary (n)</th><th>hyperlink to the summary entries in this sheet</th></tr>
+	 * <tr><th>Information (n)</th><th>hyperlink to the information entries in this sheet</th></tr>
+	 * <tr><th>Warnings (n)</th><th>hyperlink to the warnings entries in this sheet</th></tr>
+	 * <tr><th>Errors (n)</th><th>hyperlink to the errors entries in this sheet)</th></tr>
+	 * <tr><th>Test description</th></tr>
+	 * </thead>
+	 * </table>
+	 * <table>
+	 * <thead>
+	 * <tr><th>Summary (n)</th></tr>
+	 * <tr><th>col1</th><th>col2</th></tr>
+	 * </thead>
+	 * <tbody>
+	 * <tr><td>val1</td><td>val2</td></tr>
+	 * <tr><td>...</td><td>...</td></tr>
+	 * </tbody>
+	 * </table>
+	 * <table>
+	 * <thead>
+	 * <tr><th>Information (n)</th></tr>
+	 * <tr><th>col1</th><th>col2</th></tr>
+	 * </thead>
+	 * <tbody>
+	 * <tr><td>val1</td><td>val2</td></tr>
+	 * <tr><td>...</td><td>...</td></tr>
+	 * </tbody>
+	 * </table>
+	 * <table>
+	 * <thead>
+	 * <tr><th>Warnings (n)</th></tr>
+	 * <tr><th>col1</th><th>col2</th></tr>
+	 * </thead>
+	 * <tbody>
+	 * <tr><td>val1</td><td>val2</td></tr>
+	 * <tr><td>...</td><td>...</td></tr>
+	 * </tbody>
+	 * </table>
+	 * <table>
+	 * <thead>
+	 * <tr><th>Errors (n)</th></tr>
+	 * <tr><th>col1</th><th>col2</th></tr>
+	 * </thead>
+	 * <tbody>
+	 * <tr><td>val1</td><td>val2</td></tr>
+	 * <tr><td>...</td><td>...</td></tr>
+	 * </tbody>
+	 * </table>
+	 *
+	 * @param totalsPerResultCellRefs
+	 * 		A map containing references to cells in the "Totals per result" table so that hyperlinks can be created
+	 */
+	private void createDetailsSheet(Map<String, TotalsPerResultCells> totalsPerResultCellRefs) {
+
+		for (List<ValidationResult> results : ValidationCollector.get().getAllResults().values()) {
+			for (ValidationResult result : results) {
+
+				Sheet resultSheet = workbook.createSheet(result.getId());
+
+				// Hyperlink from the detailed sheet information to the "Summary" sheet
+				ExcelUtils.createCell("<-- Back to Summary", 0, styles.get(StyleName.LINK),
+						ExcelUtils.createRow(25, resultSheet),
+						totalsPerResultCellRefs.get(result.getId()).getTitleCell());
+
+				// Title and hyperlink from the "Summary" sheet to it
+				CellStyle resultStyle = getResultTitleStyleFromValidationStatus(result.getStatus());
+				Cell titleCell = ExcelUtils
+						.createCell(result.getTitle(), 0, resultStyle, ExcelUtils.createRow(25, resultSheet));
+				ExcelUtils.addHyperLink(totalsPerResultCellRefs.get(result.getId()).getTitleCell(), titleCell);
+
+				// Index
+				int indexRowNumber = resultSheet.getLastRowNum() + 1;
+				CellStyle linkStyle = styles.get(StyleName.LINK);
+				String[] index = new String[] {
+						String.format("Summary (%d)", result.getSummary().size()),
+						String.format("Information (%d)", result.getInformation().size()),
+						String.format("Warnings (%d)", result.getWarnings().size()),
+						String.format("Errors (%d)", result.getErrors().size())
+				};
+				IntStream.range(0, index.length).forEach(
+						ix -> ExcelUtils.createCell(index[ix], 0, linkStyle, ExcelUtils.createRow(resultSheet)));
+
+				// Description
+				Row descriptionRow = ExcelUtils.createStyledRow(resultSheet, styles.get(StyleName.RESULT_DESCRIPTION));
+				descriptionRow.setHeightInPoints(50);
+				ExcelUtils.createCell(result.getDescription(), 0, styles.get(StyleName.RESULT_DESCRIPTION),
+						descriptionRow);
+
+				// Entries (Summary, Information, Warnings, Errors etc.)
+				TotalsPerResultCells totalsPerResultCells = totalsPerResultCellRefs.get(result.getId());
+
+				insertDetailedEntries( // Summary
+						resultSheet, result.getSummary(), index[0],
+						resultSheet.getRow(indexRowNumber).getCell(0), totalsPerResultCells.getSummaryCell());
+
+				insertDetailedEntries( // Information
+						resultSheet, result.getInformation(), index[1],
+						resultSheet.getRow(indexRowNumber + 1).getCell(0), totalsPerResultCells.getInfoCell());
+
+				insertDetailedEntries( // Warnings
+						resultSheet, result.getWarnings(), index[2],
+						resultSheet.getRow(indexRowNumber + 2).getCell(0), totalsPerResultCells.getWarningsCell());
+
+				insertDetailedEntries( // Errors
+						resultSheet, result.getErrors(), index[3],
+						resultSheet.getRow(indexRowNumber + 3).getCell(0), totalsPerResultCells.getErrorsCell());
+
+				// Automatically resize all columns in the sheet. The number is arbitrarily chosen
+				// since we have no easy way of retrieving the result with maximum number of columns.
+				ExcelUtils.autoSizeColumns(resultSheet, 0, 11, 50 * 256);
+
+				// Freeze the first several rows so that the index is always visible
+				ExcelUtils.freezePanes(resultSheet, indexRowNumber + index.length, 0);
+			}
+		}
+	}
+
+	/**
+	 * Inserts detailed result entries into a details sheet.
+	 * <p/>
+	 * The method appends the following table to the sheet:
+	 * <table>
+	 * <thead>
+	 * <tr><th>Header</th></tr>
+	 * <tr><th>col1</th><th>col2</th></tr>
+	 * </thead>
+	 * <tbody>
+	 * <tr><td>val1</td><td>val2</td></tr>
+	 * <tr><td>...</td><td>...</td></tr>
+	 * </tbody>
+	 * </table>
+	 *
+	 * @param sheet
+	 * 		The sheet in which to insert the entries
+	 * @param entries
+	 * 		The list of entries to insert
+	 * @param header
+	 * 		The header to use for the entries
+	 * @param indexCellRef
+	 * 		The {@link Cell} in the index of the "Details" sheet corresponding to these entries. A hyperlink will be
+	 * 		created from that cell to the entries.
+	 * @param summaryCellRef
+	 * 		The corresponding Info, Warnings, Errors, etc. {@link Cell} in the "Summary" sheet from which to create a
+	 * 		hyperlink to the entries.
+	 */
+	private void insertDetailedEntries(
+			Sheet sheet, List<BaseItem> entries, String header, Cell indexCellRef, Cell summaryCellRef) {
+
+		// Create a header cell
+		Cell headerCell = ExcelUtils
+				.createCell(header, 0, styles.get(StyleName.RESULT_TYPE), ExcelUtils.createRow(25, sheet));
+
+		// Create a hyperlink from the index in this sheet to these entries
+		ExcelUtils.addHyperLink(indexCellRef, headerCell);
+
+		// Create a hyperlink from the "Summary" sheet to these entries
+		ExcelUtils.addHyperLink(summaryCellRef, headerCell);
 
 		// Entries
-		if (entriesCount == 0) {
-
-			Row noResultsRow = ExcelUtils.createRow(resultSheet);
-			ExcelUtils.createCell(MessageFormat.format("No {0} found.", entriesType.toLowerCase()), 0, noResultsRow);
-
+		if (entries.isEmpty()) {
+			ExcelUtils.createCell("No information found.", 0, ExcelUtils.createRow(sheet));
 		} else {
+			// Get the column names from the first row
+			Row headerRow = ExcelUtils.createRow(sheet);
+			int headerCellIx = 0;
 
-			Row headerRow = ExcelUtils.createRow(resultSheet);
-
-			int headerCellIndex = 0;
-
-			// Get the table headers from the first row
 			for (String fieldName : entries.get(0).getValues().keySet()) {
-				ExcelUtils.createCell(fieldName, headerCellIndex++, styles.get(StyleName.RESULT_HEADER_ROW), headerRow);
+				ExcelUtils.createCell(fieldName, headerCellIx++, styles.get(StyleName.RESULT_HEADER_ROW), headerRow);
 			}
 
-			// Write values
+			// Write the entries
 			for (BaseItem entry : entries) {
+				Row row = ExcelUtils.createRow(15, sheet);
 
-				Row row = ExcelUtils.createRow(15, resultSheet);
-
-				int cellIndex = 0;
+				int cellIx = 0;
 				for (Object value : entry.getValues().values()) {
 					String cellValue = value == null ? "-" : value.toString();
-					ExcelUtils.createCell(cellValue, cellIndex++, styles.get(StyleName.RESULT_ROW), row);
+					ExcelUtils.createCell(cellValue, cellIx++, styles.get(StyleName.RESULT_ROW), row);
 				}
 			}
 		}
 
-		return typeCell;
+		// Create an empty row at the end
+		ExcelUtils.createRow(sheet);
 	}
 
 	private void createStyles() {
@@ -566,6 +726,79 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 				return styles.get(StyleName.RESULT_TITLE_FAILURE);
 			default:
 				throw new ReportingException("Unknown validation status: " + status);
+		}
+	}
+
+	/**
+	 * Holds a reference to all the {@link Cell}s in a "Totals per result" table row.
+	 */
+	private static class TotalsPerResultCells {
+
+		String resultId;
+		Cell titleCell;
+		Cell summaryCell;
+		Cell infoCell;
+		Cell warningsCell;
+		Cell errorsCell;
+
+		String getResultId() {
+
+			return resultId;
+		}
+
+		void setResultId(String resultId) {
+
+			this.resultId = resultId;
+		}
+
+		Cell getTitleCell() {
+
+			return titleCell;
+		}
+
+		void setTitleCell(Cell titleCell) {
+
+			this.titleCell = titleCell;
+		}
+
+		Cell getSummaryCell() {
+
+			return summaryCell;
+		}
+
+		void setSummaryCell(Cell summaryCell) {
+
+			this.summaryCell = summaryCell;
+		}
+
+		Cell getInfoCell() {
+
+			return infoCell;
+		}
+
+		void setInfoCell(Cell infoCell) {
+
+			this.infoCell = infoCell;
+		}
+
+		Cell getWarningsCell() {
+
+			return warningsCell;
+		}
+
+		void setWarningsCell(Cell warningsCell) {
+
+			this.warningsCell = warningsCell;
+		}
+
+		Cell getErrorsCell() {
+
+			return errorsCell;
+		}
+
+		void setErrorsCell(Cell errorsCell) {
+
+			this.errorsCell = errorsCell;
 		}
 	}
 }
