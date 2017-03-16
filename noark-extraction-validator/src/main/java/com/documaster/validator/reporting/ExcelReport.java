@@ -125,21 +125,45 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 		ExcelUtils.createCell("Required", 3, styles.get(StyleName.RESULT_HEADER_ROW), parametersHeaderRow);
 
 		// Parameters
-		for (Command.ParameterInfo parameter : getConfig().getExecutionInfo().getParameterInfo()) {
-			if (parameter.isDefault()) {
+		for (Command.ParameterInfo parameterInfo : getConfig().getExecutionInfo().getParameterInfo()) {
+			if (parameterInfo.isDefault()) {
 				// Skip default parameters
 				continue;
 			}
 			Row row = ExcelUtils.createRow(executionInfoSheet);
-			ExcelUtils.createCell(parameter.getName(), 0, row);
-			ExcelUtils.createCell(parameter.getSpecifiedValue(), 1, row);
-			ExcelUtils
-					.createCell(!StringUtils.isBlank(parameter.getDescription()) ? parameter.getDescription() : "-", 2,
-							row);
-			ExcelUtils.createCell(parameter.isRequired(), 3, row);
+			ExcelUtils.createCell(parameterInfo.getName(), 0, row);
+			ExcelUtils.createCell(parameterInfo.getSpecifiedValue(), 1, row);
+			ExcelUtils.createCell(
+					!StringUtils.isBlank(parameterInfo.getDescription()) ? parameterInfo.getDescription() : "-",
+					2,
+					row);
+			ExcelUtils.createCell(parameterInfo.isRequired(), 3, row);
 		}
 
-		ExcelUtils.autoSizeColumns(executionInfoSheet, 0, 4, 50);
+		// Command-specific information
+		if (!getConfig().getExecutionInfo().getCommandInfo().isEmpty()) {
+			getConfig().getExecutionInfo().getCommandInfo().entrySet().forEach(e -> {
+				// Empty row
+				ExcelUtils.createRow(executionInfoSheet);
+
+				// Header
+				ExcelUtils.createCell(e.getKey(), 0, styles.get(StyleName.GROUP),
+						ExcelUtils.createRow(25, executionInfoSheet));
+
+				// Value
+				Row valueRow = ExcelUtils.createRow(executionInfoSheet);
+
+				// Automatically determine the height for the row (works in MS Excel, but no in LibreOffice)
+				CellStyle style = ExcelUtils.createDefaultCellStyle(workbook);
+				style.setFont(ExcelUtils.createDefaultFont(workbook, (short) 10, false));
+				style.setWrapText(true);
+
+				ExcelUtils.createCell(e.getValue(), 0, style, valueRow);
+			});
+
+		}
+
+		ExcelUtils.autoSizeColumns(executionInfoSheet, 0, 4, 50 * 256);
 	}
 
 	/**

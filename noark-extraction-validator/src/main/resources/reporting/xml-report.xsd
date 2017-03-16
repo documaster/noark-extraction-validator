@@ -17,8 +17,11 @@
     <xs:complexType name="execution">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element name="parameter" type="dm:parameter"/>
+            <xs:element name="other" type="dm:other"/>
         </xs:choice>
         <xs:attribute name="version" type="xs:string" use="required"/>
+        <xs:attribute name="command" type="xs:string" use="required"/>
+        <xs:attribute name="generated" type="xs:string" use="required"/>
     </xs:complexType>
 
     <xs:complexType name="parameter">
@@ -26,6 +29,14 @@
         <xs:attribute name="description" type="xs:string" use="required"/>
         <xs:attribute name="value" type="xs:string" use="required"/>
         <xs:attribute name="required" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="other">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="name" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
     </xs:complexType>
 
     <xs:complexType name="summary">

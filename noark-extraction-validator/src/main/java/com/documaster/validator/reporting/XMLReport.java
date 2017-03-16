@@ -116,6 +116,15 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 			// End parameter
 			end();
 		}
+
+		// Command-specific (other) information
+		for (Map.Entry<String, String> commandInfo : getConfig().getExecutionInfo().getCommandInfo().entrySet()) {
+			start("other");
+			attr("name", commandInfo.getKey());
+			cdataContent(commandInfo.getValue());
+			end();
+		}
+
 		// End section
 		end();
 	}
@@ -255,6 +264,11 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 	private void content(Object data) throws XMLStreamException {
 
 		writer.writeCharacters(data != null ? data.toString() : "-");
+	}
+
+	private void cdataContent(Object data) throws XMLStreamException {
+
+		writer.writeCData(data != null ? data.toString() : "-");
 	}
 
 	private void end() throws XMLStreamException {

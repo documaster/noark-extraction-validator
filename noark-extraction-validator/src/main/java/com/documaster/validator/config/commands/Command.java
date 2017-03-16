@@ -20,7 +20,9 @@ package com.documaster.validator.config.commands;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -70,7 +72,10 @@ public abstract class Command<T extends InternalProperties> {
 			parameters.add(new ParameterInfo(param));
 		}
 
-		return new ExecutionInfo(parameters);
+		ExecutionInfo executionInfo = new ExecutionInfo(parameters);
+		executionInfo.addGeneralInfo("command", getName());
+
+		return executionInfo;
 	}
 
 	/**
@@ -83,36 +88,63 @@ public abstract class Command<T extends InternalProperties> {
 	 */
 	public abstract T getProperties() throws Exception;
 
+	/**
+	 * Provides execution information.
+	 */
 	public static class ExecutionInfo {
 
-		List<ParameterInfo> parameterInfo;
+		private List<ParameterInfo> parameterInfo = new LinkedList<>();
+
+		private Map<String, Object> generalInfo = new HashMap<>();
+
+		private Map<String, String> commandInfo = new HashMap<>();
 
 		ExecutionInfo(List<ParameterInfo> parameterInfo) {
 
-			this.parameterInfo = parameterInfo;
+			this.parameterInfo.addAll(parameterInfo);
 		}
 
 		/**
-		 * Retrieves information about the parameters used in this execution.
+		 * Returns an unmodifiable list containing the parameters of this execution.
 		 */
 		public List<ParameterInfo> getParameterInfo() {
 
-			return parameterInfo;
+			return Collections.unmodifiableList(parameterInfo);
 		}
 
 		/**
-		 * Retrieves general (usually static) information about this execution, such as:
+		 * Retrieves an unmodifiable map of general (usually static) information about this execution, such as:
 		 * <ul>
 		 * <li>Build version</li>
+		 * <li>Time of execution</li>
 		 * </ul>
 		 */
 		public Map<String, Object> getGeneralInfo() {
 
-			Map<String, Object> generalInfo = new HashMap<>();
 			generalInfo.put("version", getClass().getPackage().getImplementationVersion());
+			generalInfo.put("generated", new Date());
 
 			return Collections.unmodifiableMap(generalInfo);
 		}
+
+		public void addGeneralInfo(String name, String value) {
+
+			generalInfo.put(name, value);
+		}
+
+		/**
+		 * Retrieves an unmodifiable map of {@link Command}-specific execution information.
+		 */
+		public Map<String, String> getCommandInfo() {
+
+			return Collections.unmodifiableMap(commandInfo);
+		}
+
+		public void addCommandInfo(String title, String value) {
+
+			commandInfo.put(title, value);
+		}
+
 	}
 
 	/**
