@@ -18,20 +18,18 @@
 package com.documaster.validator.validation.noark53.model;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 
 /**
  * The Noark 5.3 extraction package structure represented as a {@link HashMap} implementation.
+ * <p/>
+ * {@link Noark53PackageStructure} provides support for optional external schemas apart from the Noark ones and the ones
+ * included in the package.
  * <p/>
  * <b>keys: </b> XML file names<br/>
  * <b>values: </b> {@link Noark53PackageEntity}
@@ -40,14 +38,21 @@ public class Noark53PackageStructure extends HashMap<String, Noark53PackageEntit
 
 	private File extractionDirectory;
 	private File noarkSchemasDirectory;
+	private File customSchemasDirectory;
 
 	public Noark53PackageStructure(File extractionDirectory, File noarkSchemasDirectory) {
+
+		this(extractionDirectory, noarkSchemasDirectory, null);
+	}
+
+	public Noark53PackageStructure(File extractionDirectory, File noarkSchemasDirectory, File customSchemasDirectory) {
 
 		Validate.isTrue(extractionDirectory.isDirectory());
 		Validate.isTrue(noarkSchemasDirectory.isDirectory());
 
 		this.extractionDirectory = extractionDirectory;
 		this.noarkSchemasDirectory = noarkSchemasDirectory;
+		this.customSchemasDirectory = customSchemasDirectory;
 
 		put(
 				"arkivstruktur.xml",
@@ -68,6 +73,11 @@ public class Noark53PackageStructure extends HashMap<String, Noark53PackageEntit
 	public File getNoarkSchemasDirectory() {
 
 		return noarkSchemasDirectory;
+	}
+
+	public File getCustomSchemasDirectory() {
+
+		return customSchemasDirectory;
 	}
 
 	public List<File> getAllNoarkSchemaFiles() {

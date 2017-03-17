@@ -153,7 +153,7 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 				// Value
 				Row valueRow = ExcelUtils.createRow(executionInfoSheet);
 
-				// Automatically determine the height for the row (works in MS Excel, but no in LibreOffice)
+				// Automatically determine the height of the row (works in MS Excel, but no in LibreOffice)
 				CellStyle style = ExcelUtils.createDefaultCellStyle(workbook);
 				style.setFont(ExcelUtils.createDefaultFont(workbook, (short) 10, false));
 				style.setWrapText(true);

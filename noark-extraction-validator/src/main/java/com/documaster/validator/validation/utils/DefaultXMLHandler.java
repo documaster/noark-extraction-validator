@@ -17,13 +17,14 @@
  */
 package com.documaster.validator.validation.utils;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+import com.documaster.validator.exceptions.aggregation.SAXParseExceptionAggregator;
 import com.documaster.validator.storage.model.BaseItem;
 import org.xml.sax.SAXParseException;
 
@@ -33,11 +34,24 @@ import org.xml.sax.SAXParseException;
  */
 public class DefaultXMLHandler extends AbstractReusableXMLHandler {
 
-	private List<SAXParseException> exceptions = new ArrayList<>();
+	private List<SAXParseException> exceptions = new LinkedList<>();
 
 	public boolean hasExceptions() {
 
 		return !exceptions.isEmpty();
+	}
+
+	@Override
+	public List<BaseItem> getSummaryOfExceptionsAsItems() {
+
+		return new SAXParseExceptionAggregator<>()
+				.aggregate(exceptions)
+				.entrySet()
+				.stream()
+				.map(k -> new BaseItem()
+						.add("Message", k.getKey())
+						.add("Count", k.getValue()))
+				.collect(collectingAndThen(toList(), Collections::unmodifiableList));
 	}
 
 	public List<BaseItem> getExceptionsAsItems() {

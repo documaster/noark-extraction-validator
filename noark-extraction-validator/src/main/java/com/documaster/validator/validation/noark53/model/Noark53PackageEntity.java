@@ -97,4 +97,34 @@ public class Noark53PackageEntity {
 
 		return Collections.unmodifiableList(noarkSchemas);
 	}
+
+	/**
+	 * Retrieves the custom schema files.
+	 * <br/>
+	 * The corresponding Noark 5.3 XSD schema is returned for each schema not found in custom schemas.
+	 */
+	public List<File> getCustomSchemas() {
+
+		List<File> customSchemas = new ArrayList<>();
+
+		for (String xsdSchemaName : xsdSchemasNames) {
+
+			// Custom schema
+			File schema = new File(structure.getCustomSchemasDirectory(), xsdSchemaName);
+
+			if (!schema.isFile()) {
+				// Fallback to Noark schema
+				schema = new File(structure.getNoarkSchemasDirectory(), xsdSchemaName);
+			}
+
+			customSchemas.add(schema);
+		}
+
+		return Collections.unmodifiableList(customSchemas);
+	}
+
+	public boolean hasCustomSchemas() {
+
+		return structure.getCustomSchemasDirectory() != null;
+	}
 }
