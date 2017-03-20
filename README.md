@@ -52,6 +52,13 @@ You can request a report to be generated in multiple formats:
 ```
 java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -output-type excel_xls -output-type xml
 ```
+You can specify custom Noark schemas to be used in the validation process (in addition to the Noark ones and the extraction package ones). In such cases the reports would also include information about the compliance of the extraction package to these schemas:
+```
+java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory -custom-schema-location /path/to/custom/schemas/directory
+```
+The specified `-custom-schema-location` directory may contain any custom Noark 5 schemas and a UTF-8-encoded description.txt file. The contents of this file will be copied to the Execution Information sections of the generated reports for completeness.
+
+
 You can also change the persistence settings:
 ```
 java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -db-name myDBName -storage hsqldb_server -server-location http://my.hsqldb.server.com
