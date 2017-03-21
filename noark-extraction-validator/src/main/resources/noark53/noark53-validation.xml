@@ -36,43 +36,53 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT 'arkivstruktur.xml' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'arkivstruktur.xml'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value'
+                            AND parent_property.name = 'checksum'
+                            AND sibling_property.name = 'name'
+                            AND LOWER(sibling_property.value) = 'arkivstruktur.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'arkivstruktur.xml'
-                    ) detected;
+                        LIMIT 1
+                    )
+                    SELECT 'arkivstruktur.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
                 ]]>
             </info>
             <errors>
                 <![CDATA[
-                    SELECT 'arkivstruktur.xml' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'arkivstruktur.xml'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value'
+                            AND parent_property.name = 'checksum'
+                            AND sibling_property.name = 'name'
+                            AND LOWER(sibling_property.value) = 'arkivstruktur.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'arkivstruktur.xml'
-                    ) detected
-                    WHERE detected.value <> arkivuttrekk_checksum OR arkivuttrekk_checksum IS NULL OR detected.value IS NULL;
+                        LIMIT 1
+                    )
+                    SELECT 'arkivstruktur.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val
+                        OR arkivuttrekk_checksum.val IS NULL
+                        OR detected_checksum.val IS NULL;
                 ]]>
             </errors>
         </queries>
@@ -85,43 +95,47 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT 'arkivstruktur.xsd' file_name, LOWER(detected.value) detected_checksum,
-                        (
-                            SELECT LOWER(property.value) value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'arkivstruktur.xsd'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'arkivstruktur.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'arkivstruktur.xsd'
-                    ) detected;
+                        LIMIT 1
+                    )
+                    SELECT 'arkivstruktur.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT 'arkivstruktur.xsd' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value) value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'arkivstruktur.xsd'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'arkivstruktur.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'arkivstruktur.xsd'
-                    ) detected
-                    WHERE detected.value <> arkivuttrekk_checksum OR arkivuttrekk_checksum IS NULL OR detected.value IS NULL;
+                        LIMIT 1
+                    )
+                    SELECT 'arkivstruktur.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val
+                        OR arkivuttrekk_checksum.val IS NULL
+                        OR detected_checksum.val IS NULL;
                 ]]>
             </warnings>
         </queries>
@@ -134,43 +148,45 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT 'loependeJournal.xml' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value) value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'loependejournal.xml'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'loependejournal.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'loependeJournal.xml'
-                    ) detected;
+                        LIMIT 1
+                    )
+                    SELECT 'loependeJournal.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
                 ]]>
             </info>
             <errors>
                 <![CDATA[
-                    SELECT 'loependeJournal.xml' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value) value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'loependejournal.xml'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'loependejournal.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'loependeJournal.xml'
-                    ) detected
-                    WHERE detected.value <> arkivuttrekk_checksum;
+                        LIMIT 1
+                    )
+                    SELECT 'loependeJournal.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val;
                 ]]>
             </errors>
         </queries>
@@ -183,43 +199,47 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT 'loependeJournal.xsd' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value) value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'loependejournal.xsd'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'loependejournal.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'loependeJournal.xsd'
-                    ) detected;
+                        LIMIT 1
+                    )
+                    SELECT 'loependeJournal.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT 'loependeJournal.xsd' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value) value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'loependejournal.xsd'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'loependejournal.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'loependeJournal.xsd'
-                    ) detected
-                    WHERE detected.value <> arkivuttrekk_checksum AND arkivuttrekk_checksum IS NOT NULL AND detected.value IS NOT NULL;
+                        LIMIT 1
+                    )
+                    SELECT 'loependeJournal.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val
+                        AND arkivuttrekk_checksum.val IS NOT NULL
+                        AND detected_checksum.val IS NOT NULL;
                 ]]>
             </warnings>
         </queries>
@@ -232,43 +252,45 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT 'offentligJournal.xml' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value) value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'offentligjournal.xml'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'offentligjournal.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'offentligJournal.xml'
-                    ) detected;
+                        LIMIT 1
+                    )
+                    SELECT 'offentligJournal.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
                 ]]>
             </info>
             <errors>
                 <![CDATA[
-                    SELECT 'offentligJournal.xml' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value) value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'offentligjournal.xml'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'offentligjournal.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'offentligJournal.xml'
-                    ) detected
-                    WHERE detected.value <> arkivuttrekk_checksum;
+                        LIMIT 1
+                    )
+                    SELECT 'offentligJournal.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val;
                 ]]>
             </errors>
         </queries>
@@ -281,43 +303,47 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT 'offentligJournal.xsd' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value) value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'offentligjournal.xsd'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'offentligjournal.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'offentligJournal.xsd'
-                    ) detected;
+                        LIMIT 1
+                    )
+                    SELECT 'offentligJournal.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT 'offentligJournal.xsd' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value) value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'offentligjournal.xsd'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'offentligjournal.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'offentligJournal.xsd'
-                    ) detected
-                    WHERE detected.value <> arkivuttrekk_checksum AND arkivuttrekk_checksum IS NOT NULL AND detected.value IS NOT NULL;
+                        LIMIT 1
+                    )
+                    SELECT 'offentligJournal.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val
+                        AND arkivuttrekk_checksum.val IS NOT NULL
+                        AND detected_checksum.val IS NOT NULL;
                 ]]>
             </warnings>
         </queries>
@@ -330,43 +356,47 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT 'endringslogg.xml' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value) value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'endringslogg.xml'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'endringslogg.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'endringslogg.xml'
-                    ) detected;
+                        LIMIT 1
+                    )
+                    SELECT 'endringslogg.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
                 ]]>
             </info>
             <errors>
                 <![CDATA[
-                    SELECT 'endringslogg.xml' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value) value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'endringslogg.xml'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'endringslogg.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'endringslogg.xml'
-                    ) detected
-                    WHERE detected.value <> arkivuttrekk_checksum OR arkivuttrekk_checksum IS NULL OR detected.value IS NULL;
+                        LIMIT 1
+                    )
+                    SELECT 'endringslogg.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val
+                        OR arkivuttrekk_checksum.val IS NULL
+                        OR detected_checksum.val IS NULL;
                 ]]>
             </errors>
         </queries>
@@ -379,43 +409,47 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT 'endringslogg.xsd' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value) value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'endringslogg.xsd'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'endringslogg.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'endringslogg.xsd'
-                    ) detected;
+                        LIMIT 1
+                    )
+                    SELECT 'endringslogg.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT 'endringslogg.xsd' file_name, detected.value detected_checksum,
-                        (
-                            SELECT LOWER(property.value) value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'endringslogg.xsd'
-                            LIMIT 1
-                        ) arkivuttrekk_checksum
-                    FROM
-                    (
-                        SELECT LOWER(value) value
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'endringslogg.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
                         FROM addml.property
                         WHERE name = 'endringslogg.xsd'
-                    ) detected
-                    WHERE detected.value <> arkivuttrekk_checksum OR arkivuttrekk_checksum IS NULL OR detected.value IS NULL;
+                        LIMIT 1
+                    )
+                    SELECT 'endringslogg.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val
+                        OR arkivuttrekk_checksum.val IS NULL
+                        OR detected_checksum.val IS NULL;
                 ]]>
             </warnings>
         </queries>
@@ -1022,79 +1056,88 @@
         <queries>
             <info>
                 <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    ), inside_period AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.arkiv, period
+                        WHERE
+                            CAST(opprettetdato AS DATE) >= period.start
+                            AND CAST(avsluttetdato AS DATE) <= period.end
+                            AND opprettetdato IS NOT NULL
+                            AND avsluttetdato IS NOT NULL
+                            AND period.start IS NOT NULL
+                            AND period.end IS NOT NULL
+                    ), outside_period AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.arkiv, period
+                        WHERE
+                            CAST(opprettetdato AS DATE) < period.start
+                            OR CAST(avsluttetdato AS DATE) > period.end
+                            OR opprettetdato IS NULL
+                            OR avsluttetdato IS NULL
+                            OR period.start IS NULL
+                            OR period.end IS NULL
+                    )
                     SELECT inside_period.val fonds_inside_of_period, outside_period.val fonds_outside_of_period
-                    FROM
-                    (
-                        SELECT COUNT(*) val,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_start_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_end_date
-                        FROM arkivstruktur.arkiv
-                        WHERE
-                            CAST(opprettetdato AS DATE) < period_start_date OR CAST(avsluttetdato AS DATE) > period_end_date
-                            OR opprettetdato IS NULL OR avsluttetdato IS NULL OR period_start_date IS NULL OR period_end_date IS NULL
-                    ) outside_period
-                    CROSS JOIN
-                    (
-                        SELECT COUNT(*) val,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_start_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_end_date
-                        FROM arkivstruktur.arkiv
-                        WHERE
-                            CAST(opprettetdato AS DATE) >= period_start_date AND CAST(avsluttetdato AS DATE) <= period_end_date
-                            AND opprettetdato IS NOT NULL AND avsluttetdato IS NOT NULL AND period_start_date IS NOT NULL AND period_end_date IS NOT NULL
-                    ) inside_period;
+                    FROM inside_period, outside_period;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT systemid system_id, CAST(opprettetdato AS DATE) created_date, CAST(avsluttetdato AS DATE) finalized_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
                             JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
                             WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
                             LIMIT 1
-                        ) period_start_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
                             JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
                             WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
                             LIMIT 1
-                        ) period_end_date
-                    FROM arkivstruktur.arkiv
-                    WHERE CAST(opprettetdato AS DATE) < period_start_date OR CAST(avsluttetdato AS DATE) > period_end_date
-                        OR opprettetdato IS NULL OR avsluttetdato IS NULL OR period_start_date IS NULL OR period_end_date IS NULL;
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    )
+                    SELECT systemid system_id,
+                        CAST(opprettetdato AS DATE) created_date,
+                        CAST(avsluttetdato AS DATE) finalized_date,
+                        period.start period_start_date,
+                        period.end period_end_date
+                    FROM arkivstruktur.arkiv, period
+                    WHERE CAST(opprettetdato AS DATE) < period.start
+                        OR CAST(avsluttetdato AS DATE) > period.end
+                        OR opprettetdato IS NULL
+                        OR avsluttetdato IS NULL
+                        OR period.start IS NULL
+                        OR period.end IS NULL;
                 ]]>
             </warnings>
         </queries>
@@ -1110,78 +1153,86 @@
         <queries>
             <info>
                 <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    ), outside_period AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.arkivdel, period
+                        WHERE CAST(opprettetdato AS DATE) < period.start
+                            OR CAST(avsluttetdato AS DATE) > period.end
+                            OR opprettetdato IS NULL
+                            OR avsluttetdato IS NULL
+                            OR period.start IS NULL
+                            OR period.end IS NULL
+                    ), inside_period AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.arkivdel, period
+                        WHERE CAST(opprettetdato AS DATE) >= period.start
+                            AND CAST(avsluttetdato AS DATE) <= period.end
+                            AND opprettetdato IS NOT NULL
+                            AND avsluttetdato IS NOT NULL
+                            AND period.start IS NOT NULL
+                            AND period.end IS NOT NULL
+                    )
                     SELECT inside_period.val series_inside_of_period, outside_period.val series_outside_of_period
-                    FROM
-                    (
-                        SELECT COUNT(*) val,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_start_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_end_date
-                        FROM arkivstruktur.arkivdel
-                        WHERE CAST(opprettetdato AS DATE) < period_start_date
-                            OR CAST(avsluttetdato AS DATE) > period_end_date
-                            OR opprettetdato IS NULL OR avsluttetdato IS NULL OR period_start_date IS NULL OR period_end_date IS NULL
-                    ) outside_period
-                    CROSS JOIN
-                    (
-                        SELECT COUNT(*) val,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_start_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_end_date
-                        FROM arkivstruktur.arkivdel
-                        WHERE CAST(opprettetdato AS DATE) >= period_start_date AND CAST(avsluttetdato AS DATE) <= period_end_date
-                            AND opprettetdato IS NOT NULL AND avsluttetdato IS NOT NULL AND period_start_date IS NOT NULL AND period_end_date IS NOT NULL
-                    ) inside_period;
+                    FROM inside_period, outside_period;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT systemid system_id, CAST(opprettetdato AS DATE) created_date, CAST(avsluttetdato AS DATE) finalized_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
                             JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
                             WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
                             LIMIT 1
-                        ) period_start_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
                             JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
                             WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
                             LIMIT 1
-                        ) period_end_date
-                    FROM arkivstruktur.arkivdel
-                    WHERE CAST(opprettetdato AS DATE) < period_start_date OR CAST(avsluttetdato AS DATE) > period_end_date
-                        OR opprettetdato IS NULL OR avsluttetdato IS NULL OR period_start_date IS NULL OR period_end_date IS NULL;
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    )
+                    SELECT systemid system_id,
+                        CAST(opprettetdato AS DATE) created_date,
+                        CAST(avsluttetdato AS DATE) finalized_date,
+                        period.start period_start_date,
+                        period.end period_end_date
+                    FROM arkivstruktur.arkivdel, period
+                    WHERE CAST(opprettetdato AS DATE) < period.start
+                        OR CAST(avsluttetdato AS DATE) > period.end
+                        OR opprettetdato IS NULL
+                        OR avsluttetdato IS NULL
+                        OR period.start IS NULL
+                        OR period.end IS NULL;
                 ]]>
             </warnings>
         </queries>
@@ -1198,19 +1249,17 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT not_closed.val not_closed_series, closed.val closed_series
-                    FROM
-                    (
+                    WITH not_closed AS (
                         SELECT COUNT(*) val
                         FROM arkivstruktur.arkivdel
                         WHERE arkivdelstatus <> 'Avsluttet periode' OR avsluttetdato IS NULL OR avsluttetav IS NULL
-                    ) not_closed
-                    CROSS JOIN
-                    (
+                    ), closed AS (
                         SELECT COUNT(*) val
                         FROM arkivstruktur.arkivdel
                         WHERE arkivdelstatus = 'Avsluttet periode' AND avsluttetdato IS NOT NULL AND avsluttetav IS NOT NULL
-                    ) closed;
+                    )
+                    SELECT not_closed.val not_closed_series, closed.val closed_series
+                    FROM closed, not_closed;
                 ]]>
             </info>
             <warnings>
@@ -1245,25 +1294,28 @@
             </info>
             <errors>
                 <![CDATA[
-                    SELECT arkivstruktur_file_count.val arkivstruktur_file_count,
-                        (
-                            SELECT property.value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
-                            JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
-                            JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
-                            JOIN addml.dataobject data_object ON data_object._id = parent_properties3._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'numberOfOccurrences' AND parent_property.value = 'mappe' AND parent_property2.name = 'info' and data_object.name = 'arkivstruktur'
-                            LIMIT 1
-                        ) arkiv_uttrekk_file_count
-                    FROM
-                    (
+                    WITH arkiv_uttrekk_file_count AS (
+                        SELECT property.value val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
+                        JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
+                        JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
+                        JOIN addml.dataobject data_object ON data_object._id = parent_properties3._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'numberOfOccurrences' AND parent_property.value = 'mappe' AND parent_property2.name = 'info' and data_object.name = 'arkivstruktur'
+                        LIMIT 1
+                    ), arkivstruktur_file_count AS (
                         SELECT COUNT(*) val
                         FROM arkivstruktur.mappe
-                    ) arkivstruktur_file_count
-                    WHERE arkivstruktur_file_count.val <> arkiv_uttrekk_file_count OR arkiv_uttrekk_file_count IS NULL;
+                    ), cnt as (
+                        SELECT arkiv_uttrekk_file_count.val uttrekk, arkivstruktur_file_count.val arkivstruktur
+                        FROM arkivstruktur_file_count
+                        LEFT JOIN arkiv_uttrekk_file_count ON 1 = 1
+                    )
+                    SELECT cnt.arkivstruktur arkivstruktur_file_count, cnt.uttrekk arkiv_uttrekk_file_count
+                    FROM cnt
+                    WHERE cnt.arkivstruktur <> cnt.uttrekk OR cnt.uttrekk IS NULL;
                 ]]>
             </errors>
         </queries>
@@ -1279,87 +1331,112 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT s.systemid series_system_id, COALESCE(inside_period.val, 0) files_inside_period, COALESCE(outside_period.val, 0) files_outside_period
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    ), inside_period AS (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.mappe f
+                        JOIN arkivstruktur.arkivdel s ON s.systemid = f._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(f.opprettetdato AS DATE) >= period.start
+                                OR s.arkivdelstatus = 'Overlappingsperiode'
+                            )
+                            AND CAST(f.avsluttetdato AS DATE) <= period.end
+                            AND f.opprettetdato IS NOT NULL
+                            AND f.avsluttetdato IS NOT NULL
+                            AND period.start IS NOT NULL
+                            AND period.end IS NOT NULL
+                        GROUP BY f._ref_arkivdel
+                    ), outside_period AS (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.mappe f
+                        JOIN arkivstruktur.arkivdel s ON s.systemid = f._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(f.opprettetdato AS DATE) < period.start
+                                AND s.arkivdelstatus <> 'Overlappingsperiode'
+                            )
+                            OR CAST(f.avsluttetdato AS DATE) > period.end
+                            OR f.opprettetdato IS NULL
+                            OR f.avsluttetdato IS NULL
+                            OR period.start IS NULL
+                            OR period.end IS NULL
+                        GROUP BY f._ref_arkivdel
+                    )
+                    SELECT s.systemid series_system_id,
+                        COALESCE(ip.val, 0) files_inside_period,
+                        COALESCE(op.val, 0) files_outside_period
                     FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
-                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_start_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_end_date
-                        FROM arkivstruktur.mappe f
-                        JOIN arkivstruktur.arkivdel s ON s.systemid = f._ref_arkivdel
-                        WHERE
-                            ( CAST(f.opprettetdato AS DATE) >= period_start_date OR s.arkivdelstatus = 'Overlappingsperiode' ) AND CAST(f.avsluttetdato AS DATE) <= period_end_date
-                            AND f.opprettetdato IS NOT NULL AND f.avsluttetdato IS NOT NULL AND period_start_date IS NOT NULL AND period_end_date IS NOT NULL
-                        GROUP BY f._ref_arkivdel, period_start_date, period_end_date
-                    ) inside_period ON s.systemid = inside_period.series_system_id
-                    LEFT JOIN
-                    (
-                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_start_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_end_date
-                        FROM arkivstruktur.mappe f
-                        JOIN arkivstruktur.arkivdel s ON s.systemid = f._ref_arkivdel
-                        WHERE
-                            ( CAST(f.opprettetdato AS DATE) < period_start_date AND s.arkivdelstatus <> 'Overlappingsperiode' ) OR CAST(f.avsluttetdato AS DATE) > period_end_date
-                            OR f.opprettetdato IS NULL OR f.avsluttetdato IS NULL OR period_start_date IS NULL OR period_end_date IS NULL
-                        GROUP BY f._ref_arkivdel, period_start_date, period_end_date
-                    ) outside_period ON s.systemid = outside_period.series_system_id;
+                    LEFT JOIN inside_period ip ON s.systemid = ip.series_system_id
+                    LEFT JOIN outside_period op ON s.systemid = op.series_system_id;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT f._ref_arkivdel series_system_id, f.systemid file_system_id, f.mappeid file_id, CAST(f.opprettetdato AS DATE) created_date, CAST(f.avsluttetdato AS DATE) finalized_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
                             JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
                             WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
                             LIMIT 1
-                        ) period_start_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
                             JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
                             WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
                             LIMIT 1
-                        ) period_end_date
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    )
+                    SELECT f._ref_arkivdel series_system_id,
+                        f.systemid file_system_id,
+                        f.mappeid file_id,
+                        CAST(f.opprettetdato AS DATE) created_date,
+                        CAST(f.avsluttetdato AS DATE) finalized_date,
+                        period.start period_start_date,
+                        period.end period_end_date
                     FROM arkivstruktur.mappe f
                     JOIN arkivstruktur.arkivdel s ON s.systemid = f._ref_arkivdel
+                    CROSS JOIN period
                     WHERE
-                        ( CAST(f.opprettetdato AS DATE) < period_start_date AND s.arkivdelstatus <> 'Overlappingsperiode' )
-                        OR CAST(f.avsluttetdato AS DATE) > period_end_date
-                        OR f.opprettetdato IS NULL OR f.avsluttetdato IS NULL OR period_start_date IS NULL OR period_end_date IS NULL;
+                        (
+                            CAST(f.opprettetdato AS DATE) < period.start
+                            AND s.arkivdelstatus <> 'Overlappingsperiode'
+                        )
+                        OR CAST(f.avsluttetdato AS DATE) > period.end
+                        OR f.opprettetdato IS NULL
+                        OR f.avsluttetdato IS NULL
+                        OR period.start IS NULL
+                        OR period.end IS NULL;
                 ]]>
             </warnings>
         </queries>
@@ -1432,24 +1509,25 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT f._ref_arkivdel series_system_id, COALESCE(f._dtype, 'mappe') file_type, COALESCE(closed.val, 0) closed_files, COALESCE(not_closed.val, 0) not_closed_files
-                    FROM arkivstruktur.mappe f
-                    LEFT JOIN (
+                    WITH not_closed AS (
                         SELECT _ref_arkivdel series_system_id, COALESCE(_dtype, 'mappe') _dtype, COUNT(*) val
                         FROM arkivstruktur.mappe
                         WHERE avsluttetdato IS NULL
                             OR avsluttetav IS NULL
                             OR (_dtype = 'saksmappe' AND saksstatus <> 'Utgår' AND saksstatus <> 'Avsluttet')
                         GROUP BY _ref_arkivdel, _dtype
-                    ) not_closed ON not_closed.series_system_id = f._ref_arkivdel AND f._dtype = not_closed._dtype
-                    LEFT JOIN (
+                    ), closed AS (
                         SELECT _ref_arkivdel series_system_id, COALESCE(_dtype, 'mappe') _dtype, COUNT(*) val
                         FROM arkivstruktur.mappe
                         WHERE avsluttetdato IS NOT NULL
                             AND avsluttetav IS NOT NULL
                             OR (_dtype = 'saksmappe' AND saksstatus = 'Utgår' AND saksstatus = 'Avsluttet')
                         GROUP BY _ref_arkivdel, _dtype
-                    ) closed ON closed.series_system_id = f._ref_arkivdel AND f._dtype = closed._dtype
+                    )
+                    SELECT f._ref_arkivdel series_system_id, COALESCE(f._dtype, 'mappe') file_type, COALESCE(c.val, 0) closed_files, COALESCE(nc.val, 0) not_closed_files
+                    FROM arkivstruktur.mappe f
+                    LEFT JOIN not_closed nc ON nc.series_system_id = f._ref_arkivdel AND f._dtype = nc._dtype
+                    LEFT JOIN closed c ON c.series_system_id = f._ref_arkivdel AND f._dtype = c._dtype
                     GROUP BY f._ref_arkivdel, f._dtype, not_closed_files, closed_files;
                 ]]>
             </info>
@@ -1487,25 +1565,28 @@
             </info>
             <errors>
                 <![CDATA[
-                    SELECT arkivstruktur_record_count.val arkivstruktur_record_count,
-                        (
-                            SELECT property.value val
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
-                            JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
-                            JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
-                            JOIN addml.dataobject data_object ON data_object._id = parent_properties3._parent_id
-                            WHERE property.name = 'value' AND parent_property.name = 'numberOfOccurrences' AND parent_property.value = 'registrering' AND parent_property2.name = 'info' AND data_object.name = 'arkivstruktur'
-                            LIMIT 1
-                        ) arkivuttrekk_record_count
-                    FROM
-                    (
+                    WITH arkivuttrekk_record_count AS (
+                        SELECT property.value val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
+                        JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
+                        JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
+                        JOIN addml.dataobject data_object ON data_object._id = parent_properties3._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'numberOfOccurrences' AND parent_property.value = 'registrering' AND parent_property2.name = 'info' AND data_object.name = 'arkivstruktur'
+                        LIMIT 1
+                    ), arkivstruktur_record_count AS (
                         SELECT COUNT(*) val
                         FROM arkivstruktur.registrering
-                    ) arkivstruktur_record_count
-                    WHERE arkivstruktur_record_count.val <> arkivuttrekk_record_count OR arkivuttrekk_record_count IS NULL;
+                    ), cnt AS (
+                        SELECT uttrekk.val uttrekk, arkivstruktur.val arkivstruktur
+                        FROM arkivstruktur_record_count arkivstruktur
+                        LEFT JOIN arkivuttrekk_record_count uttrekk ON 1 = 1
+                    )
+                    SELECT cnt.arkivstruktur arkivstruktur_record_count, cnt.uttrekk arkivuttrekk_record_count
+                    FROM cnt
+                    WHERE cnt.arkivstruktur <> cnt.uttrekk OR cnt.uttrekk IS NULL;
                 ]]>
             </errors>
         </queries>
@@ -1521,87 +1602,112 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT s.systemid series_systemid, COALESCE(inside_period.val, 0) records_inside_period, COALESCE(outside_period.val, 0) records_outside_period
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    ), outside_period AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.registrering r
+                        JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(r.opprettetdato AS DATE) < period.start
+                                AND s.arkivdelstatus <> 'Overlappingsperiode'
+                            )
+                            OR CAST(r.arkivertdato AS DATE) > period.end
+                            OR r.opprettetdato IS NULL
+                            OR r.arkivertdato IS NULL
+                            OR period.start IS NULL
+                            OR period.end IS NULL
+                        GROUP BY r._ref_arkivdel
+                    ), inside_period AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.registrering r
+                        JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(r.opprettetdato AS DATE) >= period.start
+                                OR s.arkivdelstatus = 'Overlappingsperiode'
+                            )
+                            AND CAST(r.arkivertdato AS DATE) <= period.end
+                            AND r.opprettetdato IS NOT NULL
+                            AND r.arkivertdato IS NOT NULL
+                            AND period.start IS NOT NULL
+                            AND period.end IS NOT NULL
+                        GROUP BY r._ref_arkivdel
+                    )
+                    SELECT s.systemid series_systemid, COALESCE(ip.val, 0) records_inside_period, COALESCE(op.val, 0) records_outside_period
                     FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_start_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_end_date
-                        FROM arkivstruktur.registrering r
-                        JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
-                        WHERE
-                            ( CAST(r.opprettetdato AS DATE) < period_start_date AND s.arkivdelstatus <> 'Overlappingsperiode' ) OR CAST(r.arkivertdato AS DATE) > period_end_date
-                            OR r.opprettetdato IS NULL OR r.arkivertdato IS NULL OR period_start_date IS NULL OR period_end_date IS NULL
-                        GROUP BY r._ref_arkivdel, period_start_date, period_end_date
-                    ) outside_period ON s.systemid = outside_period.series_system_id
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_start_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_end_date
-                        FROM arkivstruktur.registrering r
-                        JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
-                        WHERE
-                            ( CAST(r.opprettetdato AS DATE) >= period_start_date OR s.arkivdelstatus = 'Overlappingsperiode' ) AND CAST(r.arkivertdato AS DATE) <= period_end_date
-                            AND r.opprettetdato IS NOT NULL AND r.arkivertdato IS NOT NULL AND period_start_date IS NOT NULL AND period_end_date IS NOT NULL
-                        GROUP BY r._ref_arkivdel, period_start_date, period_end_date
-                    ) inside_period ON s.systemid = outside_period.series_system_id;
+                    LEFT JOIN outside_period op ON s.systemid = op.series_system_id
+                    LEFT JOIN inside_period ip ON s.systemid = ip.series_system_id;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, f.mappeid file_id, r.systemid record_system_id, r.registreringsid record_id, CAST(r.opprettetdato AS DATE) created_date, CAST(r.arkivertdato AS DATE) finalized_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
                             JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
                             WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
                             LIMIT 1
-                        ) period_start_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
                             JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
                             WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
                             LIMIT 1
-                        ) period_end_date
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    )
+                    SELECT r._ref_arkivdel series_system_id,
+                        f.mappeid file_id,
+                        r.systemid record_system_id,
+                        r.registreringsid record_id,
+                        CAST(r.opprettetdato AS DATE) created_date,
+                        CAST(r.arkivertdato AS DATE) finalized_date,
+                        period.start period_start_date,
+                        period.end period_end_date
                     FROM arkivstruktur.registrering r
                     JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                    CROSS JOIN period
                     LEFT JOIN arkivstruktur.mappe f ON f._id = r._parent_id
                     WHERE
-                        ( CAST(r.opprettetdato AS DATE) < period_start_date AND s.arkivdelstatus <> 'Overlappingsperiode' ) OR CAST(r.arkivertdato AS DATE) > period_end_date
-                        OR r.opprettetdato IS NULL OR r.arkivertdato IS NULL OR period_start_date IS NULL OR period_end_date IS NULL;
+                        (
+                            CAST(r.opprettetdato AS DATE) < period.start
+                            AND s.arkivdelstatus <> 'Overlappingsperiode'
+                        )
+                        OR CAST(r.arkivertdato AS DATE) > period.end
+                        OR r.opprettetdato IS NULL
+                        OR r.arkivertdato IS NULL
+                        OR period.start IS NULL
+                        OR period.end IS NULL;
                 ]]>
             </warnings>
         </queries>
@@ -1674,24 +1780,25 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, COALESCE(r._dtype, 'registrering') record_type, COALESCE(closed.val, 0) closed_records, COALESCE(not_closed.val, 0) not_closed_records
-                    FROM arkivstruktur.registrering r
-                    LEFT JOIN (
+                    WITH not_closed AS (
                         SELECT _ref_arkivdel series_system_id, COALESCE(_dtype, 'registrering') _dtype, COUNT(*) val
                         FROM arkivstruktur.registrering
                         WHERE arkivertdato IS NULL
                             OR arkivertav IS NULL
                             OR (_dtype = 'journalpost' AND journalstatus <> 'Arkivert' AND journalstatus <> 'Utgår')
                         GROUP BY _ref_arkivdel, _dtype
-                    ) not_closed ON not_closed.series_system_id = r._ref_arkivdel AND r._dtype = not_closed._dtype
-                    LEFT JOIN (
+                    ), closed AS (
                         SELECT _ref_arkivdel series_system_id, COALESCE(_dtype, 'registrering') _dtype, COUNT(*) val
                         FROM arkivstruktur.registrering
                         WHERE arkivertdato IS NOT NULL
                             AND arkivertav IS NOT NULL
                             OR (_dtype = 'journalpost' AND journalstatus = 'Arkivert' AND journalstatus = 'Utgår')
                         GROUP BY _ref_arkivdel, _dtype
-                    ) closed ON closed.series_system_id = r._ref_arkivdel AND r._dtype = closed._dtype
+                    )
+                    SELECT r._ref_arkivdel series_system_id, COALESCE(r._dtype, 'registrering') record_type, COALESCE(c.val, 0) closed_records, COALESCE(nc.val, 0) not_closed_records
+                    FROM arkivstruktur.registrering r
+                    LEFT JOIN not_closed nc ON nc.series_system_id = r._ref_arkivdel AND r._dtype = nc._dtype
+                    LEFT JOIN closed c ON c.series_system_id = r._ref_arkivdel AND r._dtype = c._dtype
                     GROUP BY r._ref_arkivdel, r._dtype, not_closed_records, closed_records;
                 ]]>
             </info>
@@ -1720,22 +1827,23 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, COALESCE(closed.val, 0) closed_documents, COALESCE(not_closed.val, 0) not_closed_documents
-                    FROM arkivstruktur.registrering r
-                    LEFT JOIN (
+                    WITH not_closed AS (
                         SELECT r._ref_arkivdel series_system_id, COUNT(*) val
                         FROM arkivstruktur.dokumentbeskrivelse d
                         JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
                         WHERE dokumentstatus <> 'Dokumentet er ferdigstilt'
                         GROUP BY r._ref_arkivdel
-                    ) not_closed ON not_closed.series_system_id = r._ref_arkivdel
-                    LEFT JOIN (
+                    ), closed AS (
                         SELECT r._ref_arkivdel series_system_id, COUNT(*) val
                         FROM arkivstruktur.dokumentbeskrivelse d
                         JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
                         WHERE dokumentstatus = 'Dokumentet er ferdigstilt'
                         GROUP BY r._ref_arkivdel
-                    ) closed ON closed.series_system_id = r._ref_arkivdel
+                    )
+                    SELECT r._ref_arkivdel series_system_id, COALESCE(c.val, 0) closed_documents, COALESCE(nc.val, 0) not_closed_documents
+                    FROM arkivstruktur.registrering r
+                    LEFT JOIN not_closed nc ON nc.series_system_id = r._ref_arkivdel
+                    LEFT JOIN closed c ON c.series_system_id = r._ref_arkivdel
                     GROUP BY r._ref_arkivdel, not_closed_documents, closed_documents;
                 ]]>
             </info>
@@ -1761,64 +1869,78 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT s.systemid series_system_id, COALESCE(inside_period.val, 0) documents_inside_period, COALESCE(outside_period.val, 0) documents_outside_period
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), outside_period AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.dokumentbeskrivelse d
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period_start_date
+                        WHERE
+                            (
+                                CAST(d.opprettetdato AS DATE) < period_start_date.val
+                                AND s.arkivdelstatus <> 'Overlappingsperiode'
+                            )
+                            OR d.opprettetdato IS NULL
+                            OR period_start_date.val IS NULL
+                        GROUP by r._ref_arkivdel
+                    ), inside_period AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.dokumentbeskrivelse d
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period_start_date
+                        WHERE
+                            (
+                                CAST(d.opprettetdato AS DATE) >= period_start_date.val
+                                OR s.arkivdelstatus = 'Overlappingsperiode'
+                            )
+                            AND d.opprettetdato IS NOT NULL
+                            AND period_start_date.val IS NOT NULL
+                        GROUP by r._ref_arkivdel
+                    )
+                    SELECT s.systemid series_system_id, COALESCE(ip.val, 0) documents_inside_period, COALESCE(op.val, 0) documents_outside_period
                     FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_start_date
-                        FROM arkivstruktur.dokumentbeskrivelse d
-                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
-                        JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
-                        WHERE
-                            ( CAST(d.opprettetdato AS DATE) < period_start_date AND s.arkivdelstatus <> 'Overlappingsperiode' ) OR d.opprettetdato IS NULL OR period_start_date IS NULL
-                        GROUP by r._ref_arkivdel, period_start_date
-                    ) outside_period ON s.systemid = outside_period.series_system_id
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_start_date
-                        FROM arkivstruktur.dokumentbeskrivelse d
-                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
-                        JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
-                        WHERE
-                            ( CAST(d.opprettetdato AS DATE) >= period_start_date OR s.arkivdelstatus = 'Overlappingsperiode' ) AND d.opprettetdato IS NOT NULL AND period_start_date IS NOT NULL
-                        GROUP by r._ref_arkivdel, period_start_date
-                    ) inside_period ON inside_period.series_system_id = s.systemid;
+                    LEFT JOIN outside_period op ON s.systemid = op.series_system_id
+                    LEFT JOIN inside_period ip ON ip.series_system_id = s.systemid;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT r._ref_arkivdel series_system_id, f.mappeid file_id,
-                        r.registreringsid record_id, d.systemid document_description_system_id,
-                        CAST(d.opprettetdato AS DATE) created_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
                             JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
                             WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
                             LIMIT 1
-                        ) period_start_date
+                        ) AS val
+                    )
+                    SELECT r._ref_arkivdel series_system_id, f.mappeid file_id,
+                        r.registreringsid record_id, d.systemid document_description_system_id,
+                        CAST(d.opprettetdato AS DATE) created_date,
+                        period_start_date.val period_start_date
                     FROM arkivstruktur.dokumentbeskrivelse d
                     JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
                     JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
                     LEFT JOIN arkivstruktur.mappe f ON f._id = r._parent_id
-                    WHERE ( CAST(d.opprettetdato AS DATE) < period_start_date AND s.arkivdelstatus <> 'Overlappingsperiode' ) OR d.opprettetdato IS NULL OR period_start_date IS NULL;
+                    CROSS JOIN period_start_date
+                    WHERE
+                        (
+                            CAST(d.opprettetdato AS DATE) < period_start_date.val
+                            AND s.arkivdelstatus <> 'Overlappingsperiode'
+                        )
+                        OR d.opprettetdato IS NULL
+                        OR period_start_date.val IS NULL;
                 ]]>
             </warnings>
         </queries>
@@ -1911,113 +2033,125 @@
         <queries>
             <info>
                 <![CDATA[
+                    WITH arkivuttrekk_screening AS (
+                        SELECT value val
+                        FROM addml.property
+                        WHERE name = 'inneholderSkjermetInformasjon'
+                        LIMIT 1
+                    ), series AS (
+                        SELECT sc._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming sc
+                        GROUP BY sc._ref_arkivdel
+                    ), class AS (
+                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.klasse k ON k.systemid = s._ref_klasse
+                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                        GROUP BY ks._ref_arkivdel
+                    ), file AS (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.mappe f ON f.systemid = s._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ), item AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.registrering r ON r.systemid = s._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ), document AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = s._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    )
                     SELECT s.systemid series_system_id,
                         COALESCE(series.val, 0) number_of_series_screenings,
                         COALESCE(class.val, 0) number_of_class_screenings,
                         COALESCE(file.val, 0) number_of_file_screenings,
                         COALESCE(item.val, 0) number_of_record_screenings,
                         COALESCE(document.val, 0) number_of_document_descriptions_screenings,
-                        (
-                            SELECT value
-                            FROM addml.property
-                            WHERE name = 'inneholderSkjermetInformasjon'
-                            LIMIT 1
-                        ) arkivuttrekk_has_screening
+                        arkivuttrekk_screening.val arkivuttrekk_has_screening
                     FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
-                        SELECT sc._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.skjerming sc
-                        GROUP BY sc._ref_arkivdel
-                    ) series ON series.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.skjerming s
-                        JOIN arkivstruktur.klasse k ON k.systemid = s._ref_klasse
-                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
-                        GROUP BY ks._ref_arkivdel
-                    ) class ON class.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.skjerming s
-                        JOIN arkivstruktur.mappe f ON f.systemid = s._ref_mappe
-                        GROUP BY f._ref_arkivdel
-                    ) file ON file.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.skjerming s
-                        JOIN arkivstruktur.registrering r ON r.systemid = s._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) item ON item.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.skjerming s
-                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = s._ref_dokumentbeskrivelse
-                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) document ON document.series_system_id = s.systemid;
+                    LEFT JOIN series ON series.series_system_id = s.systemid
+                    LEFT JOIN class ON class.series_system_id = s.systemid
+                    LEFT JOIN file ON file.series_system_id = s.systemid
+                    LEFT JOIN item ON item.series_system_id = s.systemid
+                    LEFT JOIN document ON document.series_system_id = s.systemid
+                    LEFT JOIN arkivuttrekk_screening ON 1 = 1;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
+                    WITH arkivuttrekk_screening AS (
+                        SELECT value val
+                        FROM addml.property
+                        WHERE name = 'inneholderSkjermetInformasjon'
+                        LIMIT 1
+                    ), series AS (
+                        SELECT sc._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming sc
+                        GROUP BY sc._ref_arkivdel
+                    ), class AS (
+                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.klasse k ON k.systemid = s._ref_klasse
+                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                        GROUP BY ks._ref_arkivdel
+                    ), file AS (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.mappe f ON f.systemid = s._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ), item AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.registrering r ON r.systemid = s._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ), document AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = s._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    )
                     SELECT s.systemid series_system_id,
                         COALESCE(series.val, 0) number_of_series_screenings,
                         COALESCE(class.val, 0) number_of_class_screenings,
                         COALESCE(file.val, 0) number_of_file_screenings,
                         COALESCE(item.val, 0) number_of_record_screenings,
                         COALESCE(document.val, 0) number_of_document_descriptions_screenings,
-                        (
-                            SELECT value
-                            FROM addml.property
-                            WHERE name = 'inneholderSkjermetInformasjon'
-                            LIMIT 1
-                        ) arkivuttrekk_has_screening
+                        arkivuttrekk_screening.val arkivuttrekk_has_screening
                     FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
-                        SELECT sc._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.skjerming sc
-                        GROUP BY sc._ref_arkivdel
-                    ) series ON series.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.skjerming s
-                        JOIN arkivstruktur.klasse k ON k.systemid = s._ref_klasse
-                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
-                        GROUP BY ks._ref_arkivdel
-                    ) class ON class.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.skjerming s
-                        JOIN arkivstruktur.mappe f ON f.systemid = s._ref_mappe
-                        GROUP BY f._ref_arkivdel
-                    ) file ON file.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.skjerming s
-                        JOIN arkivstruktur.registrering r ON r.systemid = s._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) item ON item.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.skjerming s
-                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = s._ref_dokumentbeskrivelse
-                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) document ON document.series_system_id = s.systemid
+                    LEFT JOIN series ON series.series_system_id = s.systemid
+                    LEFT JOIN class ON class.series_system_id = s.systemid
+                    LEFT JOIN file ON file.series_system_id = s.systemid
+                    LEFT JOIN item ON item.series_system_id = s.systemid
+                    LEFT JOIN document ON document.series_system_id = s.systemid
+                    LEFT JOIN arkivuttrekk_screening ON 1 = 1
                     WHERE
-                        (arkivuttrekk_has_screening = 'false' AND (series.val <> 0 OR class.val <> 0 OR file.val <> 0 OR item.val <> 0 OR document.val <> 0))
+                        (
+                            arkivuttrekk_screening.val = 'false'
+                            AND (
+                                series.val <> 0
+                                OR class.val <> 0
+                                OR file.val <> 0
+                                OR item.val <> 0
+                                OR document.val <> 0
+                            )
+                        )
                         OR
-                        (arkivuttrekk_has_screening = 'true' AND (series.val = 0 AND class.val = 0 AND file.val = 0 AND item.val = 0 AND document.val = 0))
-                        OR arkivuttrekk_has_screening IS NULL;
+                        (
+                            arkivuttrekk_screening.val = 'true'
+                            AND (
+                                series.val = 0
+                                AND class.val = 0
+                                AND file.val = 0
+                                AND item.val =
+                                0 AND document.val = 0
+                            )
+                        )
+                        OR arkivuttrekk_screening.val IS NULL;
                 ]]>
             </warnings>
         </queries>
@@ -2034,113 +2168,125 @@
         <queries>
             <info>
                 <![CDATA[
+                    WITH arkivuttrekk_disposal_decisions AS (
+                        SELECT value val
+                        FROM addml.property
+                        WHERE name = 'inneholderDokumenterSomSkalKasseres'
+                        LIMIT 1
+                    ), series AS (
+                        SELECT kj._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        GROUP BY kj._ref_arkivdel
+                    ), class AS (
+                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.klasse k ON k.systemid = kj._ref_klasse
+                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                        GROUP BY ks._ref_arkivdel
+                    ), file AS (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.mappe f ON f.systemid = kj._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ), item AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.registrering r ON r.systemid = kj._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ), document AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = kj._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    )
                     SELECT s.systemid series_system_id,
                         COALESCE(series.val, 0) number_of_series_disposal_decisions,
                         COALESCE(class.val, 0) number_of_class_disposal_decisions,
                         COALESCE(file.val, 0) number_of_file_disposal_decisions,
                         COALESCE(item.val, 0) number_of_record_disposal_decisions,
                         COALESCE(document.val, 0) number_of_document_descriptions_disposal_decisions,
-                        (
-                            SELECT value
-                            FROM addml.property
-                            WHERE name = 'inneholderDokumenterSomSkalKasseres'
-                            LIMIT 1
-                        ) arkivuttrekk_has_disposal_decisions
+                        arkivuttrekk_disposal_decisions.val arkivuttrekk_has_disposal_decisions
                     FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
-                        SELECT kj._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.kassasjon kj
-                        GROUP BY kj._ref_arkivdel
-                    ) series ON series.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.kassasjon kj
-                        JOIN arkivstruktur.klasse k ON k.systemid = kj._ref_klasse
-                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
-                        GROUP BY ks._ref_arkivdel
-                    ) class ON class.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.kassasjon kj
-                        JOIN arkivstruktur.mappe f ON f.systemid = kj._ref_mappe
-                        GROUP BY f._ref_arkivdel
-                    ) file ON file.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.kassasjon kj
-                        JOIN arkivstruktur.registrering r ON r.systemid = kj._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) item ON item.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.kassasjon kj
-                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = kj._ref_dokumentbeskrivelse
-                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) document ON document.series_system_id = s.systemid;
+                    LEFT JOIN series ON series.series_system_id = s.systemid
+                    LEFT JOIN class ON class.series_system_id = s.systemid
+                    LEFT JOIN file ON file.series_system_id = s.systemid
+                    LEFT JOIN item ON item.series_system_id = s.systemid
+                    LEFT JOIN document ON document.series_system_id = s.systemid
+                    LEFT JOIN arkivuttrekk_disposal_decisions ON 1 = 1;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
+                    WITH arkivuttrekk_disposal_decisions AS (
+                        SELECT value val
+                        FROM addml.property
+                        WHERE name = 'inneholderDokumenterSomSkalKasseres'
+                        LIMIT 1
+                    ), series AS (
+                        SELECT kj._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        GROUP BY kj._ref_arkivdel
+                    ), class AS (
+                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.klasse k ON k.systemid = kj._ref_klasse
+                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                        GROUP BY ks._ref_arkivdel
+                    ), file AS (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.mappe f ON f.systemid = kj._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ), item AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.registrering r ON r.systemid = kj._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ), document AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = kj._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    )
                     SELECT s.systemid series_system_id,
                         COALESCE(series.val, 0) number_of_series_disposal_decisions,
                         COALESCE(class.val, 0) number_of_class_disposal_decisions,
                         COALESCE(file.val, 0) number_of_file_disposal_decisions,
                         COALESCE(item.val, 0) number_of_record_disposal_decisions,
                         COALESCE(document.val, 0) number_of_document_descriptions_disposal_decisions,
-                        (
-                            SELECT value
-                            FROM addml.property
-                            WHERE name = 'inneholderDokumenterSomSkalKasseres'
-                            LIMIT 1
-                        ) arkivuttrekk_has_disposal_decisions
+                        arkivuttrekk_disposal_decisions.val arkivuttrekk_has_disposal_decisions
                     FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
-                        SELECT kj._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.kassasjon kj
-                        GROUP BY kj._ref_arkivdel
-                    ) series ON series.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.kassasjon kj
-                        JOIN arkivstruktur.klasse k ON k.systemid = kj._ref_klasse
-                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
-                        GROUP BY ks._ref_arkivdel
-                    ) class ON class.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.kassasjon kj
-                        JOIN arkivstruktur.mappe f ON f.systemid = kj._ref_mappe
-                        GROUP BY f._ref_arkivdel
-                    ) file ON file.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.kassasjon kj
-                        JOIN arkivstruktur.registrering r ON r.systemid = kj._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) item ON item.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
-                        FROM arkivstruktur.kassasjon kj
-                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = kj._ref_dokumentbeskrivelse
-                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
-                        GROUP BY r._ref_arkivdel
-                    ) document ON document.series_system_id = s.systemid
+                    LEFT JOIN series ON series.series_system_id = s.systemid
+                    LEFT JOIN class ON class.series_system_id = s.systemid
+                    LEFT JOIN file ON file.series_system_id = s.systemid
+                    LEFT JOIN item ON item.series_system_id = s.systemid
+                    LEFT JOIN document ON document.series_system_id = s.systemid
+                    LEFT JOIN arkivuttrekk_disposal_decisions ON 1 = 1
                     WHERE
-                        (arkivuttrekk_has_disposal_decisions = 'false' AND (series.val <> 0 OR class.val <> 0 OR file.val <> 0 OR item.val <> 0 OR document.val <> 0))
+                        (
+                            arkivuttrekk_disposal_decisions.val = 'false'
+                            AND (
+                                series.val <> 0
+                                OR class.val <> 0
+                                OR file.val <> 0
+                                OR item.val <> 0
+                                OR document.val <> 0
+                            )
+                        )
                         OR
-                        (arkivuttrekk_has_disposal_decisions = 'true' AND (series.val = 0 AND class.val = 0 AND file.val = 0 AND item.val = 0 AND document.val = 0))
-                        OR arkivuttrekk_has_disposal_decisions IS NULL;
+                        (
+                            arkivuttrekk_disposal_decisions.val = 'true'
+                            AND (
+                                series.val = 0
+                                AND class.val = 0
+                                AND file.val = 0
+                                AND item.val = 0
+                                AND document.val = 0
+                            )
+                        )
+                        OR arkivuttrekk_disposal_decisions.val IS NULL;
                 ]]>
             </warnings>
         </queries>
@@ -2157,63 +2303,75 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT s.systemid series_system_id,
-                        COALESCE(series.val, 0) number_of_series_disposals,
-                        COALESCE(document.val, 0) number_of_document_descriptions_disposals,
-                        (
-                            SELECT value
-                            FROM addml.property
-                            WHERE name = 'omfatterDokumenterSomErKassert'
-                            LIMIT 1
-                        ) arkivuttrekk_has_disposals
-                    FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
+                    WITH arkivuttrekk_disposals AS (
+                        SELECT value val
+                        FROM addml.property
+                        WHERE name = 'omfatterDokumenterSomErKassert'
+                        LIMIT 1
+                    ), series AS (
                         SELECT kj._ref_arkivdel series_system_id, COUNT(*) val
                         FROM arkivstruktur.utfoertkassasjon kj
                         GROUP BY kj._ref_arkivdel
-                    ) series ON series.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
+                    ), document AS (
                         SELECT r._ref_arkivdel series_system_id, COUNT(*) val
                         FROM arkivstruktur.utfoertkassasjon kj
                         JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = kj._ref_dokumentbeskrivelse
                         JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
                         GROUP BY r._ref_arkivdel
-                    ) document ON document.series_system_id = s.systemid;
+                    )
+                    SELECT s.systemid series_system_id,
+                        COALESCE(series.val, 0) number_of_series_disposals,
+                        COALESCE(document.val, 0) number_of_document_descriptions_disposals,
+                        arkivuttrekk_disposals.val arkivuttrekk_has_disposals
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN series ON series.series_system_id = s.systemid
+                    LEFT JOIN document ON document.series_system_id = s.systemid
+                    LEFT JOIN arkivuttrekk_disposals ON 1 = 1;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT s.systemid series_system_id,
-                        COALESCE(series.val, 0) number_of_series_disposals,
-                        COALESCE(document.val, 0) number_of_document_descriptions_disposals,
-                        (
-                            SELECT value
-                            FROM addml.property
-                            WHERE name = 'omfatterDokumenterSomErKassert'
-                            LIMIT 1
-                        ) arkivuttrekk_has_disposals
-                    FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
+                    WITH arkivuttrekk_disposals AS (
+                        SELECT value val
+                        FROM addml.property
+                        WHERE name = 'omfatterDokumenterSomErKassert'
+                        LIMIT 1
+                    ), series AS (
                         SELECT kj._ref_arkivdel series_system_id, COUNT(*) val
                         FROM arkivstruktur.utfoertkassasjon kj
                         GROUP BY kj._ref_arkivdel
-                    ) series ON series.series_system_id = s.systemid
-                    LEFT JOIN
-                    (
+                    ), document AS (
                         SELECT r._ref_arkivdel series_system_id, COUNT(*) val
                         FROM arkivstruktur.utfoertkassasjon kj
                         JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = kj._ref_dokumentbeskrivelse
                         JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
                         GROUP BY r._ref_arkivdel
-                    ) document ON document.series_system_id = s.systemid
+                    )
+                    SELECT s.systemid series_system_id,
+                        COALESCE(series.val, 0) number_of_series_disposals,
+                        COALESCE(document.val, 0) number_of_document_descriptions_disposals,
+                        arkivuttrekk_disposals.val arkivuttrekk_has_disposals
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN series ON series.series_system_id = s.systemid
+                    LEFT JOIN document ON document.series_system_id = s.systemid
+                    LEFT JOIN arkivuttrekk_disposals ON 1 = 1
                     WHERE
-                        (arkivuttrekk_has_disposals = 'false' AND (series.val <> 0 OR document.val <> 0))
+                        (
+                            arkivuttrekk_disposals.val = 'false'
+                            AND (
+                                series.val <> 0
+                                OR document.val <> 0
+                            )
+                        )
                         OR
-                        (arkivuttrekk_has_disposals = 'true' AND (series.val = 0 AND document.val = 0))
-                        OR arkivuttrekk_has_disposals IS NULL;
+                        (
+                            arkivuttrekk_disposals.val = 'true'
+                            AND (
+                                series.val = 0
+                                AND document.val = 0
+                            )
+                        )
+                        OR arkivuttrekk_disposals.val IS NULL;
                 ]]>
             </warnings>
         </queries>
@@ -2252,66 +2410,64 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT running.value running_journal, struktur.value arkivstruktur_count,
-                        (
-                            SELECT property.value value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
-                            JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
-                            JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
-                            JOIN addml.dataobject parent_data_object ON parent_properties3._parent_id = parent_data_object._id
-                            WHERE property.name = 'value'
-                                AND parent_property.name = 'numberOfOccurrences'
-                                AND parent_property.value = 'journalregistrering'
-                                AND parent_data_object.name = 'loependeJournal'
-                            LIMIT 1
-                        ) arkivuttrekk_count
-                    FROM
-                    (
-                        SELECT count(*) value
+                    WITH arkivuttrekk_count AS (
+                        SELECT property.value val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
+                        JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
+                        JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
+                        JOIN addml.dataobject parent_data_object ON parent_properties3._parent_id = parent_data_object._id
+                        WHERE property.name = 'value'
+                            AND parent_property.name = 'numberOfOccurrences'
+                            AND parent_property.value = 'journalregistrering'
+                            AND parent_data_object.name = 'loependeJournal'
+                        LIMIT 1
+                    ), loependejournal_count AS (
+                        SELECT COUNT(*) val
                         FROM loependejournal.journalpost
-                    ) running
-                    CROSS JOIN
-                    (
-                        SELECT COUNT(*) value
+                    ), struktur_count AS (
+                        SELECT COUNT(*) val
                         FROM arkivstruktur.registrering
                         WHERE _dtype = 'journalpost'
-                    ) struktur;
+                    )
+                    SELECT ljc.val running_journal_count, sc.val arkivstruktur_count, uc.val arkivuttrekk_count
+                    FROM loependejournal_count ljc, struktur_count sc
+                    LEFT JOIN arkivuttrekk_count uc ON 1 = 1;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT running.value running_journal, struktur.value arkivstruktur_count,
-                        (
-                            SELECT property.value value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
-                            JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
-                            JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
-                            JOIN addml.dataobject parent_data_object ON parent_properties3._parent_id = parent_data_object._id
-                            WHERE property.name = 'value'
-                                AND parent_property.name = 'numberOfOccurrences'
-                                AND parent_property.value = 'journalregistrering'
-                                AND parent_data_object.name = 'loependeJournal'
-                            LIMIT 1
-                        ) arkivuttrekk_count
-                    FROM
-                    (
-                        SELECT count(*) value
+                    WITH arkivuttrekk_count AS (
+                        SELECT property.value val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
+                        JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
+                        JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
+                        JOIN addml.dataobject parent_data_object ON parent_properties3._parent_id = parent_data_object._id
+                        WHERE property.name = 'value'
+                            AND parent_property.name = 'numberOfOccurrences'
+                            AND parent_property.value = 'journalregistrering'
+                            AND parent_data_object.name = 'loependeJournal'
+                        LIMIT 1
+                    ), loependejournal_count AS (
+                        SELECT COUNT(*) val
                         FROM loependejournal.journalpost
-                    ) running
-                    CROSS JOIN
-                    (
-                        SELECT COUNT(*) value
+                    ), struktur_count AS (
+                        SELECT COUNT(*) val
                         FROM arkivstruktur.registrering
                         WHERE _dtype = 'journalpost'
-                    ) struktur
-                    WHERE (arkivuttrekk_count IS NULL AND running.value > 0) OR
-                        (arkivuttrekk_count IS NOT NULL AND running.value <> arkivuttrekk_count);
+                    )
+                    SELECT ljc.val running_journal_count, sc.val arkivstruktur_count, uc.val arkivuttrekk_count
+                    FROM loependejournal_count ljc, struktur_count sc
+                    LEFT JOIN arkivuttrekk_count uc ON 1 = 1
+                    WHERE
+                        (uc.val IS NULL AND ljc.val > 0)
+                        OR
+                        (uc.val IS NOT NULL AND ljc.val <> uc.val);
                 ]]>
             </warnings>
         </queries>
@@ -2328,86 +2484,109 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT s.systemid series_system_id, COALESCE(inside_period.val, 0) registry_entries_inside_period, COALESCE(outside_period.val, 0) registry_entries_outside_period
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    ), outside_period AS (
+                        SELECT s.systemid series_systemid, COUNT(*) val
+                        FROM loependejournal.journalpost j
+                        LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
+                        LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(journaldato AS DATE) < period.start
+                                AND s.arkivdelstatus <> 'Overlappingsperiode'
+                            )
+                            OR CAST(journaldato AS DATE) > period.end
+                            OR s.systemid IS NULL
+                            OR period.start IS NULL
+                            OR period.end IS NULL
+                        GROUP BY s.systemid
+                    ), inside_period AS (
+                        SELECT s.systemid series_systemid, COUNT(*) val
+                        FROM loependejournal.journalpost j
+                        LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
+                        LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(journaldato AS DATE) >= period.start
+                                OR s.arkivdelstatus = 'Overlappingsperiode'
+                            )
+                            AND CAST(journaldato AS DATE) <= period.end
+                            AND s.systemid IS NOT NULL
+                            AND period.start IS NOT NULL
+                            AND period.end IS NOT NULL
+                        GROUP BY s.systemid
+                    )
+                    SELECT s.systemid series_system_id, COALESCE(ip.val, 0) registry_entries_inside_period, COALESCE(op.val, 0) registry_entries_outside_period
                     FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
-                        SELECT s.systemid series_systemid, COUNT(*) val,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_start_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_end_date
-                        FROM loependejournal.journalpost j
-                        LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
-                        LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
-                        WHERE ( CAST(journaldato AS DATE) < period_start_date AND s.arkivdelstatus <> 'Overlappingsperiode' ) OR CAST(journaldato AS DATE) > period_end_date
-                            OR s.systemid IS NULL OR period_start_date IS NULL OR period_end_date IS NULL
-                        GROUP BY s.systemid, period_start_date, period_end_date
-                    ) outside_period ON outside_period.series_systemid = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT s.systemid series_systemid, COUNT(*) val,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_start_date,
-                        (
-                            SELECT CAST(property.value AS DATE)
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
-                            LIMIT 1
-                        ) period_end_date
-                        FROM loependejournal.journalpost j
-                        LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
-                        LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
-                        WHERE ( CAST(journaldato AS DATE) >= period_start_date OR s.arkivdelstatus = 'Overlappingsperiode' ) AND CAST(journaldato AS DATE) <= period_end_date
-                            AND s.systemid IS NOT NULL AND period_start_date IS NOT NULL AND period_end_date IS NOT NULL
-                        GROUP BY s.systemid, period_start_date, period_end_date
-                    ) inside_period ON inside_period.series_systemid = s.systemid;
+                    LEFT JOIN outside_period op ON op.series_systemid = s.systemid
+                    LEFT JOIN inside_period ip ON ip.series_systemid = s.systemid;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT s.systemid series_system_id, j.systemid registry_entry_system_id,
-                        COALESCE(NULLIF(j.journalaar || '/' || j.journalsekvensnummer, '/'), 'N/A') record_id,
-                        CAST(journaldato AS DATE) registry_entry_date,
-                        (SELECT CAST(property.value AS DATE)
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
                             JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
                             WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
                             LIMIT 1
-                        ) period_start_date,
-                        (SELECT CAST(property.value AS DATE)
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
                             JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
                             WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
                             LIMIT 1
-                        ) period_end_date
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    )
+                    SELECT s.systemid series_system_id,
+                        j.systemid registry_entry_system_id,
+                        COALESCE(NULLIF(j.journalaar || '/' || j.journalsekvensnummer, '/'), 'N/A') record_id,
+                        CAST(journaldato AS DATE) registry_entry_date,
+                        period.start period_start_date,
+                        period.end period_end_date
                     FROM loependejournal.journalpost j
                     LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
                     LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
-                    WHERE ( CAST(journaldato AS DATE) < period_start_date AND s.arkivdelstatus <> 'Overlappingsperiode' ) OR CAST(journaldato AS DATE) > period_end_date
-                        OR period_start_date IS NULL OR period_end_date IS NULL OR s.systemid IS NULL
+                    CROSS JOIN period
+                    WHERE
+                        (
+                            CAST(journaldato AS DATE) < period.start
+                            AND s.arkivdelstatus <> 'Overlappingsperiode'
+                        )
+                        OR CAST(journaldato AS DATE) > period.end
+                        OR period.start IS NULL
+                        OR period.end IS NULL
+                        OR s.systemid IS NULL
                     ORDER BY journaldato;
                 ]]>
             </warnings>
@@ -2431,66 +2610,64 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT running.value public_journal, struktur.value arkivstruktur_count,
-                        (
-                            SELECT property.value value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
-                            JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
-                            JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
-                            JOIN addml.dataobject parent_data_object ON parent_properties3._parent_id = parent_data_object._id
-                            WHERE property.name = 'value'
-                                AND parent_property.name = 'numberOfOccurrences'
-                                AND parent_property.value = 'journalregistrering'
-                                AND parent_data_object.name = 'offentligJournal'
-                            LIMIT 1
-                        ) arkivuttrekk_count
-                    FROM
-                    (
-                        SELECT count(*) value
+                    WITH arkivuttrekk_count AS (
+                        SELECT property.value val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
+                        JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
+                        JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
+                        JOIN addml.dataobject parent_data_object ON parent_properties3._parent_id = parent_data_object._id
+                        WHERE property.name = 'value'
+                            AND parent_property.name = 'numberOfOccurrences'
+                            AND parent_property.value = 'journalregistrering'
+                            AND parent_data_object.name = 'offentligJournal'
+                        LIMIT 1
+                    ), public_journal_count AS (
+                        SELECT count(*) val
                         FROM offentligjournal.journalpost
-                    ) running
-                    CROSS JOIN
-                    (
-                        SELECT COUNT(*) value
+                    ), arkivstruktur_count AS (
+                        SELECT COUNT(*) val
                         FROM arkivstruktur.registrering
                         WHERE _dtype = 'journalpost'
-                    ) struktur;
+                    )
+                    SELECT ljc.val public_journal_count, sc.val arkivstruktur_count, uc.val arkivuttrekk_count
+                    FROM public_journal_count ljc, arkivstruktur_count sc
+                    LEFT JOIN arkivuttrekk_count uc ON 1 = 1;
                 ]]>
             </info>
             <warnings>
                 <![CDATA[
-                    SELECT running.value public_journal, struktur.value arkivstruktur_count,
-                        (
-                            SELECT property.value value
-                            FROM addml.property property
-                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                            JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
-                            JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
-                            JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
-                            JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
-                            JOIN addml.dataobject parent_data_object ON parent_properties3._parent_id = parent_data_object._id
-                            WHERE property.name = 'value'
-                                AND parent_property.name = 'numberOfOccurrences'
-                                AND parent_property.value = 'journalregistrering'
-                                AND parent_data_object.name = 'offentligJournal'
-                            LIMIT 1
-                        ) arkivuttrekk_count
-                    FROM
-                    (
-                        SELECT count(*) value
-                        FROM offentligJournal.journalpost
-                    ) running
-                    CROSS JOIN
-                    (
-                        SELECT COUNT(*) value
+                    WITH arkivuttrekk_count AS (
+                        SELECT property.value val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
+                        JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
+                        JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
+                        JOIN addml.dataobject parent_data_object ON parent_properties3._parent_id = parent_data_object._id
+                        WHERE property.name = 'value'
+                            AND parent_property.name = 'numberOfOccurrences'
+                            AND parent_property.value = 'journalregistrering'
+                            AND parent_data_object.name = 'offentligJournal'
+                        LIMIT 1
+                    ), public_journal_count AS (
+                        SELECT count(*) val
+                        FROM offentligjournal.journalpost
+                    ), arkivstruktur_count AS (
+                        SELECT COUNT(*) val
                         FROM arkivstruktur.registrering
                         WHERE _dtype = 'journalpost'
-                    ) struktur
-                    WHERE (arkivuttrekk_count IS NULL AND running.value > 0) OR
-                        (arkivuttrekk_count IS NOT NULL AND running.value <> arkivuttrekk_count);
+                    )
+                    SELECT ljc.val public_journal_count, sc.val arkivstruktur_count, uc.val arkivuttrekk_count
+                    FROM public_journal_count ljc, arkivstruktur_count sc
+                    LEFT JOIN arkivuttrekk_count uc ON 1 = 1
+                    WHERE
+                        (uc.val IS NULL AND ljc.val > 0)
+                        OR
+                        (uc.val IS NOT NULL AND ljc.val <> uc.val);
                 ]]>
             </warnings>
         </queries>
@@ -2507,86 +2684,108 @@
         <queries>
             <info>
                 <![CDATA[
-                    SELECT s.systemid series_system_id, COALESCE(inside_period.val, 0) registry_entries_inside_period, COALESCE(outside_period.val, 0) registry_entries_outside_period
-                    FROM arkivstruktur.arkivdel s
-                    LEFT JOIN
-                    (
-                        SELECT s.systemid series_systemid, COUNT(*) val,
-                            (
-                                SELECT CAST(property.value AS DATE)
-                                FROM addml.property property
-                                JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                                JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                                WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
-                                LIMIT 1
-                            ) period_start_date,
-                            (
-                                SELECT CAST(property.value AS DATE)
-                                FROM addml.property property
-                                JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                                JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                                WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
-                                LIMIT 1
-                            ) period_end_date
-                        FROM offentligjournal.journalpost j
-                        LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
-                        LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
-                        WHERE ( CAST(journaldato AS DATE) < period_start_date AND s.arkivdelstatus <> 'Overlappingsperiode' ) OR CAST(journaldato AS DATE) > period_end_date
-                            OR s.systemid IS NULL OR period_start_date IS NULL OR period_end_date IS NULL
-                        GROUP BY s.systemid, period_start_date, period_end_date
-                    ) outside_period ON outside_period.series_systemid = s.systemid
-                    LEFT JOIN
-                    (
-                        SELECT s.systemid series_systemid, COUNT(*) val,
-                            (
-                                SELECT CAST(property.value AS DATE)
-                                FROM addml.property property
-                                JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                                JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                                WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
-                                LIMIT 1
-                            ) period_start_date,
-                            (
-                                SELECT CAST(property.value AS DATE)
-                                FROM addml.property property
-                                JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
-                                JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
-                                WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
-                                LIMIT 1
-                            ) period_end_date
-                        FROM offentligjournal.journalpost j
-                        LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
-                        LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
-                        WHERE ( CAST(journaldato AS DATE) >= period_start_date OR s.arkivdelstatus = 'Overlappingsperiode' ) AND CAST(journaldato AS DATE) <= period_end_date
-                            AND s.systemid IS NOT NULL AND period_start_date IS NOT NULL AND period_end_date IS NOT NULL
-                        GROUP BY s.systemid, period_start_date, period_end_date
-                    ) inside_period ON inside_period.series_systemid = s.systemid;
-                ]]>
-            </info>
-            <warnings>
-                <![CDATA[
-                    SELECT s.systemid series_system_id, j.systemid registry_entry_system_id,
-                        COALESCE(NULLIF(j.journalaar || '/' || j.journalsekvensnummer, '/'), 'N/A') record_id,
-                        CAST(journaldato AS DATE) registry_entry_date,
-                        (SELECT CAST(property.value AS DATE)
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
                             JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
                             WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
                             LIMIT 1
-                        ) period_start_date,
-                        (SELECT CAST(property.value AS DATE)
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
                             FROM addml.property property
                             JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
                             JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
                             WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
                             LIMIT 1
-                        ) period_end_date
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    ), outside_period AS (
+                        SELECT s.systemid series_systemid, COUNT(*) val
+                        FROM offentligjournal.journalpost j
+                        LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
+                        LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(journaldato AS DATE) < period.start
+                                AND s.arkivdelstatus <> 'Overlappingsperiode'
+                            )
+                            OR CAST(journaldato AS DATE) > period.end
+                            OR s.systemid IS NULL
+                            OR period.start IS NULL
+                            OR period.end IS NULL
+                        GROUP BY s.systemid
+                    ), inside_period AS (
+                        SELECT s.systemid series_systemid, COUNT(*) val
+                        FROM offentligjournal.journalpost j
+                        LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
+                        LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(journaldato AS DATE) >= period.start
+                                OR s.arkivdelstatus = 'Overlappingsperiode'
+                            )
+                            AND CAST(journaldato AS DATE) <= period.end
+                            AND s.systemid IS NOT NULL
+                            AND period.start IS NOT NULL
+                            AND period.end IS NOT NULL
+                        GROUP BY s.systemid
+                    )
+                    SELECT s.systemid series_system_id, COALESCE(ip.val, 0) registry_entries_inside_period, COALESCE(op.val, 0) registry_entries_outside_period
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN outside_period op ON op.series_systemid = s.systemid
+                    LEFT JOIN inside_period ip ON ip.series_systemid = s.systemid;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    )
+                    SELECT s.systemid series_system_id, j.systemid registry_entry_system_id,
+                        COALESCE(NULLIF(j.journalaar || '/' || j.journalsekvensnummer, '/'), 'N/A') record_id,
+                        CAST(journaldato AS DATE) registry_entry_date,
+                        period.start period_start_date,
+                        period.end period_end_date
                     FROM offentligjournal.journalpost j
                     LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
                     LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
-                    WHERE ( CAST(journaldato AS DATE) < period_start_date AND s.arkivdelstatus <> 'Overlappingsperiode' ) OR CAST(journaldato AS DATE) > period_end_date
-                        OR s.systemid IS NULL OR period_start_date IS NULL OR period_end_date IS NULL
+                    CROSS JOIN period
+                    WHERE
+                        (
+                            CAST(journaldato AS DATE) < period.start
+                            AND s.arkivdelstatus <> 'Overlappingsperiode'
+                        )
+                        OR CAST(journaldato AS DATE) > period.end
+                        OR s.systemid IS NULL
+                        OR period.start IS NULL
+                        OR period.end IS NULL
                     ORDER BY journaldato;
                 ]]>
             </warnings>
@@ -2629,40 +2828,39 @@
                     SELECT COUNT(*) systemids_not_in_arkivstruktur
                     FROM endringslogg.endring e
                     LEFT JOIN (
-                    SELECT systemid
-                                        FROM
-                                            (SELECT systemid FROM arkivstruktur.arkiv)
-                                        UNION ALL
-                                            (SELECT systemid FROM arkivstruktur.arkiv WHERE systemid IS NULL)
-                                        UNION ALL
-                                            (SELECT systemid FROM arkivstruktur.arkivdel)
-                                        UNION ALL
-                                            (SELECT systemid FROM arkivstruktur.arkivdel WHERE systemid IS NULL)
-                                        UNION ALL
-                                            (SELECT systemid FROM arkivstruktur.klassifikasjonssystem)
-                                        UNION ALL
-                                            (SELECT systemid FROM arkivstruktur.klassifikasjonssystem WHERE systemid IS NULL)
-                                        UNION ALL
-                                            (SELECT systemid systemid FROM arkivstruktur.klasse)
-                                        UNION ALL
-                                            (SELECT systemid FROM arkivstruktur.klasse WHERE systemid IS NULL)
-                                        UNION ALL
-                                            (SELECT systemid systemid FROM arkivstruktur.mappe)
-                                        UNION ALL
-                                            (SELECT systemid FROM arkivstruktur.mappe WHERE systemid IS NULL)
-                                        UNION ALL
-                                            (SELECT systemid systemid FROM arkivstruktur.registrering)
-                                        UNION ALL
-                                            (SELECT systemid FROM arkivstruktur.registrering WHERE systemid IS NULL)
-                                        UNION ALL
-                                            (SELECT systemid systemid FROM arkivstruktur.dokumentbeskrivelse)
-                                        UNION ALL
-                                            (SELECT systemid FROM arkivstruktur.dokumentbeskrivelse WHERE systemid IS NULL)
-                    UNION ALL
-                    (SELECT arkivskaperid FROM arkivstruktur.arkivskaper)
-                    UNION ALL
-                    (SELECT arkivskaperid FROM arkivstruktur.arkivskaper WHERE arkivskaperid IS NULL)
-
+                        SELECT systemid
+                            FROM
+                                (SELECT systemid FROM arkivstruktur.arkiv)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.arkiv WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.arkivdel)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.arkivdel WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.klassifikasjonssystem)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.klassifikasjonssystem WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid systemid FROM arkivstruktur.klasse)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.klasse WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid systemid FROM arkivstruktur.mappe)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.mappe WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid systemid FROM arkivstruktur.registrering)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.registrering WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid systemid FROM arkivstruktur.dokumentbeskrivelse)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.dokumentbeskrivelse WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT arkivskaperid FROM arkivstruktur.arkivskaper)
+                            UNION ALL
+                                (SELECT arkivskaperid FROM arkivstruktur.arkivskaper WHERE arkivskaperid IS NULL)
                     ) all_system_ids ON all_system_ids.systemid = e.referansearkivenhet
                     WHERE all_system_ids.systemid IS NULL;
                 ]]>
