@@ -2377,6 +2377,497 @@
         </queries>
     </test>
 
+	<test id="AST22">
+		<title>Personal name fields</title>
+		<description>
+			Checks whether all name fields contain seemingly valid personal names. The regular expressions used for
+            the purpose are "^[\p{L}\s-'.]*$" and "^[\p{L}\s-'.]+$" depending on whether the value can be blank or not.
+            The validated fields are: saksansvarlig (M306), kontaktperson (M412), korrespondansepartNavn (M400),
+            sakspartNavn (M302), moeteDeltakerNavn (M372), arkivertAv (M605), avskrevetAv (M618), tilknyttetAv (M621),
+            merknadRegistrertAv (M612), kassertAv (M631), slettetAv (M614), gradertAv (M625), presedensGodkjentAv (M629),
+            verifisertAv (M623), nedgradertAv (M627), opprettetAv (M601), avsluttetAv (M603).
+		</description>
+		<group>arkivstruktur</group>
+		<queries>
+			<info>
+				<![CDATA[
+                    WITH case_responsible AS (
+						SELECT 'arkivstruktur' file, 'mappe' entity, 'saksansvarlig (M306)' field_name,
+						    COUNT(*) total
+						FROM arkivstruktur.mappe
+						WHERE (saksansvarlig IS NULL OR
+						    NOT REGEXP_MATCHES(saksansvarlig, '^[\p{L}\s-''.]+$')) AND _dtype = 'saksmappe'
+					), correspondence_contact_person AS (
+					    SELECT 'arkivstruktur' file, 'korrespondansepart' entity, 'kontaktperson (M412)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.korrespondansepart
+						WHERE NOT REGEXP_MATCHES(kontaktperson, '^[\p{L}\s-''.]*$')
+					), correspondence_party_name AS (
+					    SELECT 'arkivstruktur' file, 'korrespondansepart' entity,
+					        'korrespondansepartNavn (M400)' field_name, COUNT(*) total
+						FROM arkivstruktur.korrespondansepart
+						WHERE korrespondansepartNavn IS NULL OR korrespondansepartNavn = ''
+					), case_contact_person AS (
+					    SELECT 'arkivstruktur' file, 'sakspart' entity, 'kontaktperson (M412)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.sakspart
+						WHERE NOT REGEXP_MATCHES(kontaktperson, '^[\p{L}\s-''.]*$')
+					), case_party_name AS (
+					    SELECT 'arkivstruktur' file, 'sakspart' entity, 'sakspartnavn (M302)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.sakspart
+						WHERE sakspartnavn IS NULL OR sakspartnavn = ''
+					), meeting_party_name AS (
+					    SELECT 'arkivstruktur' file, 'moetedeltaker' entity, 'moetedeltakerNavn (M372)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.moetedeltaker
+						WHERE moetedeltakerNavn IS NULL OR NOT REGEXP_MATCHES(moetedeltakerNavn, '^[\p{L}\s-''.]+$')
+					), record_archived_by AS (
+					    SELECT 'arkivstruktur' file, 'registrering' entity, 'arkivertAv (M605)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.registrering
+						WHERE NOT REGEXP_MATCHES(arkivertAv, '^[\p{L}\s-''.]*$')
+					), signed_off_by AS (
+					    SELECT 'arkivstruktur' file, 'avskrivning' entity, 'avskrevetav (M618)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.avskrivning
+						WHERE NOT REGEXP_MATCHES(avskrevetav, '^[\p{L}\s-''.]*$')
+					), document_associated_by AS (
+					    SELECT 'arkivstruktur' file, 'dokumentbeskrivelse' entity, 'tilknyttetAv (M621)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.dokumentbeskrivelse
+						WHERE NOT REGEXP_MATCHES(tilknyttetAv, '^[\p{L}\s-''.]*$')
+					), note_registered_by AS (
+					    SELECT 'arkivstruktur' file, 'merknad' entity, 'merknadRegistrertAv (M612)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.merknad
+						WHERE NOT REGEXP_MATCHES(merknadRegistrertAv, '^[\p{L}\s-''.]*$')
+					), disposed_by AS (
+					    SELECT 'arkivstruktur' file, 'utfoertKassasjon' entity, 'kassertAv (M631)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.utfoertKassasjon
+						WHERE NOT REGEXP_MATCHES(kassertAv, '^[\p{L}\s-''.]*$')
+					), deleted_by AS (
+					    SELECT 'arkivstruktur' file, 'sletting' entity, 'slettetAv (M614)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.sletting
+						WHERE NOT REGEXP_MATCHES(slettetAv, '^[\p{L}\s-''.]*$')
+					), graded_by AS (
+					    SELECT 'arkivstruktur' file, 'gradering' entity, 'gradertAv (M625)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.gradering
+						WHERE NOT REGEXP_MATCHES(gradertAv, '^[\p{L}\s-''.]*$')
+					), precedent_authorized_by AS (
+					    SELECT 'arkivstruktur' file, 'presedens' entity, 'presedensGodkjentAv (M629)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.presedens
+						WHERE NOT REGEXP_MATCHES(presedensGodkjentAv, '^[\p{L}\s-''.]*$')
+					), signature_verified_by AS (
+					    SELECT 'arkivstruktur' file, 'elektroniskSignatur' entity, 'verifisertAv (M623)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.elektroniskSignatur
+						WHERE verifisertAv IS NULL OR NOT REGEXP_MATCHES(verifisertAv, '^[\p{L}\s-''.]+$')
+					), downgraded_by AS (
+					    SELECT 'arkivstruktur' file, 'gradering' entity, 'nedgradertAv (M627)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.gradering
+						WHERE NOT REGEXP_MATCHES(nedgradertAv, '^[\p{L}\s-''.]+$')
+					), archive_created_by AS (
+					    SELECT 'arkivstruktur' file, 'arkiv' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.arkiv
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), series_created_by AS (
+					    SELECT 'arkivstruktur' file, 'arkivdel' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.arkivdel
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), ks_created_by AS (
+					    SELECT 'arkivstruktur' file, 'klassifikasjonssystem' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.klassifikasjonssystem
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), class_created_by AS (
+					    SELECT 'arkivstruktur' file, 'klasse' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.klasse
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), file_created_by AS (
+					    SELECT 'arkivstruktur' file, 'mappe' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.mappe
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), record_created_by AS (
+					    SELECT 'arkivstruktur' file, 'registrering' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.registrering
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), document_description_created_by AS (
+					    SELECT 'arkivstruktur' file, 'dokumentbeskrivelse' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.dokumentbeskrivelse
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), document_object_created_by AS (
+					    SELECT 'arkivstruktur' file, 'dokumentobjekt' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.dokumentobjekt
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), precedent_created_by AS (
+					    SELECT 'arkivstruktur' file, 'presedens' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.presedens
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), archive_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'arkiv' entity, 'avsluttetAv (M603)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.arkiv
+						WHERE avsluttetAv IS NULL OR NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]+$')
+					), series_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'arkivdel' entity, 'avsluttetAv (M603)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.arkivdel
+						WHERE avsluttetAv IS NULL OR NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]+$')
+					), ks_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'klassifikasjonssystem' entity, 'avsluttetAv (M603)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.klassifikasjonssystem
+						WHERE NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]*$')
+					), class_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'klasse' entity, 'avsluttetAv (M603)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.klasse
+						WHERE NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]*$')
+					), file_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'mappe' entity, 'avsluttetAv (M603)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.mappe
+						WHERE avsluttetAv IS NULL OR NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]+$')
+					), precedent_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'presedens' entity, 'avsluttetAv (M603)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.presedens
+						WHERE NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]*$')
+					)
+					SELECT * FROM case_responsible
+					UNION ALL
+					SELECT * FROM correspondence_contact_person
+					UNION ALL
+					SELECT * FROM correspondence_party_name
+					UNION ALL
+					SELECT * FROM case_contact_person
+					UNION ALL
+					SELECT * FROM case_party_name
+					UNION ALL
+					SELECT * FROM meeting_party_name
+					UNION ALL
+					SELECT * FROM record_archived_by
+					UNION ALL
+					SELECT * FROM signed_off_by
+					UNION ALL
+					SELECT * FROM document_associated_by
+					UNION ALL
+					SELECT * FROM note_registered_by
+					UNION ALL
+					SELECT * FROM disposed_by
+					UNION ALL
+					SELECT * FROM deleted_by
+					UNION ALL
+					SELECT * FROM graded_by
+					UNION ALL
+					SELECT * FROM precedent_authorized_by
+					UNION ALL
+					SELECT * FROM signature_verified_by
+					UNION ALL
+					SELECT * FROM downgraded_by
+					UNION ALL
+					SELECT * FROM archive_created_by
+					UNION ALL
+					SELECT * FROM series_created_by
+					UNION ALL
+					SELECT * FROM ks_created_by
+					UNION ALL
+					SELECT * FROM class_created_by
+					UNION ALL
+					SELECT * FROM file_created_by
+					UNION ALL
+					SELECT * FROM record_created_by
+					UNION ALL
+					SELECT * FROM document_description_created_by
+					UNION ALL
+					SELECT * FROM document_object_created_by
+					UNION ALL
+					SELECT * FROM precedent_created_by
+					UNION ALL
+					SELECT * FROM archive_finalized_by
+					UNION ALL
+					SELECT * FROM series_finalized_by
+					UNION ALL
+					SELECT * FROM ks_finalized_by
+					UNION ALL
+					SELECT * FROM class_finalized_by
+					UNION ALL
+					SELECT * FROM file_finalized_by
+					UNION ALL
+					SELECT * FROM precedent_finalized_by;
+				]]>
+			</info>
+			<warnings>
+				<![CDATA[
+				    WITH case_responsible AS (
+						SELECT 'arkivstruktur' file, 'mappe' entity, 'saksansvarlig (M306)' field_name,
+						    saksansvarlig field_value, COUNT(*) total
+						FROM arkivstruktur.mappe
+						WHERE (saksansvarlig IS NULL OR
+						    NOT REGEXP_MATCHES(saksansvarlig, '^[\p{L}\s-''.]+$')) AND _dtype = 'saksmappe'
+						GROUP BY saksansvarlig ORDER BY saksansvarlig
+					), correspondence_contact_person AS (
+					    SELECT 'arkivstruktur' file, 'korrespondansepart' entity, 'kontaktperson (M412)' field_name,
+					        kontaktperson field_value, COUNT(*) total
+						FROM arkivstruktur.korrespondansepart
+						WHERE NOT REGEXP_MATCHES(kontaktperson, '^[\p{L}\s-''.]*$')
+						GROUP BY kontaktperson ORDER BY kontaktperson
+					), correspondence_party_name AS (
+					    SELECT 'arkivstruktur' file, 'korrespondansepart' entity,
+					        'korrespondansepartNavn (M400)' field_name, korrespondansepartNavn field_value,
+					        COUNT(*) total
+						FROM arkivstruktur.korrespondansepart
+						WHERE korrespondansepartNavn IS NULL OR korrespondansepartNavn = ''
+						GROUP BY korrespondansepartNavn ORDER BY korrespondansepartNavn
+					), case_contact_person AS (
+					    SELECT 'arkivstruktur' file, 'sakspart' entity, 'kontaktperson (M412)' field_name,
+					        kontaktperson field_value, COUNT(*) total
+						FROM arkivstruktur.sakspart
+						WHERE NOT REGEXP_MATCHES(kontaktperson, '^[\p{L}\s-''.]*$')
+						GROUP BY kontaktperson ORDER BY kontaktperson
+					), case_party_name AS (
+					    SELECT 'arkivstruktur' file, 'sakspart' entity, 'sakspartnavn (M302)' field_name,
+					        sakspartnavn field_value, COUNT(*) total
+						FROM arkivstruktur.sakspart
+						WHERE sakspartnavn IS NULL OR sakspartnavn = ''
+						GROUP BY sakspartnavn ORDER BY sakspartnavn
+					), meeting_party_name AS (
+					    SELECT 'arkivstruktur' file, 'moetedeltaker' entity, 'moetedeltakerNavn (M372)' field_name,
+					        moetedeltakerNavn field_value, COUNT(*) total
+						FROM arkivstruktur.moetedeltaker
+						WHERE moetedeltakerNavn IS NULL OR NOT REGEXP_MATCHES(moetedeltakerNavn, '^[\p{L}\s-''.]+$')
+						GROUP BY moetedeltakerNavn ORDER BY moetedeltakerNavn
+					), record_archived_by AS (
+					    SELECT 'arkivstruktur' file, 'registrering' entity, 'arkivertAv (M605)' field_name,
+					        arkivertAv field_value, COUNT(*) total
+						FROM arkivstruktur.registrering
+						WHERE NOT REGEXP_MATCHES(arkivertAv, '^[\p{L}\s-''.]*$')
+						GROUP BY arkivertAv ORDER BY arkivertAv
+					), signed_off_by AS (
+					    SELECT 'arkivstruktur' file, 'avskrivning' entity, 'avskrevetav (M618)' field_name,
+					        avskrevetav field_value, COUNT(*) total
+						FROM arkivstruktur.avskrivning
+						WHERE NOT REGEXP_MATCHES(avskrevetav, '^[\p{L}\s-''.]*$')
+						GROUP BY avskrevetav ORDER BY avskrevetav
+					), document_associated_by AS (
+					    SELECT 'arkivstruktur' file, 'dokumentbeskrivelse' entity, 'tilknyttetAv (M621)' field_name,
+					        tilknyttetAv field_value, COUNT(*) total
+						FROM arkivstruktur.dokumentbeskrivelse
+						WHERE NOT REGEXP_MATCHES(tilknyttetAv, '^[\p{L}\s-''.]*$')
+						GROUP BY tilknyttetAv ORDER BY tilknyttetAv
+					), note_registered_by AS (
+					    SELECT 'arkivstruktur' file, 'merknad' entity, 'merknadRegistrertAv (M612)' field_name,
+					        merknadRegistrertAv field_value, COUNT(*) total
+						FROM arkivstruktur.merknad
+						WHERE NOT REGEXP_MATCHES(merknadRegistrertAv, '^[\p{L}\s-''.]*$')
+						GROUP BY merknadRegistrertAv ORDER BY merknadRegistrertAv
+					), disposed_by AS (
+					    SELECT 'arkivstruktur' file, 'utfoertKassasjon' entity, 'kassertAv (M631)' field_name,
+					        kassertAv field_value, COUNT(*) total
+						FROM arkivstruktur.utfoertKassasjon
+						WHERE NOT REGEXP_MATCHES(kassertAv, '^[\p{L}\s-''.]*$')
+						GROUP BY kassertAv ORDER BY kassertAv
+					), deleted_by AS (
+					    SELECT 'arkivstruktur' file, 'sletting' entity, 'slettetAv (M614)' field_name,
+					        slettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.sletting
+						WHERE NOT REGEXP_MATCHES(slettetAv, '^[\p{L}\s-''.]*$')
+						GROUP BY slettetAv ORDER BY slettetAv
+					), graded_by AS (
+					    SELECT 'arkivstruktur' file, 'gradering' entity, 'gradertAv (M625)' field_name,
+					        gradertAv field_value, COUNT(*) total
+						FROM arkivstruktur.gradering
+						WHERE NOT REGEXP_MATCHES(gradertAv, '^[\p{L}\s-''.]*$')
+						GROUP BY gradertAv ORDER BY gradertAv
+					), precedent_authorized_by AS (
+					    SELECT 'arkivstruktur' file, 'presedens' entity, 'presedensGodkjentAv (M629)' field_name,
+					        presedensGodkjentAv field_value, COUNT(*) total
+						FROM arkivstruktur.presedens
+						WHERE NOT REGEXP_MATCHES(presedensGodkjentAv, '^[\p{L}\s-''.]*$')
+						GROUP BY presedensGodkjentAv ORDER BY presedensGodkjentAv
+					), signature_verified_by AS (
+					    SELECT 'arkivstruktur' file, 'elektroniskSignatur' entity, 'verifisertAv (M623)' field_name,
+					        verifisertAv field_value, COUNT(*) total
+						FROM arkivstruktur.elektroniskSignatur
+						WHERE verifisertAv IS NULL OR NOT REGEXP_MATCHES(verifisertAv, '^[\p{L}\s-''.]+$')
+						GROUP BY verifisertAv ORDER BY verifisertAv
+					), downgraded_by AS (
+					    SELECT 'arkivstruktur' file, 'gradering' entity, 'nedgradertAv (M627)' field_name,
+					        nedgradertAv field_value, COUNT(*) total
+						FROM arkivstruktur.gradering
+						WHERE NOT REGEXP_MATCHES(nedgradertAv, '^[\p{L}\s-''.]+$')
+						GROUP BY nedgradertAv ORDER BY nedgradertAv
+					), archive_created_by AS (
+					    SELECT 'arkivstruktur' file, 'arkiv' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.arkiv
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), series_created_by AS (
+					    SELECT 'arkivstruktur' file, 'arkivdel' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.arkivdel
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), ks_created_by AS (
+					    SELECT 'arkivstruktur' file, 'klassifikasjonssystem' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.klassifikasjonssystem
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), class_created_by AS (
+					    SELECT 'arkivstruktur' file, 'klasse' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.klasse
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), file_created_by AS (
+					    SELECT 'arkivstruktur' file, 'mappe' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.mappe
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), record_created_by AS (
+					    SELECT 'arkivstruktur' file, 'registrering' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.registrering
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), document_description_created_by AS (
+					    SELECT 'arkivstruktur' file, 'dokumentbeskrivelse' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.dokumentbeskrivelse
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), document_object_created_by AS (
+					    SELECT 'arkivstruktur' file, 'dokumentobjekt' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.dokumentobjekt
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), precedent_created_by AS (
+					    SELECT 'arkivstruktur' file, 'presedens' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.presedens
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), archive_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'arkiv' entity, 'avsluttetAv (M603)' field_name,
+					        avsluttetAv field_value, COUNT(*) total
+						FROM arkivstruktur.arkiv
+						WHERE avsluttetAv IS NULL OR NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY avsluttetAv ORDER BY avsluttetAv
+					), series_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'arkivdel' entity, 'avsluttetAv (M603)' field_name,
+					        avsluttetAv field_value, COUNT(*) total
+						FROM arkivstruktur.arkivdel
+						WHERE avsluttetAv IS NULL OR NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY avsluttetAv ORDER BY avsluttetAv
+					), ks_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'klassifikasjonssystem' entity, 'avsluttetAv (M603)' field_name,
+					        avsluttetAv field_value, COUNT(*) total
+						FROM arkivstruktur.klassifikasjonssystem
+						WHERE NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]*$')
+						GROUP BY avsluttetAv ORDER BY avsluttetAv
+					), class_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'klasse' entity, 'avsluttetAv (M603)' field_name,
+					        avsluttetAv field_value, COUNT(*) total
+						FROM arkivstruktur.klasse
+						WHERE NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]*$')
+						GROUP BY avsluttetAv ORDER BY avsluttetAv
+					), file_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'mappe' entity, 'avsluttetAv (M603)' field_name,
+					        avsluttetAv field_value, COUNT(*) total
+						FROM arkivstruktur.mappe
+						WHERE avsluttetAv IS NULL OR NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY avsluttetAv ORDER BY avsluttetAv
+					), precedent_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'presedens' entity, 'avsluttetAv (M603)' field_name,
+					        avsluttetAv field_value, COUNT(*) total
+						FROM arkivstruktur.presedens
+						WHERE NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]*$')
+						GROUP BY avsluttetAv ORDER BY avsluttetAv
+					)
+					SELECT * FROM case_responsible
+					UNION ALL
+					SELECT * FROM correspondence_contact_person
+					UNION ALL
+					SELECT * FROM correspondence_party_name
+					UNION ALL
+					SELECT * FROM case_contact_person
+					UNION ALL
+					SELECT * FROM case_party_name
+					UNION ALL
+					SELECT * FROM meeting_party_name
+					UNION ALL
+					SELECT * FROM record_archived_by
+					UNION ALL
+					SELECT * FROM signed_off_by
+					UNION ALL
+					SELECT * FROM document_associated_by
+					UNION ALL
+					SELECT * FROM note_registered_by
+					UNION ALL
+					SELECT * FROM disposed_by
+					UNION ALL
+					SELECT * FROM deleted_by
+					UNION ALL
+					SELECT * FROM graded_by
+					UNION ALL
+					SELECT * FROM precedent_authorized_by
+					UNION ALL
+					SELECT * FROM signature_verified_by
+					UNION ALL
+					SELECT * FROM downgraded_by
+					UNION ALL
+					SELECT * FROM archive_created_by
+					UNION ALL
+					SELECT * FROM series_created_by
+					UNION ALL
+					SELECT * FROM ks_created_by
+					UNION ALL
+					SELECT * FROM class_created_by
+					UNION ALL
+					SELECT * FROM file_created_by
+					UNION ALL
+					SELECT * FROM record_created_by
+					UNION ALL
+					SELECT * FROM document_description_created_by
+					UNION ALL
+					SELECT * FROM document_object_created_by
+					UNION ALL
+					SELECT * FROM precedent_created_by
+					UNION ALL
+					SELECT * FROM archive_finalized_by
+					UNION ALL
+					SELECT * FROM series_finalized_by
+					UNION ALL
+					SELECT * FROM ks_finalized_by
+					UNION ALL
+					SELECT * FROM class_finalized_by
+					UNION ALL
+					SELECT * FROM file_finalized_by
+					UNION ALL
+					SELECT * FROM precedent_finalized_by;
+				]]>
+			</warnings>
+		</queries>
+	</test>
+
     <!--
     ============================================================================================================
     LOEPENDEJOURNAL
