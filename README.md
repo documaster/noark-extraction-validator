@@ -38,6 +38,14 @@ OR
 java -jar noark-extraction-validator-0.2.0.jar --help
 ```
 
+**Logging**
+
+If you would like to enable logging in the console or in a specific file, you will need to provide a reference to a log4j2 configuration:
+```
+java -Dlog4j.configurationFile='/path/to/log4j2.xml' -jar noark-extraction-validator-0.2.0.jar noark53 ...
+```
+A default configuration exists in a directory called `config/`.
+
 **Validating a Noark 5.3 extraction package**
 
 The shortest command to validate a package is:
