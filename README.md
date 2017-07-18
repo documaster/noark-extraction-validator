@@ -97,6 +97,26 @@ Similar to the above but note that Windows uses a different path separator:
 
 Also note that the above command specifies the path to Java explicitly to make sure that we are using a JDK, not a JRE (if one is installed). There are other ways to achieve the same thing.
 
+**Running as a library**
+
+The application can also be run as a library. To do so, you will need to prepare a command, create a validator, and run it:
+```
+# Initialize report configuration
+ReportConfiguration reportConfiguration = new ReportConfiguration();
+reportConfiguration.setOutputDir(new File("/path/to/output/directory/"));
+reportConfiguration.setOutputTypes(Arrays.asList(ReportType.EXCEL_XLSX, ReportType.XML));
+
+# Create a command
+Noark53Command command = new Noark53Command();
+command.setExtractionDirectory(new File("/path/to/extraction"));
+command.setReportConfiguration(reportConfiguration);
+
+# Create a validator
+Validator validator = ValidationFactory.createValidator(ValidatorType.byName(command.getName()), command);
+
+validator.run();
+```
+
 # Samples
 
 The [Noark Extraction Validator Samples repository](https://github.com/documaster/noark-extraction-validator-samples) contains a number of sample extraction packages and their corresponding validation reports produced by this tool. Note that the samples are of varying quality in order to demonstrate the capabilities of the validator.
