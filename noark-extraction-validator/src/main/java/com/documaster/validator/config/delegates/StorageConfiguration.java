@@ -41,14 +41,29 @@ public class StorageConfiguration implements Delegate {
 		return storageType;
 	}
 
+	public void setStorageType(Storage.StorageType storageType) {
+
+		this.storageType = storageType;
+	}
+
 	public String getDatabaseName() {
 
 		return databaseName;
 	}
 
+	public void setDatabaseName(String databaseName) {
+
+		this.databaseName = databaseName;
+	}
+
 	public String getServerLocation() {
 
 		return serverLocation;
+	}
+
+	public void setServerLocation(String serverLocation) {
+
+		this.serverLocation = serverLocation;
 	}
 
 	@Override
