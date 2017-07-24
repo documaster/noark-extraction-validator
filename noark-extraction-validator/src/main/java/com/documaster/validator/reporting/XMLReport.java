@@ -49,9 +49,9 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 
 	private XMLStreamWriter writer;
 
-	XMLReport(T config, String title) {
+	XMLReport(T config, ValidationCollector collector, String title) {
 
-		super(config, title);
+		super(config, collector, title);
 	}
 
 	@Override
@@ -132,13 +132,12 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 	private void writeValidationSummary() throws XMLStreamException {
 
 		start("summary");
-		attr("summary", ValidationCollector.get().getTotalSummaryCount());
-		attr("info", ValidationCollector.get().getTotalInformationCount());
-		attr("warn", ValidationCollector.get().getTotalWarningCount());
-		attr("error", ValidationCollector.get().getTotalErrorCount());
+		attr("summary", getCollector().getTotalSummaryCount());
+		attr("info", getCollector().getTotalInformationCount());
+		attr("warn", getCollector().getTotalWarningCount());
+		attr("error", getCollector().getTotalErrorCount());
 
-		for (Map.Entry<String, List<ValidationResult>> group : ValidationCollector.get()
-				.getAllResults().entrySet()) {
+		for (Map.Entry<String, List<ValidationResult>> group : getCollector().getAllResults().entrySet()) {
 
 			startGroup(group.getKey());
 
@@ -157,7 +156,7 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 
 		start("details");
 
-		for (Map.Entry<String, List<ValidationResult>> group : ValidationCollector.get().getAllResults().entrySet()) {
+		for (Map.Entry<String, List<ValidationResult>> group : getCollector().getAllResults().entrySet()) {
 
 			startGroup(group.getKey());
 
@@ -210,10 +209,10 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 		start("group");
 
 		attr("name", groupName);
-		attr("summary", ValidationCollector.get().getSummaryCountIn(groupName));
-		attr("info", ValidationCollector.get().getInformationCountIn(groupName));
-		attr("warn", ValidationCollector.get().getWarningCountIn(groupName));
-		attr("error", ValidationCollector.get().getErrorCountIn(groupName));
+		attr("summary", getCollector().getSummaryCountIn(groupName));
+		attr("info", getCollector().getInformationCountIn(groupName));
+		attr("warn", getCollector().getWarningCountIn(groupName));
+		attr("error", getCollector().getErrorCountIn(groupName));
 	}
 
 	private void startTest(ValidationResult test) throws XMLStreamException {

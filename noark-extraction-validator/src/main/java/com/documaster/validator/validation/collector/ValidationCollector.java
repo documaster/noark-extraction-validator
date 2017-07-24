@@ -17,14 +17,17 @@
  */
 package com.documaster.validator.validation.collector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Collects information about the executed validation.
  */
 public class ValidationCollector {
-
-	private static ValidationCollector instance;
 
 	private Map<String, List<ValidationResult>> results;
 
@@ -40,7 +43,7 @@ public class ValidationCollector {
 
 	private Map<String, ValidationStatus> statuses;
 
-	private ValidationCollector() {
+	public ValidationCollector() {
 
 		results = new LinkedHashMap<>();
 
@@ -49,15 +52,6 @@ public class ValidationCollector {
 		warningCount = new HashMap<>();
 		errorCount = new HashMap<>();
 		statuses = new HashMap<>();
-	}
-
-	public static ValidationCollector get() {
-
-		if (instance == null) {
-			instance = new ValidationCollector();
-		}
-
-		return instance;
 	}
 
 	public Map<String, List<ValidationResult>> getAllResults() {
@@ -92,17 +86,17 @@ public class ValidationCollector {
 
 	public int getInformationCountIn(String groupName) {
 
-		return informationCount.containsKey(groupName) ? informationCount.get(groupName) : 0;
+		return informationCount.getOrDefault(groupName, 0);
 	}
 
 	public int getWarningCountIn(String groupName) {
 
-		return warningCount.containsKey(groupName) ? warningCount.get(groupName) : 0;
+		return warningCount.getOrDefault(groupName, 0);
 	}
 
 	public int getErrorCountIn(String groupName) {
 
-		return errorCount.containsKey(groupName) ? errorCount.get(groupName) : 0;
+		return errorCount.getOrDefault(groupName, 0);
 	}
 
 	public int getTotalResultCountIn(String groupName) {

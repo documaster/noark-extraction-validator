@@ -35,12 +35,19 @@ public class XMLValidator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(XMLValidator.class);
 
-	public static boolean isValid(Noark53PackageEntity entity, boolean ignoreNonComplianceToSchema) {
+	private ValidationCollector collector;
+
+	public XMLValidator(ValidationCollector collector) {
+
+		this.collector = collector;
+	}
+
+	public boolean isValid(Noark53PackageEntity entity, boolean ignoreNonComplianceToSchema) {
 
 		LOGGER.info("Validating XML File {} ...", entity.getXmlFile());
 
 		ValidationResult result = new ValidationResult(
-				ValidationGroup.PACKAGE.getNextGroupId(), entity.getXmlFileName() + " integrity",
+				ValidationGroup.PACKAGE.getNextGroupId(collector), entity.getXmlFileName() + " integrity",
 				"Tests whether the XML file 1) exists, 2) is valid XML, 3) complies with the Noark schemas, "
 						+ "and, optionally, 4) complies with the custom schemas",
 				ValidationGroup.PACKAGE.getName());
@@ -62,7 +69,7 @@ public class XMLValidator {
 					entity.getXmlFile(), result, entity.getCustomSchemas(), NoarkXMLHandler.Schema.CUSTOM, true);
 		}
 
-		ValidationCollector.get().collect(result);
+		collector.collect(result);
 
 		return exists && isWellFormed && (compliesWithNoarkSchemas || ignoreNonComplianceToSchema);
 	}
@@ -111,7 +118,8 @@ public class XMLValidator {
 			// Report a summary of the errors and warnings
 			List<BaseItem> summaryItems = handler.getSummaryOfExceptionsAsItems();
 			result.addSummaries(summaryItems);
-			result.addInformation(new BaseItem().add("Information",
+			result.addInformation(new BaseItem().add(
+					"Information",
 					String.format("Distinct errors in %s schema(s): %d", schemaType, summaryItems.size())));
 
 			return false;

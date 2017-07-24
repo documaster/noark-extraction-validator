@@ -33,12 +33,19 @@ public class XSDValidator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(XSDValidator.class);
 
-	public static boolean isValid(File xsdFile, String checksum) {
+	private ValidationCollector collector;
+
+	public XSDValidator(ValidationCollector collector) {
+
+		this.collector = collector;
+	}
+
+	public boolean isValid(File xsdFile, String checksum) {
 
 		LOGGER.info("Validating XSD File {} ...", xsdFile);
 
 		ValidationResult result = new ValidationResult(
-				ValidationGroup.PACKAGE.getNextGroupId(), xsdFile.getName() + " integrity",
+				ValidationGroup.PACKAGE.getNextGroupId(collector), xsdFile.getName() + " integrity",
 				"Tests whether the XSD schema 1) exists, 2) is valid XML, and 3) its checksum "
 						+ "matches the checksum of its Noark counterpart",
 				ValidationGroup.PACKAGE.getName());
@@ -47,7 +54,7 @@ public class XSDValidator {
 		boolean isWellFormed = validateIntegrity(xsdFile, result);
 		boolean checksumMatches = validateChecksum(xsdFile, result, checksum);
 
-		ValidationCollector.get().collect(result);
+		collector.collect(result);
 
 		return exists && isWellFormed && checksumMatches;
 	}
