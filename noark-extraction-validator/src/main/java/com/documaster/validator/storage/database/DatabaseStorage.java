@@ -25,8 +25,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.documaster.validator.storage.core.Storage;
 import com.documaster.validator.storage.model.BaseItem;
@@ -119,11 +121,14 @@ public class DatabaseStorage extends Storage {
 	@Override
 	public void writeItem(Item item) throws SQLException {
 
-		String fields = StringUtils.join(item.getValues().keySet(), ", ");
+		// Get the item's fields
+		Set<String> fieldNames = new HashSet<>(item.getValues().keySet());
 
-		String[] parametersArray = new String[item.getValues().keySet().size()];
-		Arrays.fill(parametersArray, "?");
-		String parameters = StringUtils.join(parametersArray, ", ");
+		// Retain only the ones found in its item definition... ignore the rest
+		fieldNames.retainAll(item.getItemDef().getFields().keySet());
+
+		String fields = StringUtils.join(fieldNames, ", ");
+		String parameters = StringUtils.join(Collections.nCopies(fieldNames.size(), "?"), ", ");
 
 		String insertStmt = MessageFormat
 				.format("INSERT INTO {0} ( {1} ) VALUES ( {2} );", item.getItemDef().getFullName(), fields, parameters);
@@ -131,7 +136,9 @@ public class DatabaseStorage extends Storage {
 		try (PreparedStatement statement = conn.prepareStatement(insertStmt)) {
 
 			int i = 0;
-			for (Object value : item.getValues().values()) {
+			for (String field : fieldNames) {
+
+				Object value = item.getValues().get(field);
 
 				// Convert date strings...
 				if (value != null && value.toString()
