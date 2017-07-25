@@ -142,7 +142,9 @@ public class Noark53Validator extends Validator<Noark53Command> {
 		File tempNoarkSchemasDirectory = Files.createTempDirectory("noark-extraction-validator-").toFile();
 
 		// Initialize the package structure
-		structure = new Noark53PackageStructure(getCommand().getExtractionDirectory(), tempNoarkSchemasDirectory);
+		structure = new Noark53PackageStructure(
+				getCommand().getExtractionDirectory(), tempNoarkSchemasDirectory,
+				getCommand().getCustomSchemaLocation());
 
 		// Create temporary files containing the original Noark 5.3 schemas
 		for (Noark53PackageEntity entity : structure.values()) {

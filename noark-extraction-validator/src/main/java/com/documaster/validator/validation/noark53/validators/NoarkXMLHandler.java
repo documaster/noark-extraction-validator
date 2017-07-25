@@ -17,14 +17,15 @@
  */
 package com.documaster.validator.validation.noark53.validators;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import java.util.stream.Stream;
 
+import com.documaster.validator.exceptions.aggregation.SAXParseExceptionAggregator;
 import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.validation.utils.AbstractReusableXMLHandler;
 import org.apache.commons.lang.StringUtils;
@@ -43,7 +44,7 @@ class NoarkXMLHandler extends AbstractReusableXMLHandler {
 	private Schema schema;
 	private String elementType;
 	private final Map<NoarkReferenceField, String> idFields = new LinkedHashMap<>();
-	private List<NoarkSAXParseException> exceptions = new ArrayList<>();
+	private List<NoarkSAXParseException> exceptions = new LinkedList<>();
 	private StringBuilder characters = new StringBuilder();
 
 	NoarkXMLHandler(Schema schema) {
@@ -77,6 +78,20 @@ class NoarkXMLHandler extends AbstractReusableXMLHandler {
 	public boolean hasExceptions() {
 
 		return !exceptions.isEmpty();
+	}
+
+	@Override
+	public List<BaseItem> getSummaryOfExceptionsAsItems() {
+
+		return new SAXParseExceptionAggregator<NoarkSAXParseException>()
+				.aggregate(exceptions)
+				.entrySet()
+				.stream()
+				.map(k -> new BaseItem()
+						.add("Schema", schema.toString())
+						.add("Message", k.getKey())
+						.add("Count", k.getValue()))
+				.collect(collectingAndThen(toList(), Collections::unmodifiableList));
 	}
 
 	@Override
@@ -174,7 +189,7 @@ class NoarkXMLHandler extends AbstractReusableXMLHandler {
 	}
 
 	public enum Schema {
-		PACKAGE, NOARK;
+		PACKAGE, NOARK, CUSTOM;
 	}
 
 	private enum NoarkElementType {

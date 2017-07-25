@@ -17,8 +17,11 @@
     <xs:complexType name="execution">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element name="parameter" type="dm:parameter"/>
+            <xs:element name="other" type="dm:other"/>
         </xs:choice>
         <xs:attribute name="version" type="xs:string" use="required"/>
+        <xs:attribute name="command" type="xs:string" use="required"/>
+        <xs:attribute name="generated" type="xs:string" use="required"/>
     </xs:complexType>
 
     <xs:complexType name="parameter">
@@ -28,10 +31,19 @@
         <xs:attribute name="required" type="xs:string" use="required"/>
     </xs:complexType>
 
+    <xs:complexType name="other">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="name" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
     <xs:complexType name="summary">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element name="group" type="dm:group"/>
         </xs:choice>
+        <xs:attribute name="summary" type="xs:integer" use="required"/>
         <xs:attribute name="info" type="xs:integer" use="required"/>
         <xs:attribute name="warn" type="xs:integer" use="required"/>
         <xs:attribute name="error" type="xs:integer" use="required"/>
@@ -48,6 +60,7 @@
             <xs:element name="test" type="dm:test"/>
         </xs:choice>
         <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="summary" type="xs:integer" use="required"/>
         <xs:attribute name="info" type="xs:integer" use="required"/>
         <xs:attribute name="warn" type="xs:integer" use="required"/>
         <xs:attribute name="error" type="xs:integer" use="required"/>
@@ -55,6 +68,7 @@
 
     <xs:complexType name="test">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="summary" type="dm:table" minOccurs="0" maxOccurs="1"/>
             <xs:element name="info" type="dm:table" minOccurs="0" maxOccurs="1"/>
             <xs:element name="warn" type="dm:table" minOccurs="0" maxOccurs="1"/>
             <xs:element name="error" type="dm:table" minOccurs="0" maxOccurs="1"/>
@@ -62,6 +76,7 @@
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="name" type="xs:string" use="required"/>
         <xs:attribute name="description" type="xs:string" use="required"/>
+        <xs:attribute name="summary" type="xs:integer" use="required"/>
         <xs:attribute name="info" type="xs:integer" use="required"/>
         <xs:attribute name="warn" type="xs:integer" use="required"/>
         <xs:attribute name="error" type="xs:integer" use="required"/>

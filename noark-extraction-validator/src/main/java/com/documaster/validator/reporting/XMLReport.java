@@ -116,6 +116,15 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 			// End parameter
 			end();
 		}
+
+		// Command-specific (other) information
+		for (Map.Entry<String, String> commandInfo : getConfig().getExecutionInfo().getCommandInfo().entrySet()) {
+			start("other");
+			attr("name", commandInfo.getKey());
+			cdataContent(commandInfo.getValue());
+			end();
+		}
+
 		// End section
 		end();
 	}
@@ -123,6 +132,7 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 	private void writeValidationSummary() throws XMLStreamException {
 
 		start("summary");
+		attr("summary", ValidationCollector.get().getTotalSummaryCount());
 		attr("info", ValidationCollector.get().getTotalInformationCount());
 		attr("warn", ValidationCollector.get().getTotalWarningCount());
 		attr("error", ValidationCollector.get().getTotalErrorCount());
@@ -155,6 +165,7 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 
 				startTest(test);
 
+				testDetails("summary", test.getSummary());
 				testDetails("info", test.getInformation());
 				testDetails("warn", test.getWarnings());
 				testDetails("error", test.getErrors());
@@ -199,6 +210,7 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 		start("group");
 
 		attr("name", groupName);
+		attr("summary", ValidationCollector.get().getSummaryCountIn(groupName));
 		attr("info", ValidationCollector.get().getInformationCountIn(groupName));
 		attr("warn", ValidationCollector.get().getWarningCountIn(groupName));
 		attr("error", ValidationCollector.get().getErrorCountIn(groupName));
@@ -211,6 +223,7 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 		attr("id", test.getId());
 		attr("name", test.getTitle());
 		attr("description", test.getDescription());
+		attr("summary", test.getSummary().size());
 		attr("info", test.getInformation().size());
 		attr("warn", test.getWarnings().size());
 		attr("error", test.getErrors().size());
@@ -251,6 +264,11 @@ class XMLReport<T extends Command<?> & ConfigurableReporting> extends Report<T> 
 	private void content(Object data) throws XMLStreamException {
 
 		writer.writeCharacters(data != null ? data.toString() : "-");
+	}
+
+	private void cdataContent(Object data) throws XMLStreamException {
+
+		writer.writeCData(data != null ? data.toString() : "-");
 	}
 
 	private void end() throws XMLStreamException {

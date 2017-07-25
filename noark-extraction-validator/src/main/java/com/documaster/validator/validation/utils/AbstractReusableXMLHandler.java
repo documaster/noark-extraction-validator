@@ -36,6 +36,11 @@ public abstract class AbstractReusableXMLHandler extends DefaultHandler {
 	public abstract boolean hasExceptions();
 
 	/**
+	 * Returns a summary of the encountered exceptions as {@link BaseItem}s.
+	 */
+	public abstract List<BaseItem> getSummaryOfExceptionsAsItems();
+
+	/**
 	 * Sorts the encountered exceptions and returns an ordered list of {@link BaseItem}s created from the sorted list of
 	 * exceptions.
 	 * <br/>
