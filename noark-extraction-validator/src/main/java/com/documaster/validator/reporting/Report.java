@@ -23,6 +23,7 @@ import java.util.Date;
 
 import com.documaster.validator.config.commands.Command;
 import com.documaster.validator.config.delegates.ConfigurableReporting;
+import com.documaster.validator.validation.collector.ValidationCollector;
 import org.apache.commons.lang.StringUtils;
 
 public abstract class Report<T extends Command<?> & ConfigurableReporting> {
@@ -31,15 +32,23 @@ public abstract class Report<T extends Command<?> & ConfigurableReporting> {
 
 	private String title;
 
-	Report(T config, String title) {
+	private ValidationCollector collector;
+
+	Report(T config, ValidationCollector collector, String title) {
 
 		this.config = config;
+		this.collector = collector;
 		this.title = title;
 	}
 
 	protected T getConfig() {
 
 		return config;
+	}
+
+	protected ValidationCollector getCollector() {
+
+		return collector;
 	}
 
 	protected String getTitle() {

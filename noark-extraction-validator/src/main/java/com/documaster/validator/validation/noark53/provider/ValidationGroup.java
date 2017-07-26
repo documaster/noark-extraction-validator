@@ -67,8 +67,8 @@ public enum ValidationGroup {
 		return prefix;
 	}
 
-	public String getNextGroupId() {
+	public String getNextGroupId(ValidationCollector collector) {
 
-		return prefix + (ValidationCollector.get().getTotalResultCountIn(name) + 1);
+		return prefix + (collector.getTotalResultCountIn(name) + 1);
 	}
 }

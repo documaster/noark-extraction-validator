@@ -44,16 +44,16 @@ import com.documaster.validator.storage.model.ItemDef;
 import com.documaster.validator.validation.Validator;
 import com.documaster.validator.validation.collector.ValidationCollector;
 import com.documaster.validator.validation.collector.ValidationResult;
+import com.documaster.validator.validation.noark53.model.Noark53PackageEntity;
+import com.documaster.validator.validation.noark53.model.Noark53PackageStructure;
 import com.documaster.validator.validation.noark53.parsers.BaseHandler;
 import com.documaster.validator.validation.noark53.parsers.HandlerFactory;
 import com.documaster.validator.validation.noark53.provider.ValidationGroup;
+import com.documaster.validator.validation.noark53.provider.ValidationProvider;
 import com.documaster.validator.validation.noark53.provider.data.Data;
 import com.documaster.validator.validation.noark53.provider.data.ValidationData;
-import com.documaster.validator.validation.noark53.provider.ValidationProvider;
 import com.documaster.validator.validation.noark53.provider.rules.Check;
 import com.documaster.validator.validation.noark53.provider.rules.Test;
-import com.documaster.validator.validation.noark53.model.Noark53PackageEntity;
-import com.documaster.validator.validation.noark53.model.Noark53PackageStructure;
 import com.documaster.validator.validation.noark53.validators.XMLValidator;
 import com.documaster.validator.validation.noark53.validators.XSDValidator;
 import com.documaster.validator.validation.utils.ChecksumCalculator;
@@ -75,11 +75,11 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 	public Noark53Validator(Noark53Command command) {
 
-		super(command);
+		super(command, new ValidationCollector());
 	}
 
 	@Override
-	public void run() throws Exception {
+	public ValidationCollector run() throws Exception {
 
 		LOGGER.info("Executing Noark 5.3 extraction validation ...");
 
@@ -113,24 +113,26 @@ public class Noark53Validator extends Validator<Noark53Command> {
 			LOGGER.error("Noark 5.3 validation failed.", ex);
 
 			ValidationResult error = new ValidationResult(
-					ValidationGroup.EXCEPTIONS.getNextGroupId(), "Exceptions",
+					ValidationGroup.EXCEPTIONS.getNextGroupId(getCollector()), "Exceptions",
 					"Unexpected errors that the validator could not recover from",
 					ValidationGroup.EXCEPTIONS.getName());
 			error.addError(new BaseItem().add("exception", ex.getMessage()));
 
-			ValidationCollector.get().collect(error);
+			collect(error);
 
 		} finally {
 
 			FileUtils.deleteQuietly(structure.getNoarkSchemasDirectory());
 
-			ReportFactory.generateReports(getCommand(), getArchiveTitle());
+			ReportFactory.generateReports(getCommand(), getCollector(), getArchiveTitle());
 
 			if (Storage.get() != null) {
 				Storage.get().stopWriter();
 				Storage.get().destroy();
 			}
 		}
+
+		return getCollector();
 	}
 
 	/**
@@ -168,6 +170,9 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 		boolean stopValidation = false;
 
+		XMLValidator xmlValidator = new XMLValidator(getCollector());
+		XSDValidator xsdValidator = new XSDValidator(getCollector());
+
 		for (Noark53PackageEntity entity : structure.values()) {
 
 			if (!entity.getXmlFile().isFile() && entity.isOptional()) {
@@ -177,11 +182,11 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 			// Validate the extraction-distributed XSD schemas
 			for (File xsdSchema : entity.getPackageSchemas()) {
-				XSDValidator.isValid(xsdSchema, getCommand().getProperties().getChecksumFor(xsdSchema.getName()));
+				xsdValidator.isValid(xsdSchema, getCommand().getProperties().getChecksumFor(xsdSchema.getName()));
 			}
 
 			// Validate the extraction-distributed XML files
-			boolean isXMLValid = XMLValidator.isValid(entity, getCommand().getIgnoreNonCompliantXML());
+			boolean isXMLValid = xmlValidator.isValid(entity, getCommand().getIgnoreNonCompliantXML());
 			stopValidation = stopValidation || !isXMLValid;
 		}
 
@@ -268,13 +273,13 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 			if (exceptionHandler.hasExceptions()) {
 				ValidationResult errorResult = new ValidationResult(
-						xmlHandler.getValidationGroup().getNextGroupId(), "Parse errors",
+						xmlHandler.getValidationGroup().getNextGroupId(getCollector()), "Parse errors",
 						"Exceptions that occurred while parsing the package XML files. Such exceptions might "
 								+ "indicate an error in the validator itself and should be reported to its "
 								+ "developers. Test results cannot be trusted upon such errors.",
 						xmlHandler.getValidationGroup().getName());
 				errorResult.addErrors(exceptionHandler.getExceptionsAsItems());
-				ValidationCollector.get().collect(errorResult);
+				collect(errorResult);
 			}
 		}
 	}
@@ -339,7 +344,7 @@ public class Noark53Validator extends Validator<Noark53Command> {
 				result.addInformation(Storage.get().fetch(informationRequest));
 			}
 
-			ValidationCollector.get().collect(result);
+			collect(result);
 		}
 
 		for (Test test : vp.getTests()) {
@@ -365,7 +370,7 @@ public class Noark53Validator extends Validator<Noark53Command> {
 				result.addErrors(Storage.get().fetch(errorRequest));
 			}
 
-			ValidationCollector.get().collect(result);
+			collect(result);
 		}
 	}
 

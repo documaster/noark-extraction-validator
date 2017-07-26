@@ -73,6 +73,11 @@ public class Noark53Command extends Command<Noark53Properties> implements Config
 
 	private Noark53Properties properties;
 
+	public Noark53Command() {
+
+		super();
+	}
+
 	public Noark53Command(JCommander argParser) {
 
 		super(argParser);
@@ -83,14 +88,29 @@ public class Noark53Command extends Command<Noark53Properties> implements Config
 		return extractionDirectory;
 	}
 
+	public void setExtractionDirectory(File extractionDirectory) {
+
+		this.extractionDirectory = extractionDirectory;
+	}
+
 	public boolean getIgnoreNonCompliantXML() {
 
 		return ignoreNonCompliantXML;
 	}
 
+	public void setIgnoreNonCompliantXML(boolean ignoreNonCompliantXML) {
+
+		this.ignoreNonCompliantXML = ignoreNonCompliantXML;
+	}
+
 	public File getCustomSchemaLocation() {
 
 		return customSchemaLocation;
+	}
+
+	public void setCustomSchemaLocation(File customSchemaLocation) {
+
+		this.customSchemaLocation = customSchemaLocation;
 	}
 
 	@Override
@@ -99,10 +119,20 @@ public class Noark53Command extends Command<Noark53Properties> implements Config
 		return reportConfiguration;
 	}
 
+	public void setReportConfiguration(ReportConfiguration reportConfiguration) {
+
+		this.reportConfiguration = reportConfiguration;
+	}
+
 	@Override
 	public StorageConfiguration getStorageConfiguration() {
 
 		return storageConfiguration;
+	}
+
+	public void setStorageConfiguration(StorageConfiguration storageConfiguration) {
+
+		this.storageConfiguration = storageConfiguration;
 	}
 
 	@Override

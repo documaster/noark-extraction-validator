@@ -55,9 +55,9 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 
 	private Map<StyleName, CellStyle> styles;
 
-	ExcelReport(T config, ReportType reportType, String title) {
+	ExcelReport(T config, ReportType reportType, ValidationCollector collector, String title) {
 
-		super(config, title);
+		super(config, collector, title);
 		this.reportType = reportType;
 	}
 
@@ -286,21 +286,21 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 
 		Map<String, Cell> groupNameCells = new HashMap<>();
 
-		for (String groupTitle : ValidationCollector.get().getAllResults().keySet()) {
+		for (String groupTitle : getCollector().getAllResults().keySet()) {
 
 			Row groupRow = ExcelUtils.createRow(summarySheet);
 
-			ValidationStatus groupStatus = ValidationCollector.get().getGroupStatus(groupTitle);
+			ValidationStatus groupStatus = getCollector().getGroupStatus(groupTitle);
 			CellStyle groupStatusStyle = getResultStatusStyleFromValidationStatus(groupStatus);
 
 			ExcelUtils.createCell("", 0, groupStatusStyle, groupRow); // Status
 			groupNameCells.put(
 					groupTitle,
 					ExcelUtils.createCell(groupTitle, 1, styles.get(StyleName.RESULT_TITLE), groupRow)); // Title
-			ExcelUtils.createCell(ValidationCollector.get().getSummaryCountIn(groupTitle), 2, groupRow); // Summary
-			ExcelUtils.createCell(ValidationCollector.get().getInformationCountIn(groupTitle), 3, groupRow); // Info
-			ExcelUtils.createCell(ValidationCollector.get().getWarningCountIn(groupTitle), 4, groupRow); // Warnings
-			ExcelUtils.createCell(ValidationCollector.get().getErrorCountIn(groupTitle), 5, groupRow); // Errors
+			ExcelUtils.createCell(getCollector().getSummaryCountIn(groupTitle), 2, groupRow); // Summary
+			ExcelUtils.createCell(getCollector().getInformationCountIn(groupTitle), 3, groupRow); // Info
+			ExcelUtils.createCell(getCollector().getWarningCountIn(groupTitle), 4, groupRow); // Warnings
+			ExcelUtils.createCell(getCollector().getErrorCountIn(groupTitle), 5, groupRow); // Errors
 		}
 
 		return groupNameCells;
@@ -315,10 +315,10 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 
 		ExcelUtils.createCell("", 0, styles.get(StyleName.GROUP), totalsRow); // Status
 		ExcelUtils.createCell("Total", 1, styles.get(StyleName.RESULT_TITLE), totalsRow); // Title
-		ExcelUtils.createCell(ValidationCollector.get().getTotalSummaryCount(), 2, totalsRow); // Summary count
-		ExcelUtils.createCell(ValidationCollector.get().getTotalInformationCount(), 3, totalsRow); // Information count
-		ExcelUtils.createCell(ValidationCollector.get().getTotalWarningCount(), 4, totalsRow); // Warnings count
-		ExcelUtils.createCell(ValidationCollector.get().getTotalErrorCount(), 5, totalsRow); // Errors count
+		ExcelUtils.createCell(getCollector().getTotalSummaryCount(), 2, totalsRow); // Summary count
+		ExcelUtils.createCell(getCollector().getTotalInformationCount(), 3, totalsRow); // Information count
+		ExcelUtils.createCell(getCollector().getTotalWarningCount(), 4, totalsRow); // Warnings count
+		ExcelUtils.createCell(getCollector().getTotalErrorCount(), 5, totalsRow); // Errors count
 	}
 
 	/**
@@ -350,7 +350,7 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 
 		Map<String, TotalsPerResultCells> tableCells = new HashMap<>();
 
-		for (Map.Entry<String, List<ValidationResult>> group : ValidationCollector.get().getAllResults().entrySet()) {
+		for (Map.Entry<String, List<ValidationResult>> group : getCollector().getAllResults().entrySet()) {
 
 			String groupName = group.getKey();
 			List<ValidationResult> results = group.getValue();
@@ -467,7 +467,7 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 	 */
 	private void createDetailsSheet(Map<String, TotalsPerResultCells> totalsPerResultCellRefs) {
 
-		for (List<ValidationResult> results : ValidationCollector.get().getAllResults().values()) {
+		for (List<ValidationResult> results : getCollector().getAllResults().values()) {
 			for (ValidationResult result : results) {
 
 				Sheet resultSheet = workbook.createSheet(result.getId());

@@ -38,6 +38,14 @@ OR
 java -jar noark-extraction-validator-0.2.0.jar --help
 ```
 
+**Logging**
+
+If you would like to enable logging in the console or in a specific file, you will need to provide a reference to a log4j2 configuration:
+```
+java -Dlog4j.configurationFile='/path/to/log4j2.xml' -jar noark-extraction-validator-0.2.0.jar noark53 ...
+```
+A default configuration exists in a directory called `config/`.
+
 **Validating a Noark 5.3 extraction package**
 
 The shortest command to validate a package is:
@@ -88,6 +96,26 @@ Similar to the above but note that Windows uses a different path separator:
 ```
 
 Also note that the above command specifies the path to Java explicitly to make sure that we are using a JDK, not a JRE (if one is installed). There are other ways to achieve the same thing.
+
+**Running as a library**
+
+The application can also be run as a library. To do so, you will need to prepare a command, create a validator, and run it:
+```
+# Initialize report configuration
+ReportConfiguration reportConfiguration = new ReportConfiguration();
+reportConfiguration.setOutputDir(new File("/path/to/output/directory/"));
+reportConfiguration.setOutputTypes(Arrays.asList(ReportType.EXCEL_XLSX, ReportType.XML));
+
+# Create a command
+Noark53Command command = new Noark53Command();
+command.setExtractionDirectory(new File("/path/to/extraction"));
+command.setReportConfiguration(reportConfiguration);
+
+# Create a validator
+Validator validator = ValidationFactory.createValidator(ValidatorType.byName(command.getName()), command);
+
+validator.run();
+```
 
 # Samples
 

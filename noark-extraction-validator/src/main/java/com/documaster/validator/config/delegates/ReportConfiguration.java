@@ -55,9 +55,19 @@ public class ReportConfiguration implements Delegate {
 		return outputDir;
 	}
 
+	public void setOutputDir(File outputDir) {
+
+		this.outputDir = outputDir;
+	}
+
 	public List<ReportType> getOutputTypes() {
 
 		return outputTypes;
+	}
+
+	public void setOutputTypes(List<ReportType> outputTypes) {
+
+		this.outputTypes = outputTypes;
 	}
 
 	@Override

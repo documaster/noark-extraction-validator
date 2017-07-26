@@ -38,6 +38,10 @@ public abstract class Command<T extends InternalProperties> {
 
 	private JCommander argParser;
 
+	public Command() {
+
+	}
+
 	public Command(JCommander argParser) {
 
 		this.argParser = argParser;
@@ -68,8 +72,10 @@ public abstract class Command<T extends InternalProperties> {
 
 		List<ParameterInfo> parameters = new ArrayList<>();
 
-		for (ParameterDescription param : argParser.getCommands().get(getName()).getParameters()) {
-			parameters.add(new ParameterInfo(param));
+		if (argParser != null) {
+			for (ParameterDescription param : argParser.getCommands().get(getName()).getParameters()) {
+				parameters.add(new ParameterInfo(param));
+			}
 		}
 
 		ExecutionInfo executionInfo = new ExecutionInfo(parameters);
