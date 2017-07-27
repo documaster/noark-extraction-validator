@@ -31,28 +31,47 @@ mvn clean package
 **Help**
 
 ```
-java -jar noark-extraction-validator-0.1.0.jar
+java -jar noark-extraction-validator-0.2.0.jar
 ```
 OR
 ```
-java -jar noark-extraction-validator-0.1.0.jar --help
+java -jar noark-extraction-validator-0.2.0.jar --help
 ```
+
+**Logging**
+
+If you would like to enable logging in the console or in a specific file, you will need to provide a reference to a log4j2 configuration:
+```
+java -Dlog4j.configurationFile='/path/to/log4j2.xml' -jar noark-extraction-validator-0.2.0.jar noark53 ...
+```
+A default configuration exists in a directory called `config/`.
 
 **Validating a Noark 5.3 extraction package**
 
 The shortest command to validate a package is:
 ```
-java -jar noark-extraction-validator-0.1.0.jar noark53 -extraction /path/to/uttrekk/directory
+java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory
 ```
 More complex scenarios would include modifying the output report type and/or directory:
 ```
-java -jar noark-extraction-validator-0.1.0.jar noark53 -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -output-type excel_xls
+java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -output-type excel_xls
 ```
+You can request a report to be generated in multiple formats:
+```
+java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -output-type excel_xls -output-type xml
+```
+You can specify custom Noark schemas to be used in the validation process (in addition to the Noark ones and the extraction package ones). In such cases the reports would also include information about the compliance of the extraction package to these schemas:
+```
+java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory -custom-schema-location /path/to/custom/schemas/directory
+```
+The specified `-custom-schema-location` directory may contain any custom Noark 5 schemas and a UTF-8-encoded description.txt file. The contents of this file will be copied to the Execution Information sections of the generated reports for completeness.
+
+
 You can also change the persistence settings:
 ```
-java -jar noark-extraction-validator-0.1.0.jar noark53 -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -db-name myDBName -storage hsqldb_server -server-location http://my.hsqldb.server.com
+java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -db-name myDBName -storage hsqldb_server -server-location http://my.hsqldb.server.com
 ```
-Do not modify the persistence settings unless:
+*Do not modify* the persistence settings unless:
 * You would like to run several instances of the validator at the same time
   * In this case, you need to modify the target database name to avoid conflicts (-db-name).
 * You would like to persist the database created by the validator
@@ -64,20 +83,43 @@ Do not modify the persistence settings unless:
 
 Making the validation process less strict is also possible. The default behavior of the validator is to stop execution if an XML file does not comply with the corresponding Noark XSD schema. To continue execution instead:
 ```
-java -jar noark-extraction-validator-0.1.0.jar noark53 -extraction /path/to/uttrekk/directory -ignore-non-compliant-xml
+java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory -ignore-non-compliant-xml
 ```
-This, however, is a bad practice that we would strongly advise against - the reason being that the result of the validation in such cases may be unreliable because crucial metadata elements are missing.
+This, however, is a bad practice that we would *advise strongly against* - the reason being that the result of the validation in such cases may be unreliable because crucial metadata elements are missing.
 
 **Validating a Noark 5.3 extraction package - Windows**
 
 Similar to the above but note that Windows uses a different path separator:
 
 ```
-"c:\Program Files\Java\jdk1.8.0_111\bin\java" -jar noark-extraction-validator-0.1.0.jar noark53 -extraction c:\path\to\uttrekk -output-dir c:\path\to\output\reports\dir
+"c:\Program Files\Java\jdk1.8.0_111\bin\java" -jar noark-extraction-validator-0.2.0.jar noark53 -extraction c:\path\to\uttrekk -output-dir c:\path\to\output\reports\dir
 ```
 
 Also note that the above command specifies the path to Java explicitly to make sure that we are using a JDK, not a JRE (if one is installed). There are other ways to achieve the same thing.
 
+**Running as a library**
+
+The application can also be run as a library. To do so, you will need to prepare a command, create a validator, and run it:
+```
+# Initialize report configuration
+ReportConfiguration reportConfiguration = new ReportConfiguration();
+reportConfiguration.setOutputDir(new File("/path/to/output/directory/"));
+reportConfiguration.setOutputTypes(Arrays.asList(ReportType.EXCEL_XLSX, ReportType.XML));
+
+# Create a command
+Noark53Command command = new Noark53Command();
+command.setExtractionDirectory(new File("/path/to/extraction"));
+command.setReportConfiguration(reportConfiguration);
+
+# Create a validator
+Validator validator = ValidationFactory.createValidator(ValidatorType.byName(command.getName()), command);
+
+validator.run();
+```
+
+# Samples
+
+The [Noark Extraction Validator Samples repository](https://github.com/documaster/noark-extraction-validator-samples) contains a number of sample extraction packages and their corresponding validation reports produced by this tool. Note that the samples are of varying quality in order to demonstrate the capabilities of the validator.
 
 <a name="validationRules"></a>
 # Noark 5.3 Validation
@@ -95,10 +137,10 @@ ROOT
       business-specific-metadata.xml (vendor-dependent; may not exist)
       endringslogg.xml
       endringslogg.xsd
-      loependeJournal.xml
-      loependeJournal.xsd
-      offentligJournal.xml
-      offentligJournal.xsd
+      loependeJournal.xml (optional)
+      loependeJournal.xsd (optional)
+      offentligJournal.xml (optional)
+      offentligJournal.xsd (optional)
    info.xml (not well-defined currently)
 ```
 
@@ -134,77 +176,134 @@ ROOT
 
 ## Package structure validation rules
 The package structure is validated according to the following rules:
+
 * Required XML and XSD files exist in the package and are well-formed:
-  * arkivstruktur.xsd, endringslogg.xsd, offentligJournal.xsd, loependeJournal.xsd, addml.xsd, metadatakatalog.xsd
-  * arkivstruktur.xml, endringslogg.xml, offentligJournal.xml, loependeJournal.xml, arkivuttrekk.xml
+  * arkivstruktur.xsd, endringslogg.xsd, offentligJournal.xsd, loependeJournal.xsd, addml.xsd, metadatakatalog.xsd, where offentligJournal.xsd and loependeJournal.xsd are optional
+  * arkivstruktur.xml, endringslogg.xml, offentligJournal.xml, loependeJournal.xml, arkivuttrekk.xml, where offentligJournal.xml and loependeJournal.xml are optional
 * The checksums of all XSD schemas in the package match the corresponding checksums of the schemas distributed with the Noark 5 standard
 * All XML files in the package match the corresponding XSD schemas distributed with the Noark 5 standard
 
 ## Content validation rules
+There are two distinct categories of validation rules - *checks* and *tests*. Both of them have an ID, title, and description, and belong to a group. *Checks* produce information about a specific aspect of an extraction package whereas *tests* perform validations and may produce warnings and errors. Generally, you will see *checks* printed before *tests* in validation reports.
 
-**common:**
-* [Test] Validity of the arkivstruktur.xml checksum specified in arkivuttrekk.xml
-* [Test] Validity of the arkivstruktur.xsd checksum specified in arkivuttrekk.xml
-* [Test] Validity of the loependeJournal.xml checksum specified in arkivuttrekk.xml
-* [Test] Validity of the loependeJournal.xsd checksum specified in arkivuttrekk.xml
-* [Test] Validity of the offentligJournal.xml checksum specified in arkivuttrekk.xml
-* [Test] Validity of the offentligJournal.xsd checksum specified in arkivuttrekk.xml
-* [Test] Validity of the endringslogg.xml checksum specified in arkivuttrekk.xml
-* [Test] Validity of the endringslogg.xsd checksum specified in arkivuttrekk.xml
+Below are all validation rules ordered by their execution priority (every test is annotated based on the kind of result it produces - info/warning/error):
+
+**package:**
+
+|Type|Results in|ID|Title|Description|
+|---|---|---|---|---|
+|Test|Info,Error|P1|Validity of addml.xsd (existence, well-formedness, compliance with schemas|Tests whether the XSD schema 1) exists, 2) is valid XML, and 3) its checksum matches the checksum of its Noark counterpart.|
+|Test|Info,Warning,Error|P2|Validity of arkivuttrekk.xml (existence, well-formedness, compliance with schemas)|Produces warnings when arkivuttrekk.xml does not comply with the package addml.xsd. Produces errors when arkivuttrekk.xml does not comply with the Noark addml.xsd.|
+|Test|Info,Error|P3|Validity of offentligJournal.xsd (existence, well-formedness, comparison against Noark counterpart)|Tests whether the XSD schema 1) exists, 2) is valid XML, and 3) its checksum matches the checksum of its Noark counterpart.|
+|Test|Info,Warning,Error|P4|Validity of offentligJournal.xml (existence, well-formedness, compliance with schemas)|Produces warnings when offentligJournal.xml does not comply with the package offentligJournal.xsd. Produces errors when offentligJournal.xml does not comply with the Noark offentligJournal.xsd.|
+|Test|Info,Error|P5|Validity of endringslogg.xsd (existence, well-formedness, comparison against Noark counterpart)|Tests whether the XSD schema 1) exists, 2) is valid XML, and 3) its checksum matches the checksum of its Noark counterpart.|
+|Test|Info,Warning,Error|P6|Validity of endringslogg.xml (existence, well-formedness, compliance with schemas)|Produces warnings when endringslogg.xml does not comply with the package endringslogg.xsd. Produces errors when endringslogg.xml does not comply with the Noark endringslogg.xsd.|
+|Test|Info,Error|P7|Validity of metadatakatalog.xsd (existence, well-formedness, comparison against Noark counterpart)|Tests whether the XSD schema 1) exists, 2) is valid XML, and 3) its checksum matches the checksum of its Noark counterpart.|
+|Test|Info,Error|P8|Validity of arkivstruktur.xsd (existence, well-formedness, comparison against Noark counterpart)|Tests whether the XSD schema 1) exists, 2) is valid XML, and 3) its checksum matches the checksum of its Noark counterpart.|
+|Test|Info,Warning,Error|P9|Validity of arkivstruktur.xml (existence, well-formedness, compliance with schemas)|Produces warnings when arkivstruktur.xml does not comply with the package arkivstruktur.xsd. Produces errors when arkivstruktur.xml does not comply with the Noark arkivstruktur.xsd.|
+|Test|Info,Error|P10|Validity of loependeJournal.xsd (existence, well-formedness, comparison against Noark counterpart)|Tests whether the XSD schema 1) exists, 2) is valid XML, and 3) its checksum matches the checksum of its Noark counterpart.|
+|Test|Info,Warning,Error|P11|Validity of loependeJournal.xml (existence, well-formedness, compliance with schemas)|Produces warnings when loependeJournal.xml does not comply with the package loependeJournal.xsd. Produces errors when loependeJournal.xml does not comply with the Noark loependeJournal.xsd.|
 
 **arkivstruktur:**
-* [Test] Extraction-wide system ID uniqueness
-* [Info] Fonds count
-* [Info] Number of series (at least 1 per leaf fonds entity)
-* [Test] Fonds created/finalized dates are within the extraction period start and end dates
-* [Test] Series created/finalized dates are within the extraction period start and end dates
-* [Test] Series status validity
-* [Info] Number of classification systems
-* [Info] Number of classes
-* [Info] Classes without sub-classes, files, or records
-* [Test] File count specified in arkivuttrekk against the actual file count in arkivstruktur
-* [Test] File created/finalized dates are within the extraction period start and end dates
-* [Test] Files are only linked to classes that do not have sub-classes
-* [Info] Number of files per class
-* [Info] Number of Files without sub-files and records
-* [Test] File status validity
-* [Test] Record count specified in arkivuttrekk against the actual Record count in arkivstruktur
-* [Info] Records without a main document (document description)
-* [Test] Record created/finalized dates are within the extraction period start and end dates
-* [Test] Records are only linked to classes that do not have sub-classes
-* [Info] Number of records per class
-* [Info] Number of records without documents (document descriptions)
-* [Test] Record status validity
-* [Info] Number of document descriptions
-* [Info] Number of document descriptions without document objects
-* [Test] Document description status validity
-* [Test] Document Description created/finalized dates are within the extraction period start and end dates
-* [Info] Number of document objects
-* [Test] Document object checksums specified in arkivstruktur against the document object checksums calculated by the validator
-* [Test] Document object file types validity (PDF/A-1b required)
-* [Info] Number of case parties
-* [Info] Number of notes
-* [Info] Number of cross references
-* [Info] Number of precedents
-* [Info] Number of correspondence parties
-* [Info] Number of sign-offs
-* [Info] Number of document flows
-* [Test] Cross-reference the screening value (boolean) specified in arkivuttrekk against the screened objects encountered by the tool
-* [Info] Number of gradings
-* [Test] Cross-reference the disposal decision value (boolean) specified in arkivuttrekk against the disposal decision objects encountered by the tool
-* [Test] Cross-reference the disposal value (boolean) specified in arkivuttrekk against the disposal objects encountered by the tool
-* [Info] Number of conversions
-* [Info] Number of deletions (note that this is different from disposal)
+
+|Type|Results in|ID|Title|Description|
+|---|---|---|---|---|
+|Check|Info|ASC1|Fonds|Number of fonds|
+|Check|Info|ASC2|Classification systems|Number of classification systems grouped by series|
+|Check|Info|ASC3|Classes|Number of classes grouped by classification system|
+|Check|Info|ASC4|Classes without subclasses, files, or records|Number of classes without children of any type, grouped by series|
+|Check|Info|ASC5|Files with classes|Number of files grouped by class and series|
+|Check|Info|ASC6|Files without subfiles or records|Number of files without children of any type, grouped by series|
+|Check|Info|ASC7|Registry entries without a main document (document description)|Number of registry entries without a main document, grouped by series|
+|Check|Info|ASC8|Records with classes|Number of records with classes, grouped by class and series|
+|Check|Info|ASC9|Records without document descriptions|Number of records without document descriptions, grouped by series|
+|Check|Info|ASC10|Document descriptions|Number of document descriptions grouped by series|
+|Check|Info|ASC11|Document descriptions without document objects|Number of document descriptions without document objects, grouped by series|
+|Check|Info|ASC12|Document objects|Number of document objects grouped by series and parent (document description or record)|
+|Check|Info|ASC13|Case parties|Number of case parties grouped by series|
+|Check|Info|ASC14|Notes|Number of notes associated with files, records, or document descriptions, grouped by series|
+|Check|Info|ASC15|Cross references|Number of cross references associated with classes, files, or records, grouped by series|
+|Check|Info|ASC16|Precedents|Number of precedents associated with files or records, grouped by series|
+|Check|Info|ASC17|Sign-offs|Number of sign-offs grouped by series|
+|Check|Info|ASC18|Document flows|Number of document flows grouped by series|
+|Check|Info|ASC19|Gradings|Number of gradings associated with series, classes, files, records, or document descriptions|
+|Check|Info|ASC20|Conversions|Number of conversions grouped by series|
+|Check|Info|ASC21|Deletions (apart from disposals)|Number of deletions (apart from disposals)|
+|Test|Info,Error|AST1|Extraction-wide systemID uniqueness|Tests whether the same systemID has been used for more than one object in the archive.|
+|Test|Info,Error|AST2|Series|Provides information about the number of series in the archive, and tests whether a fonds without any series exists.|
+|Test|Info,Warning|AST3|Fonds period containment|Tests whether the created and finalized dates of all fonds are within the archival period specified in arkivuttrekk.xml.|
+|Test|Info,Warning|AST4|Series period containment|Tests whether the created and finalized dates of all series are within the archival period specified in arkivuttrekk.xml.|
+|Test|Info,Warning|AST5|Series status|Tests whether non-finalized series exist in the archive. A series is considered non-finalized if a finalized date or a finalizing party is not specified, or if the series status is not 'Avsluttet periode'.|
+|Test|Info,Error|AST6|File count|Provides information about the number of files per series and tests whether the corresponding number specified in arkivuttrekk.xml is correct.|
+|Test|Info,Warning|AST7|File period containment|Tests whether the created and finalized dates of all files are within the archival period specified in arkivuttrekk.xml.|
+|Test|Info,Error|AST8|Files in leaf classes|Provides information about the number of files per series and class, and tests whether any file belongs to a class which has other classes as children (i.e. the file has a class sibling).|
+|Test|Info,Warning|AST9|File status|Tests whether non-finalized files exist in the archive. A file is considered non-finalized if a finalized date or a finalizing party is not specified, or if the file status is not 'Avsluttet'.|
+|Test|Info,Error|AST10|Records|Provides information about the number of records per series and tests whether the corresponding number specified in arkivuttrekk.xml is correct.|
+|Test|Info,Warning|AST11|Record period containment|Tests whether the created and finalized dates of all records are within the archival period specified in arkivuttrekk.xml.|
+|Test|Info,Error|AST12|Records in leaf classes|Provides information about the number of records per series and class, and tests whether any record belongs to a class which has other classes as children (i.e. the record has a class sibling).|
+|Test|Info,Warning|AST13|Record status|Tests whether non-finalized records exist in the archive. A record is considered non-finalized if a finalized date or a finalizing party is not specified, or if the record status is not 'Arkivert' or 'Utgår'.|
+|Test|Info,Warning|AST14|Document description status|Tests whether non-finalized document descriptions exist in the archive. A document description is considered non-finalized if a finalized date or a finalizing party is not specified, or if the document description status is not 'Dokumentet er ferdigstilt'.|
+|Test|Info,Warning|AST15|Document description period containment|Tests whether the created and finalized dates of all document descriptions are within the archival period specified in arkivuttrekk.xml.|
+|Test|Info,Error|AST16|Document object checksums|Tests whether the document object checksums specified in arkivstruktur.xml match the ones that the validator calculated using the SHA256 algorithm.|
+|Test|Info,Error|AST17|Document object file types|Tests whether all document objects are valid PDF/A-1B documents.|
+|Test|Info,Error|AST18|Correspondence parties|Provides information about the number of correspondence parties grouped by series and tests whether any registry entries without correspondence parties exist.|
+|Test|Info,Warning|AST19|Screenings|Provides information about the number of screened series, classes, files, records, and document descriptions, and tests whether the corresponding value in arkivuttrekk.xml (inneholderSkjermetInformasjon) is correct.|
+|Test|Info,Warning|AST20|Disposal decisions|Provides information about the number of disposal decisions related to series, classes, files, records, and document descriptions, and tests whether the corresponding value in arkivuttrekk.xml (inneholderDokumenterSomSkalKasseres) is correct.|
+|Test|Info,Warning|AST21|Disposals|Provides information about the number of disposals of series and document descriptions, and tests whether the corresponding value in arkivuttrekk.xml (omfatterDokumenterSomErKassert) is correct.|
+|Test|Info,Warning|AST22|Personal name fields|Checks whether all name fields contain seemingly valid personal names. The regular expressions used for the purpose are "\^[\p{L}\s-'.]*$" and "\^[\p{L}\s-'.]+$" depending on whether the value can be blank or not. The validated fields are: saksansvarlig (M306), kontaktperson (M412), korrespondansepartNavn (M400), sakspartNavn (M302), moeteDeltakerNavn (M372), arkivertAv (M605), avskrevetAv (M618), tilknyttetAv (M621), merknadRegistrertAv (M612), kassertAv (M631), slettetAv (M614), gradertAv (M625), presedensGodkjentAv (M629), verifisertAv (M623), nedgradertAv (M627), opprettetAv (M601), avsluttetAv (M603).|
 
 **loependejournal:**
-* [Test] Cross-reference the record count specified in arkivuttrekk against the actual record count in loependejournal
-* [Test] Record created/finalized dates are within the extraction period start and end dates
-* [Info] Number of screened records
+
+|Type|Results in|ID|Title|Description|
+|---|---|---|---|---|
+|Check|Info|LJC1|Screened registry entries|Number of screened registry entries found in loependeJournal.xml|
+|Test|Info,Warning|LJT1|Registry entries|Provides information about the number of registry entries found in loependeJournal.xml and tests whether it matches the number of registry entries found in arkivstruktur.xml.|
+|Test|Info,Warning|LJT2|Period containment of registry entries|Tests whether the created and finalized dates of all registry entries in loependeJournal.xml are within the archival period specified in arkivuttrekk.xml, and whether the same registry entries (same systemIDs) can be found in arkivstruktur.xml.|
 
 **offentligjournal:**
-* [Test] Cross-reference the record count specified in arkivuttrekk with the actual record count in offentligjournal
-* [Test] Record created/finalized dates are within the extraction period start and end dates
+
+|Type|Results in|ID|Title|Description|
+|---|---|---|---|---|
+|Test|Info,Warning|OJT1|Registry entries|Provides information about the number of registry entries found in offentligJournal.xml and tests whether it matches the number of registry entries found in arkivstruktur.xml.|
+|Test|Info,Warning|OJT2|Period containment of registry entries|Tests whether the created and finalized dates of all registry entries in offentligJournal.xml are within the archival period specified in arkivuttrekk.xml, and whether the same registry entries (same systemIDs) can be found in arkivstruktur.xml.|
+
+**arkivuttrekk:**
+
+|Type|Results in|ID|Title|Description|
+|---|---|---|---|---|
+|Test|Info,Error|AUT1|Validity of the arkivstruktur.xml checksum specified in arkivuttrekk.xml|Tests whether the checksum of arkivstruktur.xml matches the one specified in arkivuttrekk.xml.|
+|Test|Info,Error|AUT2|Validity of the arkivstruktur.xsd checksum specified in arkivuttrekk.xml|Tests whether the checksum of arkivstruktur.xsd matches the one specified in arkivuttrekk.xml.|
+|Test|Info,Error|AUT3|Validity of the loependeJournal.xml checksum specified in arkivuttrekk.xml|Tests whether the checksum of loependeJournal.xml matches the one specified in arkivuttrekk.xml.|
+|Test|Info,Error|AUT4|Validity of the loependeJournal.xsd checksum specified in arkivuttrekk.xml|Tests whether the checksum of loependeJournal.xsd matches the one specified in arkivuttrekk.xml.|
+|Test|Info,Error|AUT5|Validity of the offentligJournal.xml checksum specified in arkivuttrekk.xml|Tests whether the checksum of offentligJournal.xml matches the one specified in arkivuttrekk.xml.|
+|Test|Info,Error|AUT6|Validity of the offentligJournal.xsd checksum specified in arkivuttrekk.xml|Tests whether the checksum of offentligJournal.xsd matches the one specified in arkivuttrekk.xml.|
+|Test|Info,Error|AUT7|Validity of the endringslogg.xml checksum specified in arkivuttrekk.xml|Tests whether the checksum of endringslogg.xml matches the one specified in arkivuttrekk.xml.|
+|Test|Info,Error|AUT8|Validity of the endringslogg.xsd checksum specified in arkivuttrekk.xml|Tests whether the checksum of endringslogg.xsd matches the one specified in arkivuttrekk.xml.|
 
 **endringslogg:**
-* [Info] Number of changes in endringslogg
-* [Test] Number of system IDs found in endringlogg, but not in arkivstruktur
+
+|Type|Results in|ID|Title|Description|
+|---|---|---|---|---|
+|Check|Info|ELC1|Change log entries|Provides information about the number of change log entries in endringslogg.xml.|
+|Test|Info,Warning|ELT1|Change log references|Tests whether all objects referenced in the change log can be found by their systemID in arkivstruktur.xml.|
+
+## Reports
+The tool can produce reports in different formats (see the examples above for more information on how to request multiple reports). Currently supported formats are Excel (pre-2007 binary format), Excel (post-2007 OOXML format), and XML. All reports include:
+* information about the execution
+  * version of the tool
+  * list of key parameters specified for the execution
+* summary of the results
+* details for each executed validation rule (check or test), such as:
+  * title
+  * description
+  * info
+  * list of warnings
+  * list of errors
+
+Each list of warnings and errors aims to provide as detailed information as possible with regard to the exact location where an issue was encountered. Where applicable, this includes information such as system ID, file ID, case year, case number, record ID, record year, record number, line, or column.
+
+### Excel report
+The purpose of the Excel report is to provide an intuitive human-readable representation of the validation results. It is color-coded and includes multiple links between generated sheets in order to facilitate the navigation between them.
+
+### XML report
+The XML report is not intended to be human-readable but to be used for long-term preservation of the validation results. The corresponding XSD schema is bundled with the report.

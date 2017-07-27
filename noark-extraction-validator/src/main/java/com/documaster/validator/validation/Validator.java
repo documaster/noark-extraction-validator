@@ -18,6 +18,8 @@
 package com.documaster.validator.validation;
 
 import com.documaster.validator.config.commands.Command;
+import com.documaster.validator.validation.collector.ValidationCollector;
+import com.documaster.validator.validation.collector.ValidationResult;
 
 /**
  * A base contract for all {@link Validator}s.
@@ -30,11 +32,14 @@ import com.documaster.validator.config.commands.Command;
  */
 public abstract class Validator<T extends Command> {
 
-	private T command;
+	private final T command;
 
-	public Validator(T command) {
+	private final ValidationCollector collector;
+
+	public Validator(T command, ValidationCollector collector) {
 
 		this.command = command;
+		this.collector = collector;
 	}
 
 	protected T getCommand() {
@@ -42,5 +47,15 @@ public abstract class Validator<T extends Command> {
 		return command;
 	}
 
-	public abstract void run() throws Exception;
+	public ValidationCollector getCollector() {
+
+		return collector;
+	}
+
+	protected void collect(ValidationResult result) {
+
+		collector.collect(result);
+	}
+
+	public abstract ValidationCollector run() throws Exception;
 }

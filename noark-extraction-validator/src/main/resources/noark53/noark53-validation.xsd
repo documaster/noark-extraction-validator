@@ -1,46 +1,81 @@
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <xs:element name="validation" type="validation"/>
+	<xs:element name="validation" type="validation"/>
 
-  <xs:complexType name="validation">
-    <xs:sequence>
-      <xs:element name="target" type="xs:string" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="rule" type="rule" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
+	<xs:complexType name="validation">
+		<xs:sequence>
+			<xs:element name="target" type="xs:string"/>
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="check" type="check" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="test" type="test" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:sequence>
+	</xs:complexType>
 
-  <xs:complexType name="rule">
-    <xs:sequence>
-      <xs:element name="title" type="title" minOccurs="1" maxOccurs="1" />
-      <xs:element name="group" type="group" minOccurs="1" maxOccurs="1" />
-      <xs:element name="queries" type="queries" minOccurs="1" maxOccurs="1" />
-    </xs:sequence>
-  </xs:complexType>
+	<xs:complexType name="rule">
+		<xs:sequence>
+			<xs:element name="title" type="title"/>
+			<xs:element name="description" type="xs:string"/>
+			<xs:element name="group" type="group"/>
+		</xs:sequence>
+		<xs:attribute name="id" use="required"/>
+	</xs:complexType>
 
-  <xs:complexType name="queries">
-    <xs:sequence>
-      <xs:element name="info" type="xs:string" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="control" type="xs:string" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="errors" type="xs:string" minOccurs="0" maxOccurs="1"/>
-    </xs:sequence>
-  </xs:complexType>
+	<xs:complexType name="check">
+		<xs:complexContent>
+			<xs:extension base="rule">
+				<xs:sequence>
+					<xs:element name="queries" type="informationQueries"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
 
-  <xs:simpleType name="group">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="arkivstruktur"/>
-      <xs:enumeration value="loependejournal"/>
-      <xs:enumeration value="offentligjournal"/>
-      <xs:enumeration value="arkivuttrekk"/>
-      <xs:enumeration value="endringslogg"/>
-      <xs:enumeration value="common"/>
-    </xs:restriction>
-  </xs:simpleType>
+	<xs:complexType name="test">
+		<xs:complexContent>
+			<xs:extension base="rule">
+				<xs:sequence>
+					<xs:element name="queries" type="validationQueries"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
 
-  <xs:simpleType name="title">
-    <xs:restriction base="xs:string">
-      <xs:minLength value="3" />
-      <xs:maxLength value="50" />
-    </xs:restriction>
-  </xs:simpleType>
+	<xs:complexType name="informationQueries">
+		<xs:sequence>
+			<xs:element name="info" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="validationQueries">
+		<xs:complexContent>
+			<xs:extension base="informationQueries">
+				<xs:sequence minOccurs="1">
+					<xs:element name="warnings" type="xs:string" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="errors" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:simpleType name="group">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="arkivstruktur"/>
+			<xs:enumeration value="loependejournal"/>
+			<xs:enumeration value="offentligjournal"/>
+			<xs:enumeration value="arkivuttrekk"/>
+			<xs:enumeration value="endringslogg"/>
+			<xs:enumeration value="package"/>
+			<xs:enumeration value="exceptions"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="title">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="3"/>
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
 
 </xs:schema>

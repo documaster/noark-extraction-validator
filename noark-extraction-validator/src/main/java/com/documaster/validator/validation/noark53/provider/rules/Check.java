@@ -15,42 +15,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation.noark53.provider;
+package com.documaster.validator.validation.noark53.provider.rules;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.documaster.validator.validation.noark53.provider.data.Data;
+
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "queries")
-public class ValidationData {
+@XmlRootElement(name = "check")
+public class Check extends Rule {
 
-	@XmlElement(required = true, name = "info")
-	private String informationRequest;
+	@XmlElement(required = true, name = "queries")
+	protected Data data;
 
-	@XmlElement(name = "control")
-	private String statusRequest;
+	public Data getData() {
 
-	@XmlElement(name = "errors")
-	private String errorsRequest;
-
-	public ValidationData() {
-
-	}
-
-	public String getInformationRequest() {
-
-		return informationRequest;
-	}
-
-	public String getStatusRequest() {
-
-		return statusRequest;
-	}
-
-	public String getErrorsRequest() {
-
-		return errorsRequest;
+		return data;
 	}
 }

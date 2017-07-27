@@ -1,6 +1,6 @@
 /**
  * Noark Extraction Validator
- * Copyright (C) 2016, Documaster AS
+ * Copyright (C) 2017, Documaster AS
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -15,45 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.reporting.excel;
+package com.documaster.validator.config.delegates;
 
-public enum StyleName {
+public interface ConfigurableReporting {
 
-	LINK("link"),
-
-	GROUP("summaryGroup"),
-
-	RESULT_TITLE("summaryTitle"),
-
-	RESULT_SUCCESS("summarySuccess"),
-
-	RESULT_WARNING("summaryWarning"),
-
-	RESULT_FAILURE("summaryFailure"),
-
-	RESULT_TITLE_SUCCESS("detailedTitleSuccess"),
-
-	RESULT_TITLE_WARNING("detailedTitleWarning"),
-
-	RESULT_TITLE_FAILURE("detailedTitleError"),
-
-	RESULT_DESCRIPTION("detailedDescription"),
-
-	RESULT_TYPE("detailedType"),
-
-	RESULT_HEADER_ROW("detailedHeaderRow"),
-
-	RESULT_ROW("detailedRow");
-
-	private String name;
-
-	private StyleName(String name) {
-
-		this.name = name;
-	}
-
-	public String getName() {
-
-		return name;
-	}
+	ReportConfiguration getReportConfiguration();
 }

@@ -17,7 +17,7 @@
  */
 package com.documaster.validator.storage.model;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -30,7 +30,7 @@ public class BaseItem {
 	public Map<String, Object> getValues() {
 
 		if (values == null) {
-			values = new HashMap<>();
+			values = new LinkedHashMap<>();
 		}
 		return values;
 	}

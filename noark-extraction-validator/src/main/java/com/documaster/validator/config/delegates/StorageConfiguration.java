@@ -22,7 +22,7 @@ import com.beust.jcommander.ParameterException;
 import com.documaster.validator.exceptions.ReportingException;
 import com.documaster.validator.storage.core.Storage;
 
-public class StorageDelegate implements Delegate {
+public class StorageConfiguration implements Delegate {
 
 	private static final String STORAGE = "-storage";
 	@Parameter(names = STORAGE, description = "The storage type")
@@ -41,14 +41,29 @@ public class StorageDelegate implements Delegate {
 		return storageType;
 	}
 
+	public void setStorageType(Storage.StorageType storageType) {
+
+		this.storageType = storageType;
+	}
+
 	public String getDatabaseName() {
 
 		return databaseName;
 	}
 
+	public void setDatabaseName(String databaseName) {
+
+		this.databaseName = databaseName;
+	}
+
 	public String getServerLocation() {
 
 		return serverLocation;
+	}
+
+	public void setServerLocation(String serverLocation) {
+
+		this.serverLocation = serverLocation;
 	}
 
 	@Override

@@ -15,39 +15,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation.utils;
+package com.documaster.validator.validation.noark53.provider.data;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "queries")
+public class ValidationData extends Data {
 
-public class ValidationErrorHandler implements ErrorHandler {
+	@XmlElement(name = "warnings")
+	private String warningsRequest;
 
-	private List<SAXParseException> exceptions = new ArrayList<>();
+	@XmlElement(name = "errors")
+	private String errorsRequest;
 
-	public List<SAXParseException> getExceptions() {
+	public String getWarningsRequest() {
 
-		return exceptions;
+		return warningsRequest;
 	}
 
-	@Override
-	public void warning(SAXParseException exception) throws SAXException {
+	public String getErrorsRequest() {
 
-		exceptions.add(exception);
-	}
-
-	@Override
-	public void error(SAXParseException exception) throws SAXException {
-
-		exceptions.add(exception);
-	}
-
-	@Override
-	public void fatalError(SAXParseException exception) throws SAXException {
-
-		exceptions.add(exception);
+		return errorsRequest;
 	}
 }

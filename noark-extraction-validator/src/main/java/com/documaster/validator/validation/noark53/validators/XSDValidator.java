@@ -21,8 +21,10 @@ import java.io.File;
 
 import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.validation.collector.ValidationCollector;
+import com.documaster.validator.validation.collector.ValidationResult;
 import com.documaster.validator.validation.noark53.provider.ValidationGroup;
 import com.documaster.validator.validation.utils.ChecksumCalculator;
+import com.documaster.validator.validation.utils.DefaultXMLHandler;
 import com.documaster.validator.validation.utils.WellFormedXmlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,23 +33,33 @@ public class XSDValidator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(XSDValidator.class);
 
-	public static boolean validate(File xsdFile, String checksum) {
+	private ValidationCollector collector;
 
-		LOGGER.info("Validating XML File {} ...", xsdFile);
+	public XSDValidator(ValidationCollector collector) {
 
-		ValidationCollector.ValidationResult result = new ValidationCollector.ValidationResult(
-				xsdFile.getName() + " integrity", ValidationGroup.COMMON);
+		this.collector = collector;
+	}
+
+	public boolean isValid(File xsdFile, String checksum) {
+
+		LOGGER.info("Validating XSD File {} ...", xsdFile);
+
+		ValidationResult result = new ValidationResult(
+				ValidationGroup.PACKAGE.getNextGroupId(collector), xsdFile.getName() + " integrity",
+				"Tests whether the XSD schema 1) exists, 2) is valid XML, and 3) its checksum "
+						+ "matches the checksum of its Noark counterpart",
+				ValidationGroup.PACKAGE.getName());
 
 		boolean exists = validateExistence(xsdFile, result);
 		boolean isWellFormed = validateIntegrity(xsdFile, result);
 		boolean checksumMatches = validateChecksum(xsdFile, result, checksum);
 
-		ValidationCollector.get().collect(result);
+		collector.collect(result);
 
 		return exists && isWellFormed && checksumMatches;
 	}
 
-	private static boolean validateExistence(File xsdFile, ValidationCollector.ValidationResult result) {
+	private static boolean validateExistence(File xsdFile, ValidationResult result) {
 
 		if (!xsdFile.isFile()) {
 			result.addError(new BaseItem().add("Error", "Missing file: " + xsdFile.getName()));
@@ -58,14 +70,12 @@ public class XSDValidator {
 		}
 	}
 
-	private static boolean validateIntegrity(File xsdFile, ValidationCollector.ValidationResult result) {
+	private static boolean validateIntegrity(File xsdFile, ValidationResult result) {
 
-		WellFormedXmlValidator xmlIntegrityValidator = new WellFormedXmlValidator();
+		WellFormedXmlValidator xmlIntegrityValidator = new WellFormedXmlValidator<>(new DefaultXMLHandler());
 
 		if (!xsdFile.isFile() || !xmlIntegrityValidator.isXmlWellFormed(xsdFile)) {
-			for (String error : xmlIntegrityValidator.getErrors()) {
-				result.addError(new BaseItem().add("Error", error));
-			}
+			result.addErrors(xmlIntegrityValidator.getExceptionHandler().getExceptionsAsItems());
 			return false;
 		} else {
 			result.addInformation(new BaseItem().add("Information", xsdFile.getName() + " is well-formed"));
@@ -73,15 +83,19 @@ public class XSDValidator {
 		}
 	}
 
-	private static boolean validateChecksum(
-			File xsdFile, ValidationCollector.ValidationResult result, String checksum) {
+	private static boolean validateChecksum(File xsdFile, ValidationResult result, String checksum) {
 
 		if (!xsdFile.isFile() || !checksum.equalsIgnoreCase(ChecksumCalculator.getFileSha256Checksum(xsdFile))) {
-			result.addError(new BaseItem().add("Error", "Checksum does not match the one distributed with Noark 5"));
+			result.addWarning(
+					new BaseItem().add(
+							"Warning",
+							"Checksum does not match the checksum of the XSD schema distributed with Noark 5"));
 			return false;
 		} else {
 			result.addInformation(
-					new BaseItem().add("Information", "Checksum matches the one distributed with Noark 5"));
+					new BaseItem().add(
+							"Information",
+							"Checksum matches the checksum of the XSD schema distributed with Noark 5"));
 			return true;
 		}
 	}

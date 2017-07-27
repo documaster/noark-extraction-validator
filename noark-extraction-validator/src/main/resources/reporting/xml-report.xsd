@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dm="http://documaster.com/schema/noark-extraction-validator/xml-report"
+    targetNamespace="http://documaster.com/schema/noark-extraction-validator/xml-report" elementFormDefault="qualified"
+    attributeFormDefault="unqualified" version="1.0">
+
+    <xs:element name="validation" type="dm:validation"/>
+
+    <xs:complexType name="validation">
+        <xs:sequence>
+            <xs:element name="execution" type="dm:execution" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="summary" type="dm:summary" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="details" type="dm:details" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="type" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="execution">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="parameter" type="dm:parameter"/>
+            <xs:element name="other" type="dm:other"/>
+        </xs:choice>
+        <xs:attribute name="version" type="xs:string" use="required"/>
+        <xs:attribute name="command" type="xs:string" use="required"/>
+        <xs:attribute name="generated" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="parameter">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="required"/>
+        <xs:attribute name="value" type="xs:string" use="required"/>
+        <xs:attribute name="required" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="other">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="name" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="summary">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="group" type="dm:group"/>
+        </xs:choice>
+        <xs:attribute name="summary" type="xs:integer" use="required"/>
+        <xs:attribute name="info" type="xs:integer" use="required"/>
+        <xs:attribute name="warn" type="xs:integer" use="required"/>
+        <xs:attribute name="error" type="xs:integer" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="details">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="group" type="dm:group"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="group">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="test" type="dm:test"/>
+        </xs:choice>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="summary" type="xs:integer" use="required"/>
+        <xs:attribute name="info" type="xs:integer" use="required"/>
+        <xs:attribute name="warn" type="xs:integer" use="required"/>
+        <xs:attribute name="error" type="xs:integer" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="test">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="summary" type="dm:table" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="info" type="dm:table" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="warn" type="dm:table" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="error" type="dm:table" minOccurs="0" maxOccurs="1"/>
+        </xs:choice>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="required"/>
+        <xs:attribute name="summary" type="xs:integer" use="required"/>
+        <xs:attribute name="info" type="xs:integer" use="required"/>
+        <xs:attribute name="warn" type="xs:integer" use="required"/>
+        <xs:attribute name="error" type="xs:integer" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="table">
+        <xs:choice>
+            <xs:element name="row" type="dm:row" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
+        <xs:attribute name="total" type="xs:integer" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="row">
+        <xs:choice minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="col" type="dm:col"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="col">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="name" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+</xs:schema>

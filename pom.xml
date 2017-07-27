@@ -4,13 +4,27 @@
 
     <groupId>com.documaster.validation</groupId>
     <artifactId>noark-extraction-validator-parent</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <packaging>pom</packaging>
 
     <organization>
         <name>Documaster AS</name>
         <url>http://www.documaster.no</url>
     </organization>
+
+    <distributionManagement>
+
+        <repository>
+            <id>documaster-releases</id>
+            <url>${releases.repo.url}</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>documaster-snapshots</id>
+            <url>${snapshots.repo.url}</url>
+        </snapshotRepository>
+
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -26,7 +40,7 @@
         <version.apache-poi>3.14</version.apache-poi>
         <version.pdfbox>2.0.2</version.pdfbox>
         <version.bouncy-castle>1.54</version.bouncy-castle>
-        <version.hsqldb>1.8.0.10</version.hsqldb>
+        <version.hsqldb>2.3.4</version.hsqldb>
         <version.jcommander>1.48</version.jcommander>
     </properties>
 
@@ -174,7 +188,7 @@
 			<!--  HSQLDB -->
 
 			<dependency>
-				<groupId>hsqldb</groupId>
+				<groupId>org.hsqldb</groupId>
 				<artifactId>hsqldb</artifactId>
 				<version>${version.hsqldb}</version>
 			</dependency>

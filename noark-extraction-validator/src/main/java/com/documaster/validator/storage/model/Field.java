@@ -23,6 +23,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -118,13 +119,16 @@ public class Field {
 
 		BYTE_PRIMITIVE_ARRAY(byte[].class, "VARBINARY"),
 
-		STRING(String.class, "VARCHAR(512)"),
+		STRING(String.class, "TEXT"),
 
-		OBJECT(Object.class, "VARCHAR(512)");
+		OBJECT(Object.class, "TEXT");
 
 		private Class<?> javaType;
 
 		private String sqlType;
+
+		private static final EnumSet<FieldType> dateTypes = EnumSet
+				.of(DATE, TIMESTAMP, XML_GREGORIAN_CALENDAR, CALENDAR);
 
 		private static Map<Class<?>, FieldType> classMap;
 
@@ -184,6 +188,11 @@ public class Field {
 		public String getSqlType() {
 
 			return sqlType;
+		}
+
+		public boolean isDateType() {
+
+			return dateTypes.contains(this);
 		}
 
 		public static FieldType getFromJavaType(Class<?> javaClass) {

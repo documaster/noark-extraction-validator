@@ -18,19 +18,28 @@
 package com.documaster.validator.config.commands;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
+import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 import com.beust.jcommander.converters.FileConverter;
-import com.documaster.validator.config.delegates.ReporterDelegate;
-import com.documaster.validator.config.delegates.StorageDelegate;
+import com.documaster.validator.config.delegates.ConfigurableReporting;
+import com.documaster.validator.config.delegates.ConfigurableStorage;
+import com.documaster.validator.config.delegates.ReportConfiguration;
+import com.documaster.validator.config.delegates.StorageConfiguration;
 import com.documaster.validator.config.properties.Noark53Properties;
 import com.documaster.validator.config.validators.DirectoryValidator;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Parameters(commandNames = Noark53Command.COMMAND_NAME,
 		commandDescription = "Validates a Noark 5.3 extraction package.")
-public class Noark53Command extends Command<Noark53Properties> {
+public class Noark53Command extends Command<Noark53Properties> implements ConfigurableReporting, ConfigurableStorage {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Noark53Command.class);
 
 	public static final String COMMAND_NAME = "noark53";
 
@@ -46,17 +55,42 @@ public class Noark53Command extends Command<Noark53Properties> {
 					+ "regardless of the compliance of an XML file to its schema")
 	private boolean ignoreNonCompliantXML = false;
 
-	@ParametersDelegate
-	private ReporterDelegate reporterDelegate = new ReporterDelegate();
+	private static final String CUSTOM_SCHEMA_DESCRIPTION_FILENAME = "description.txt";
+	private static final String CUSTOM_SCHEMA_LOCATION = "-custom-schema-location";
+	@Parameter(names = CUSTOM_SCHEMA_LOCATION,
+			description = "The location of custom schema files. The XML files in the extraction package will be "
+					+ "validated against these schemas. If a required schema is missing, the Noark 5 one will be "
+					+ "used as fallback. If a " + CUSTOM_SCHEMA_DESCRIPTION_FILENAME
+					+ " is found in the directory, its content will be "
+					+ "copied to the execution information section in the report.")
+	private File customSchemaLocation;
 
 	@ParametersDelegate
-	private StorageDelegate storageDelegate = new StorageDelegate();
+	private ReportConfiguration reportConfiguration = new ReportConfiguration();
+
+	@ParametersDelegate
+	private StorageConfiguration storageConfiguration = new StorageConfiguration();
 
 	private Noark53Properties properties;
+
+	public Noark53Command() {
+
+		super();
+	}
+
+	public Noark53Command(JCommander argParser) {
+
+		super(argParser);
+	}
 
 	public File getExtractionDirectory() {
 
 		return extractionDirectory;
+	}
+
+	public void setExtractionDirectory(File extractionDirectory) {
+
+		this.extractionDirectory = extractionDirectory;
 	}
 
 	public boolean getIgnoreNonCompliantXML() {
@@ -64,14 +98,41 @@ public class Noark53Command extends Command<Noark53Properties> {
 		return ignoreNonCompliantXML;
 	}
 
-	public ReporterDelegate getReporterDelegate() {
+	public void setIgnoreNonCompliantXML(boolean ignoreNonCompliantXML) {
 
-		return reporterDelegate;
+		this.ignoreNonCompliantXML = ignoreNonCompliantXML;
 	}
 
-	public StorageDelegate getStorageDelegate() {
+	public File getCustomSchemaLocation() {
 
-		return storageDelegate;
+		return customSchemaLocation;
+	}
+
+	public void setCustomSchemaLocation(File customSchemaLocation) {
+
+		this.customSchemaLocation = customSchemaLocation;
+	}
+
+	@Override
+	public ReportConfiguration getReportConfiguration() {
+
+		return reportConfiguration;
+	}
+
+	public void setReportConfiguration(ReportConfiguration reportConfiguration) {
+
+		this.reportConfiguration = reportConfiguration;
+	}
+
+	@Override
+	public StorageConfiguration getStorageConfiguration() {
+
+		return storageConfiguration;
+	}
+
+	public void setStorageConfiguration(StorageConfiguration storageConfiguration) {
+
+		this.storageConfiguration = storageConfiguration;
 	}
 
 	@Override
@@ -88,5 +149,30 @@ public class Noark53Command extends Command<Noark53Properties> {
 		}
 
 		return properties;
+	}
+
+	@Override
+	public ExecutionInfo getExecutionInfo() {
+
+		ExecutionInfo info = super.getExecutionInfo();
+
+		if (customSchemaLocation != null && customSchemaLocation.isDirectory()) {
+			File schemaDescriptionFile = new File(customSchemaLocation, CUSTOM_SCHEMA_DESCRIPTION_FILENAME);
+
+			if (schemaDescriptionFile.isFile()) {
+				String description;
+
+				try {
+					description = FileUtils.readFileToString(schemaDescriptionFile, StandardCharsets.UTF_8);
+				} catch (Exception e) {
+					description = "Could not extract the custom schema description from " + schemaDescriptionFile;
+					LOGGER.warn(description, e);
+				}
+
+				info.addCommandInfo("Custom schema description", description);
+			}
+		}
+
+		return info;
 	}
 }

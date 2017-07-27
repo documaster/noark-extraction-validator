@@ -1,6 +1,6 @@
 /**
  * Noark Extraction Validator
- * Copyright (C) 2016, Documaster AS
+ * Copyright (C) 2017, Documaster AS
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -15,26 +15,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.reporting.core;
+package com.documaster.validator.validation.noark53.provider.data;
 
-import com.documaster.validator.config.delegates.ReporterDelegate;
-import com.documaster.validator.exceptions.ReportingException;
-import com.documaster.validator.reporting.excel.ExcelReporter;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class ReporterFactory {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "queries")
+public class Data {
 
-	private ReporterFactory() {
-		// Prevent instantiation
-	}
+	@XmlElement(required = true, name = "info")
+	private String infoRequest;
 
-	public static Reporter createReporter(ReporterDelegate config, String title) {
+	public String getInfoRequest() {
 
-		switch (config.getOutputType()) {
-			case EXCEL_XLS:
-			case EXCEL_XLSX:
-				return new ExcelReporter(config.getOutputDir(), config.getOutputType(), title);
-			default:
-				throw new ReportingException("Unknown report type: " + config.getOutputType());
-		}
+		return infoRequest;
 	}
 }

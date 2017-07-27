@@ -18,87 +18,65 @@
 package com.documaster.validator.validation.utils;
 
 import java.io.File;
-import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.xml.XMLConstants;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXParseException;
 
-public class SchemaValidator {
+public class SchemaValidator<T extends AbstractReusableXMLHandler> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SchemaValidator.class);
 
-	private ValidationErrorHandler validationErrorHandler;
+	private T handler;
 
-	private Set<String> errors = new HashSet<>();
+	/**
+	 * Creates a new schema validator using the specified {@link AbstractReusableXMLHandler} implementation.
+	 * <p/>
+	 * Callers which do not require special handling of the content or the raised exceptions can instantiate the class
+	 * with a new {@link DefaultXMLHandler} instance.
+	 *
+	 * @param handler
+	 * 		The XML content and exception handler to be used during the parsing.
+	 */
+	public SchemaValidator(T handler) {
 
-	public Set<String> getErrors() {
-
-		return errors;
+		this.handler = handler;
 	}
 
-	private void buildErrorsSet(String parseError) {
+	public T getHandler() {
 
-		errors.clear();
-		if (!StringUtils.isBlank(parseError)) {
-			errors.add(parseError);
-		}
-		errors.addAll(getValidationErrors());
+		return handler;
 	}
 
 	public boolean isXmlFileValid(File xmlFile, List<File> xsdFiles) {
 
-		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
-		StreamSource[] schemasStreamSource = new StreamSource[xsdFiles.size()];
+		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+		saxParserFactory.setValidating(false);
+		saxParserFactory.setNamespaceAware(true);
 
-		for (int i = 0; i < schemasStreamSource.length; i++) {
-			schemasStreamSource[i] = new StreamSource(xsdFiles.get(i));
-		}
-
-		String parseError = null;
 		try {
-			Schema schema = factory.newSchema(schemasStreamSource);
+			StreamSource[] sources = xsdFiles.stream().map(StreamSource::new).toArray(StreamSource[]::new);
 
-			validationErrorHandler = new ValidationErrorHandler();
+			Schema schema = schemaFactory.newSchema(sources);
+			saxParserFactory.setSchema(schema);
 
-			Validator validator = schema.newValidator();
-			validator.setErrorHandler(validationErrorHandler);
-			validator.validate(new StreamSource(xmlFile));
+			SAXParser parser = saxParserFactory.newSAXParser();
+			parser.parse(xmlFile, handler);
 
 		} catch (Exception ex) {
-			parseError = "Schema validation could not be performed for " + xmlFile;
-			LOGGER.warn(parseError, ex);
+			LOGGER.error("Schema validation failed with exception: ", ex);
+			handler.fatalError(new SAXParseException(ex.getMessage(), null));
 		}
 
-		buildErrorsSet(parseError);
-
-		return getErrors().size() == 0;
-	}
-
-	private Set<String> getValidationErrors() {
-
-		if (validationErrorHandler == null) {
-			return Collections.emptySet();
-		}
-
-		Set<String> validationErrors = new HashSet<>();
-
-		for (SAXParseException ex : validationErrorHandler.getExceptions()) {
-			validationErrors.add(MessageFormat
-					.format("Line {0}: Column {1}: {2}", ex.getLineNumber(), ex.getColumnNumber(), ex.getMessage()));
-		}
-
-		return validationErrors;
+		return !handler.hasExceptions();
 	}
 }

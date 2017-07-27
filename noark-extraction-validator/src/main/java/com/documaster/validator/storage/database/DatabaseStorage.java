@@ -24,9 +24,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.Date;
+import java.util.Map;
 
 import com.documaster.validator.storage.core.Storage;
 import com.documaster.validator.storage.model.BaseItem;
@@ -34,12 +40,16 @@ import com.documaster.validator.storage.model.Field;
 import com.documaster.validator.storage.model.Item;
 import com.documaster.validator.storage.model.ItemDef;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DatabaseStorage extends Storage {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseStorage.class);
+
+	private static final String[] INCOMING_DATE_PATTERNS = new String[] {
+			"yyyy-MM-dd'T'HH:mm:ss.SSS", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd" };
 
 	private String driver;
 
@@ -119,11 +129,14 @@ public class DatabaseStorage extends Storage {
 	@Override
 	public void writeItem(Item item) throws SQLException {
 
-		String fields = StringUtils.join(item.getValues().keySet(), ", ");
+		// Get the item's fields
+		Set<String> fieldNames = new HashSet<>(item.getValues().keySet());
 
-		String[] parametersArray = new String[item.getValues().keySet().size()];
-		Arrays.fill(parametersArray, "?");
-		String parameters = StringUtils.join(parametersArray, ", ");
+		// Retain only the ones found in its item definition... ignore the rest
+		fieldNames.retainAll(item.getItemDef().getFields().keySet());
+
+		String fields = StringUtils.join(fieldNames, ", ");
+		String parameters = StringUtils.join(Collections.nCopies(fieldNames.size(), "?"), ", ");
 
 		String insertStmt = MessageFormat
 				.format("INSERT INTO {0} ( {1} ) VALUES ( {2} );", item.getItemDef().getFullName(), fields, parameters);
@@ -131,17 +144,26 @@ public class DatabaseStorage extends Storage {
 		try (PreparedStatement statement = conn.prepareStatement(insertStmt)) {
 
 			int i = 0;
-			for (Object value : item.getValues().values()) {
+			for (String field : fieldNames) {
 
-				// Convert date strings...
-				if (value != null && value.toString()
-						.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?$")) {
+				Object value = item.getValues().get(field);
 
-					value = value.toString().replace('T', ' ');
+				boolean isDate = item.getItemDef().getFields().get(field).getFieldType().isDateType();
+
+				// Make sure all dates are properly formatted as such...
+				if (value != null && isDate) {
+					try {
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						Date date = DateUtils.parseDate(value.toString(), INCOMING_DATE_PATTERNS);
+						value = sdf.format(date);
+					} catch (ParseException e) {
+						// Ignore unknown patterns
+					}
 				}
 				statement.setObject(++i, value);
 			}
-			statement.execute();
+			statement.executeUpdate();
+			conn.commit();
 		}
 	}
 
@@ -178,7 +200,7 @@ public class DatabaseStorage extends Storage {
 			while (rs.next()) {
 				BaseItem entry = new BaseItem();
 				for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-					entry.add(rs.getMetaData().getColumnName(i), rs.getString(i));
+					entry.add(rs.getMetaData().getColumnLabel(i), rs.getString(i));
 				}
 				entries.add(entry);
 			}

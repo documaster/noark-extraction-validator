@@ -19,7 +19,7 @@ package com.documaster.validator.storage.core;
 
 import java.text.MessageFormat;
 
-import com.documaster.validator.config.delegates.StorageDelegate;
+import com.documaster.validator.config.delegates.StorageConfiguration;
 import com.documaster.validator.exceptions.StorageException;
 import com.documaster.validator.storage.database.DatabaseStorage;
 
@@ -29,17 +29,19 @@ public final class StorageFactory {
 		// Prevent instantiation
 	}
 
-	public static Storage createPersistence(StorageDelegate config) {
+	public static Storage createPersistence(StorageConfiguration config) {
 
 		switch (config.getStorageType()) {
 
 			case HSQLDB_IN_MEMORY:
 				DatabaseStorage persistence = new DatabaseStorage();
 
+				// Postgres syntax
+				// Allow column and table names beginning with underscore
 				persistence.setConnectionString(MessageFormat.format(
-						"jdbc:hsqldb:mem:{0};hsqldb.write_delay=false;shutdown=true;sql.syntax_pgs=true",
+						"jdbc:hsqldb:mem:{0};hsqldb.write_delay=false;shutdown=true;sql.syntax_pgs=true;sql.regular_names=false",
 						config.getDatabaseName()));
-				persistence.setDriver("org.hsqldb.jdbcDriver");
+				persistence.setDriver("org.hsqldb.jdbc.JDBCDriver");
 				persistence.setUsername("SA");
 				persistence.setPassword("");
 				persistence.setRole("dba");
@@ -49,10 +51,12 @@ public final class StorageFactory {
 			case HSQLDB_SERVER:
 				DatabaseStorage serverPersistence = new DatabaseStorage();
 
+				// Postgres syntax
+				// Allow column and table names beginning with underscore
 				serverPersistence.setConnectionString(MessageFormat.format(
-						"jdbc:hsqldb:hsql://{0}/{1};hsqldb.write_delay=false;shutdown=true;sql.syntax_pgs=true",
+						"jdbc:hsqldb:hsql://{0}/{1};hsqldb.write_delay_millis=1000;shutdown=false;sql.syntax_pgs=true;sql.regular_names=false",
 						config.getServerLocation(), config.getDatabaseName()));
-				serverPersistence.setDriver("org.hsqldb.jdbcDriver");
+				serverPersistence.setDriver("org.hsqldb.jdbc.JDBCDriver");
 				serverPersistence.setUsername("SA");
 				serverPersistence.setPassword("");
 				serverPersistence.setRole("dba");

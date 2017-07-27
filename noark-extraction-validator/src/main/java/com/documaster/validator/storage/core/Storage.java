@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.documaster.validator.config.delegates.StorageDelegate;
+import com.documaster.validator.config.delegates.StorageConfiguration;
 import com.documaster.validator.exceptions.StorageException;
 import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.storage.model.Item;
@@ -55,11 +55,11 @@ public abstract class Storage {
 	 * to the storage provider, and runs a separate thread that listens for actions.
 	 *
 	 * @param config
-	 * 		The {@link StorageDelegate} with which to instantiate the {@link Storage}.
+	 * 		The {@link StorageConfiguration} with which to instantiate the {@link Storage}.
 	 * @param uniqueFields
 	 * 		The name of the unique field in each table
 	 */
-	public static void init(StorageDelegate config, Map<String, Set<String>> uniqueFields) throws Exception {
+	public static void init(StorageConfiguration config, Map<String, Set<String>> uniqueFields) throws Exception {
 
 		LOGGER.info("Initializing storage ...");
 
