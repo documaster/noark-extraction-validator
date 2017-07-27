@@ -12,6 +12,20 @@
         <url>http://www.documaster.no</url>
     </organization>
 
+    <distributionManagement>
+
+        <repository>
+            <id>documaster-releases</id>
+            <url>${releases.repo.url}</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>documaster-snapshots</id>
+            <url>${snapshots.repo.url}</url>
+        </snapshotRepository>
+
+    </distributionManagement>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
