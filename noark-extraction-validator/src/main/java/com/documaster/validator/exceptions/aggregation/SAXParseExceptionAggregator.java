@@ -66,7 +66,9 @@ public class SAXParseExceptionAggregator<T extends SAXParseException> implements
 		return exceptions.stream()
 				.map(ex -> {
 					String msg = ex.getMessage();
-					switch (msg.substring(0, msg.indexOf(":"))) {
+					int ixColon = msg.indexOf(":");
+					ixColon = ixColon < 0 ? 0 : ixColon;
+					switch (msg.substring(0, ixColon)) {
 						case "cvc-attribute.3":
 						case "cvc-attribute.4":
 						case "cvc-complex-type.3.1":
