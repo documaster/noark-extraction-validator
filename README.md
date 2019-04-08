@@ -1,7 +1,7 @@
 Noark Extraction Validator
 ----
 
-The Noark Extraction Validator provides a means for validating Noark (5.3) extraction packages according to the requirements specified by the [standard](http://arkivverket.no/arkivverket/Offentleg-forvalting/Noark/Noark-5). The tool is a Java console application that:
+The Noark Extraction Validator provides a means for validating Noark (5.x) extraction packages according to the requirements specified by the [standard](http://arkivverket.no/arkivverket/Offentleg-forvalting/Noark/Noark-5). The tool is a Java console application that:
 * parses a given extraction package;
 * stores its contents in a temporary in-memory (or file) database;
 * validates metadata and documents, and collects information - validation rules are listed in the [Validation](#validationRules) section;
@@ -31,45 +31,61 @@ mvn clean package
 **Help**
 
 ```
-java -jar noark-extraction-validator-0.2.0.jar
+java -jar noark-extraction-validator-0.3.0.jar
 ```
 OR
 ```
-java -jar noark-extraction-validator-0.2.0.jar --help
+java -jar noark-extraction-validator-0.3.0.jar --help
 ```
+
+**Validating different extraction package versions**
+
+Currently supported versions are *Noark 5.3* and *Noark 5.4*.
+
+Noark 5.3:
+```
+java -jar noark-extraction-validator-0.3.0.jar noark53 ...
+```
+
+Noark 5.4:
+```
+java -jar noark-extraction-validator-0.3.0.jar noark54 ...
+```
+
+To validate against the desired version, substitute the `<noark-version>` parameter in the following examples with one of the supported versions.
 
 **Logging**
 
 If you would like to enable logging in the console or in a specific file, you will need to provide a reference to a log4j2 configuration:
 ```
-java -Dlog4j.configurationFile='/path/to/log4j2.xml' -jar noark-extraction-validator-0.2.0.jar noark53 ...
+java -Dlog4j.configurationFile='/path/to/log4j2.xml' -jar noark-extraction-validator-0.3.0.jar <noark-version> ...
 ```
 A default configuration exists in a directory called `config/`.
 
-**Validating a Noark 5.3 extraction package**
+**Validating a Noark 5.x extraction package**
 
 The shortest command to validate a package is:
 ```
-java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory
+java -jar noark-extraction-validator-0.3.0.jar <noark-version> -extraction /path/to/uttrekk/directory
 ```
 More complex scenarios would include modifying the output report type and/or directory:
 ```
-java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -output-type excel_xls
+java -jar noark-extraction-validator-0.3.0.jar <noark-version> -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -output-type excel_xls
 ```
 You can request a report to be generated in multiple formats:
 ```
-java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -output-type excel_xls -output-type xml
+java -jar noark-extraction-validator-0.3.0.jar <noark-version> -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -output-type excel_xls -output-type xml
 ```
 You can specify custom Noark schemas to be used in the validation process (in addition to the Noark ones and the extraction package ones). In such cases the reports would also include information about the compliance of the extraction package to these schemas:
 ```
-java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory -custom-schema-location /path/to/custom/schemas/directory
+java -jar noark-extraction-validator-0.3.0.jar <noark-version> -extraction /path/to/uttrekk/directory -custom-schema-location /path/to/custom/schemas/directory
 ```
 The specified `-custom-schema-location` directory may contain any custom Noark 5 schemas and a UTF-8-encoded description.txt file. The contents of this file will be copied to the Execution Information sections of the generated reports for completeness.
 
 
 You can also change the persistence settings:
 ```
-java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -db-name myDBName -storage hsqldb_server -server-location http://my.hsqldb.server.com
+java -jar noark-extraction-validator-0.3.0.jar <noark-version> -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -db-name myDBName -storage hsqldb_server -server-location http://my.hsqldb.server.com
 ```
 *Do not modify* the persistence settings unless:
 * You would like to run several instances of the validator at the same time
@@ -83,16 +99,16 @@ java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttr
 
 Making the validation process less strict is also possible. The default behavior of the validator is to stop execution if an XML file does not comply with the corresponding Noark XSD schema. To continue execution instead:
 ```
-java -jar noark-extraction-validator-0.2.0.jar noark53 -extraction /path/to/uttrekk/directory -ignore-non-compliant-xml
+java -jar noark-extraction-validator-0.3.0.jar <noark-version> -extraction /path/to/uttrekk/directory -ignore-non-compliant-xml
 ```
 This, however, is a bad practice that we would *advise strongly against* - the reason being that the result of the validation in such cases may be unreliable because crucial metadata elements are missing.
 
-**Validating a Noark 5.3 extraction package - Windows**
+**Validating a Noark 5.x extraction package - Windows**
 
 Similar to the above but note that Windows uses a different path separator:
 
 ```
-"c:\Program Files\Java\jdk1.8.0_111\bin\java" -jar noark-extraction-validator-0.2.0.jar noark53 -extraction c:\path\to\uttrekk -output-dir c:\path\to\output\reports\dir
+"c:\Program Files\Java\jdk1.8.0_111\bin\java" -jar noark-extraction-validator-0.3.0.jar <noark-version> -extraction c:\path\to\uttrekk -output-dir c:\path\to\output\reports\dir
 ```
 
 Also note that the above command specifies the path to Java explicitly to make sure that we are using a JDK, not a JRE (if one is installed). There are other ways to achieve the same thing.
@@ -106,8 +122,12 @@ ReportConfiguration reportConfiguration = new ReportConfiguration();
 reportConfiguration.setOutputDir(new File("/path/to/output/directory/"));
 reportConfiguration.setOutputTypes(Arrays.asList(ReportType.EXCEL_XLSX, ReportType.XML));
 
-# Create a command
+# Create a Noark 5.3 command
 Noark53Command command = new Noark53Command();
+
+# To create a Noark 5.4 command, use alternatively:
+# Noark54Command command = new Noark54Command();
+
 command.setExtractionDirectory(new File("/path/to/extraction"));
 command.setReportConfiguration(reportConfiguration);
 
@@ -122,7 +142,7 @@ validator.run();
 The [Noark Extraction Validator Samples repository](https://github.com/documaster/noark-extraction-validator-samples) contains a number of sample extraction packages and their corresponding validation reports produced by this tool. Note that the samples are of varying quality in order to demonstrate the capabilities of the validator.
 
 <a name="validationRules"></a>
-# Noark 5.3 Validation
+# Noark 5.x Validation
 
 ## Extraction package structure
 
