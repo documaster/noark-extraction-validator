@@ -18,6 +18,7 @@
 -->
 <validation>
     <target>Noark 5.3</target>
+    <target>Noark 5.4</target>
 
     <!-- View the associated xsd for more information on the structure of the file. -->
     <!-- Note that there is a limitation on the possible values of the group element -->

@@ -15,42 +15,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation;
+package com.documaster.validator.config.commands;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameters;
 
-import com.documaster.validator.config.commands.Noark53Command;
-import com.documaster.validator.config.commands.Noark54Command;
+@Parameters(commandNames = Noark54Command.COMMAND_NAME,
+		commandDescription = "Validates a Noark 5.4 extraction package.")
+public class Noark54Command extends Noark5Command {
 
-public enum ValidatorType {
+	public static final String COMMAND_NAME = "noark54";
+	private static final String NOARK_VERSION = "5.4";
 
-	NOARK53(Noark53Command.COMMAND_NAME),
-	NOARK54(Noark54Command.COMMAND_NAME);
+	public Noark54Command() {
 
-	private final String name;
-
-	private static final Map<String, ValidatorType> TYPES;
-
-	static {
-		TYPES = new HashMap<>();
-		for (ValidatorType validatorType : ValidatorType.values()) {
-			TYPES.put(validatorType.getName(), validatorType);
-		}
+		super(COMMAND_NAME, NOARK_VERSION);
 	}
 
-	ValidatorType(String name) {
+	public Noark54Command(JCommander argParser) {
 
-		this.name = name;
-	}
-
-	public String getName() {
-
-		return name;
-	}
-
-	public static ValidatorType byName(String name) {
-
-		return TYPES.get(name);
+		super(argParser, COMMAND_NAME, NOARK_VERSION);
 	}
 }

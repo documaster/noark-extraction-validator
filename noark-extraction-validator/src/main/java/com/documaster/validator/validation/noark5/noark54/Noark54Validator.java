@@ -15,26 +15,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation;
+package com.documaster.validator.validation.noark5.noark54;
 
-import com.documaster.validator.config.commands.Command;
-import com.documaster.validator.config.commands.Noark53Command;
 import com.documaster.validator.config.commands.Noark54Command;
-import com.documaster.validator.exceptions.ValidationException;
-import com.documaster.validator.validation.noark5.noark53.Noark53Validator;
-import com.documaster.validator.validation.noark5.noark54.Noark54Validator;
+import com.documaster.validator.validation.Noark5Validator;
 
-public class ValidationFactory {
+public class Noark54Validator extends Noark5Validator<Noark54Command> {
 
-	public static Validator createValidator(ValidatorType validatorType, Command command) {
+	public Noark54Validator(Noark54Command command) {
 
-		switch (validatorType) {
-			case NOARK53:
-				return new Noark53Validator((Noark53Command) command);
-			case NOARK54:
-				return new Noark54Validator((Noark54Command) command);
-			default:
-				throw new ValidationException("Validator not implemented: " + validatorType.getName());
-		}
+		super(command);
 	}
 }
