@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation.noark53.model;
+package com.documaster.validator.validation.noark5.model;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,17 +27,17 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 
 /**
- * Represents a construct of the {@link Noark53PackageStructure}, i.e. an XML file and its corresponding XSD schemas.
+ * Represents a construct of the {@link Noark5PackageStructure}, i.e. an XML file and its corresponding XSD schemas.
  */
-public class Noark53PackageEntity {
+public class Noark5PackageEntity {
 
-	private final Noark53PackageStructure structure;
+	private final Noark5PackageStructure structure;
 	private final String xmlFileName;
 	private final boolean optional;
 	private final Set<String> xsdSchemasNames;
 
-	Noark53PackageEntity(
-			Noark53PackageStructure structure, String xmlFileName, boolean optional, String... schemaNames) {
+	public Noark5PackageEntity(
+			Noark5PackageStructure structure, String xmlFileName, boolean optional, String... schemaNames) {
 
 		Validate.notEmpty(xmlFileName);
 
@@ -85,7 +85,7 @@ public class Noark53PackageEntity {
 	}
 
 	/**
-	 * Retrieves the Noark 5.3 XSD schema files.
+	 * Retrieves the Noark 5.x XSD schema files.
 	 */
 	public List<File> getNoarkSchemas() {
 
@@ -101,7 +101,7 @@ public class Noark53PackageEntity {
 	/**
 	 * Retrieves the custom schema files.
 	 * <br/>
-	 * The corresponding Noark 5.3 XSD schema is returned for each schema not found in custom schemas.
+	 * The corresponding Noark 5.x XSD schema is returned for each schema not found in custom schemas.
 	 */
 	public List<File> getCustomSchemas() {
 

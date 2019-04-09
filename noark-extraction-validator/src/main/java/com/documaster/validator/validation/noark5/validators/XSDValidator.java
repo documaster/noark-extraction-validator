@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation.noark53.validators;
+package com.documaster.validator.validation.noark5.validators;
 
 import java.io.File;
 
 import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.validation.collector.ValidationCollector;
 import com.documaster.validator.validation.collector.ValidationResult;
-import com.documaster.validator.validation.noark53.provider.ValidationGroup;
+import com.documaster.validator.validation.noark5.provider.ValidationGroup;
 import com.documaster.validator.validation.utils.ChecksumCalculator;
 import com.documaster.validator.validation.utils.DefaultXMLHandler;
 import com.documaster.validator.validation.utils.WellFormedXmlValidator;

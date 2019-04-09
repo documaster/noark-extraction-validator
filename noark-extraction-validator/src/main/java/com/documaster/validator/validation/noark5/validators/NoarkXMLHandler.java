@@ -15,14 +15,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation.noark53.validators;
+package com.documaster.validator.validation.noark5.validators;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
 import java.util.stream.Stream;
 
 import com.documaster.validator.exceptions.aggregation.SAXParseExceptionAggregator;

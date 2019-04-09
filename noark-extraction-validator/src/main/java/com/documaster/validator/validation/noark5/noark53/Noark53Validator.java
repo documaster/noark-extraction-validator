@@ -15,30 +15,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation.noark53.provider.data;
+package com.documaster.validator.validation.noark5.noark53;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import com.documaster.validator.config.commands.Noark53Command;
+import com.documaster.validator.validation.Noark5Validator;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "queries")
-public class ValidationData extends Data {
+public class Noark53Validator extends Noark5Validator<Noark53Command> {
 
-	@XmlElement(name = "warnings")
-	private String warningsRequest;
+	public Noark53Validator(Noark53Command command) {
 
-	@XmlElement(name = "errors")
-	private String errorsRequest;
-
-	public String getWarningsRequest() {
-
-		return warningsRequest;
-	}
-
-	public String getErrorsRequest() {
-
-		return errorsRequest;
+		super(command);
 	}
 }

@@ -15,12 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation.noark53;
+package com.documaster.validator.validation;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.text.MessageFormat;
@@ -32,7 +31,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import com.documaster.validator.config.commands.Noark53Command;
+import com.documaster.validator.config.commands.Noark5Command;
 import com.documaster.validator.converters.xsd.XsdConverter;
 import com.documaster.validator.exceptions.ValidationException;
 import com.documaster.validator.reporting.ReportFactory;
@@ -41,21 +40,20 @@ import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.storage.model.Field;
 import com.documaster.validator.storage.model.Item;
 import com.documaster.validator.storage.model.ItemDef;
-import com.documaster.validator.validation.Validator;
 import com.documaster.validator.validation.collector.ValidationCollector;
 import com.documaster.validator.validation.collector.ValidationResult;
-import com.documaster.validator.validation.noark53.model.Noark53PackageEntity;
-import com.documaster.validator.validation.noark53.model.Noark53PackageStructure;
-import com.documaster.validator.validation.noark53.parsers.BaseHandler;
-import com.documaster.validator.validation.noark53.parsers.HandlerFactory;
-import com.documaster.validator.validation.noark53.provider.ValidationGroup;
-import com.documaster.validator.validation.noark53.provider.ValidationProvider;
-import com.documaster.validator.validation.noark53.provider.data.Data;
-import com.documaster.validator.validation.noark53.provider.data.ValidationData;
-import com.documaster.validator.validation.noark53.provider.rules.Check;
-import com.documaster.validator.validation.noark53.provider.rules.Test;
-import com.documaster.validator.validation.noark53.validators.XMLValidator;
-import com.documaster.validator.validation.noark53.validators.XSDValidator;
+import com.documaster.validator.validation.noark5.model.Noark5PackageEntity;
+import com.documaster.validator.validation.noark5.model.Noark5PackageStructure;
+import com.documaster.validator.validation.noark5.parsers.BaseHandler;
+import com.documaster.validator.validation.noark5.parsers.HandlerFactory;
+import com.documaster.validator.validation.noark5.provider.ValidationGroup;
+import com.documaster.validator.validation.noark5.provider.ValidationProvider;
+import com.documaster.validator.validation.noark5.provider.data.Data;
+import com.documaster.validator.validation.noark5.provider.data.ValidationData;
+import com.documaster.validator.validation.noark5.provider.rules.Check;
+import com.documaster.validator.validation.noark5.provider.rules.Test;
+import com.documaster.validator.validation.noark5.validators.XMLValidator;
+import com.documaster.validator.validation.noark5.validators.XSDValidator;
 import com.documaster.validator.validation.utils.ChecksumCalculator;
 import com.documaster.validator.validation.utils.DefaultXMLHandler;
 import org.apache.commons.io.FileUtils;
@@ -65,15 +63,13 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-public class Noark53Validator extends Validator<Noark53Command> {
+public abstract class Noark5Validator<T extends Noark5Command> extends Validator<T> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Noark53Validator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Noark5Validator.class);
 
-	private Noark53PackageStructure structure;
+	private final XsdConverter converter = new XsdConverter();
 
-	private XsdConverter converter;
-
-	public Noark53Validator(Noark53Command command) {
+	public Noark5Validator(T command) {
 
 		super(command, new ValidationCollector());
 	}
@@ -81,11 +77,13 @@ public class Noark53Validator extends Validator<Noark53Command> {
 	@Override
 	public ValidationCollector run() throws Exception {
 
-		LOGGER.info("Executing Noark 5.3 extraction validation ...");
+		LOGGER.info("Executing Noark {} extraction validation ...", getCommand().getNoarkVersion());
+
+		Noark5PackageStructure structure = null;
 
 		try {
-			prepareStructure();
-			validateStructure();
+			structure = prepareStructure();
+			validateStructure(structure);
 
 			// Init storage
 			Storage.init(getCommand().getStorageConfiguration(), getCommand().getProperties().getUniqueFieldsMap());
@@ -93,10 +91,10 @@ public class Noark53Validator extends Validator<Noark53Command> {
 			Storage.get().startWriter();
 
 			// Persist the extraction package data
-			convertXSDSchemas();
+			convertXSDSchemas(structure);
 			storeXSDSchemas();
-			storeXMLFiles();
-			storePackageChecksums();
+			storeXMLFiles(structure);
+			storePackageChecksums(structure);
 
 			boolean isSuccessfulCompletion = Storage.get().stopWriter();
 			if (!isSuccessfulCompletion) {
@@ -106,11 +104,11 @@ public class Noark53Validator extends Validator<Noark53Command> {
 			// Validate the extraction package data
 			runValidationQueries();
 
-			LOGGER.info("Noark 5.3 extraction validation completed.");
+			LOGGER.info("Noark {} extraction validation completed.", getCommand().getNoarkVersion());
 
 		} catch (Exception ex) {
 
-			LOGGER.error("Noark 5.3 validation failed.", ex);
+			LOGGER.error(String.format("Noark %s validation failed.", getCommand().getNoarkVersion()), ex);
 
 			ValidationResult error = new ValidationResult(
 					ValidationGroup.EXCEPTIONS.getNextGroupId(getCollector()), "Exceptions",
@@ -122,7 +120,10 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 		} finally {
 
-			FileUtils.deleteQuietly(structure.getNoarkSchemasDirectory());
+			if (structure != null) {
+
+				FileUtils.deleteQuietly(structure.getNoarkSchemasDirectory());
+			}
 
 			ReportFactory.generateReports(getCommand(), getCollector(), getArchiveTitle());
 
@@ -136,24 +137,24 @@ public class Noark53Validator extends Validator<Noark53Command> {
 	}
 
 	/**
-	 * Prepares the {@link Noark53PackageStructure}.
+	 * Prepares the {@link Noark5PackageStructure}.
 	 */
-	private void prepareStructure() throws IOException {
+	private Noark5PackageStructure prepareStructure() throws Exception {
 
-		// Temporary directory for storing the original Noark 5.3 schemas
+		// Temporary directory for storing the original Noark 5.x schemas
 		File tempNoarkSchemasDirectory = Files.createTempDirectory("noark-extraction-validator-").toFile();
 
 		// Initialize the package structure
-		structure = new Noark53PackageStructure(
+		Noark5PackageStructure structure = new Noark5PackageStructure(
 				getCommand().getExtractionDirectory(), tempNoarkSchemasDirectory,
 				getCommand().getCustomSchemaLocation());
 
-		// Create temporary files containing the original Noark 5.3 schemas
-		for (Noark53PackageEntity entity : structure.values()) {
+		// Create temporary files containing the original Noark 5 schemas
+		for (Noark5PackageEntity entity : structure.values()) {
 
 			for (String xsdSchemaName : entity.getXsdShemasNames()) {
 
-				String noarkSchemaLocation = Noark53Command.COMMAND_NAME + "/" + xsdSchemaName;
+				String noarkSchemaLocation = getCommand().getDefaultSchemaLocation() + "/" + xsdSchemaName;
 				File tempXsdFile = new File(tempNoarkSchemasDirectory, xsdSchemaName);
 
 				FileUtils.copyInputStreamToFile(
@@ -161,19 +162,21 @@ public class Noark53Validator extends Validator<Noark53Command> {
 						tempXsdFile);
 			}
 		}
+
+		return structure;
 	}
 
 	/**
 	 * Validates the integrity of the extraction package structure.
 	 */
-	private void validateStructure() throws Exception {
+	private void validateStructure(Noark5PackageStructure structure) throws Exception {
 
 		boolean stopValidation = false;
 
 		XMLValidator xmlValidator = new XMLValidator(getCollector());
 		XSDValidator xsdValidator = new XSDValidator(getCollector());
 
-		for (Noark53PackageEntity entity : structure.values()) {
+		for (Noark5PackageEntity entity : structure.values()) {
 
 			if (!entity.getXmlFile().isFile() && entity.isOptional()) {
 				LOGGER.info("Did not validate missing optional XML entity {}", entity.getXmlFileName());
@@ -199,9 +202,8 @@ public class Noark53Validator extends Validator<Noark53Command> {
 	/**
 	 * Converts the XSD Schemas to {@link Item}(s).
 	 */
-	private void convertXSDSchemas() throws Exception {
+	private void convertXSDSchemas(Noark5PackageStructure structure) throws Exception {
 
-		converter = new XsdConverter();
 		converter.convert(structure.getAllNoarkSchemaFiles());
 
 		// Add additional fields
@@ -243,11 +245,11 @@ public class Noark53Validator extends Validator<Noark53Command> {
 	/**
 	 * Stores the data from the parsed XML files.
 	 */
-	private void storeXMLFiles() throws Exception {
+	private void storeXMLFiles(Noark5PackageStructure structure) throws Exception {
 
 		LOGGER.info("Storing XML data and extracting document information ...");
 
-		for (Noark53PackageEntity entity : structure.values()) {
+		for (Noark5PackageEntity entity : structure.values()) {
 
 			if (!entity.getXmlFile().isFile() && entity.isOptional()) {
 				LOGGER.info("Did not persist missing optional XML entity {}", entity.getXmlFileName());
@@ -288,9 +290,9 @@ public class Noark53Validator extends Validator<Noark53Command> {
 	 * Retrieves the checksums of all entities in the extraction package and stores them in the addml.property {@link
 	 * ItemDef}.
 	 */
-	private void storePackageChecksums() throws Exception {
+	private void storePackageChecksums(Noark5PackageStructure structure) throws Exception {
 
-		for (Noark53PackageEntity entity : structure.values()) {
+		for (Noark5PackageEntity entity : structure.values()) {
 
 			if (!entity.getXmlFile().isFile() && entity.isOptional()) {
 				LOGGER.info("Did not retrieve the checksum of missing optional XML entity {}", entity.getXmlFileName());
@@ -318,7 +320,7 @@ public class Noark53Validator extends Validator<Noark53Command> {
 
 		LOGGER.info("Validating extraction ...");
 
-		String validationFileLocation = Noark53Command.COMMAND_NAME + "/noark53-validation.xml";
+		String validationFileLocation = "noark5/noark5-validation.xml";
 
 		JAXBContext jaxbContext = JAXBContext
 				.newInstance(ValidationProvider.class, Data.class, ValidationData.class, ValidationGroup.class,

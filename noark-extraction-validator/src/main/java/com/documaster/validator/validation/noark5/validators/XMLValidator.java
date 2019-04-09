@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation.noark53.validators;
+package com.documaster.validator.validation.noark5.validators;
 
 import java.io.File;
 import java.util.List;
@@ -23,8 +23,8 @@ import java.util.List;
 import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.validation.collector.ValidationCollector;
 import com.documaster.validator.validation.collector.ValidationResult;
-import com.documaster.validator.validation.noark53.model.Noark53PackageEntity;
-import com.documaster.validator.validation.noark53.provider.ValidationGroup;
+import com.documaster.validator.validation.noark5.model.Noark5PackageEntity;
+import com.documaster.validator.validation.noark5.provider.ValidationGroup;
 import com.documaster.validator.validation.utils.DefaultXMLHandler;
 import com.documaster.validator.validation.utils.SchemaValidator;
 import com.documaster.validator.validation.utils.WellFormedXmlValidator;
@@ -42,7 +42,7 @@ public class XMLValidator {
 		this.collector = collector;
 	}
 
-	public boolean isValid(Noark53PackageEntity entity, boolean ignoreNonComplianceToSchema) {
+	public boolean isValid(Noark5PackageEntity entity, boolean ignoreNonComplianceToSchema) {
 
 		LOGGER.info("Validating XML File {} ...", entity.getXmlFile());
 

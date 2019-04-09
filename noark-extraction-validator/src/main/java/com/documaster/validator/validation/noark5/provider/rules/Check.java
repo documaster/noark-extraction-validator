@@ -1,6 +1,6 @@
 /**
  * Noark Extraction Validator
- * Copyright (C) 2017, Documaster AS
+ * Copyright (C) 2016, Documaster AS
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -15,23 +15,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation.noark53.provider.rules;
+package com.documaster.validator.validation.noark5.provider.rules;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.documaster.validator.validation.noark53.provider.data.ValidationData;
+import com.documaster.validator.validation.noark5.provider.data.Data;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "test")
-public class Test extends Rule {
+@XmlRootElement(name = "check")
+public class Check extends Rule {
 
 	@XmlElement(required = true, name = "queries")
-	protected ValidationData data;
+	protected Data data;
 
-	public ValidationData getData() {
+	public Data getData() {
 
 		return data;
 	}

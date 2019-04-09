@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation.noark53.parsers;
+package com.documaster.validator.validation.noark5.parsers;
 
 import java.io.File;
 import java.util.Map;
@@ -23,7 +23,7 @@ import java.util.Map;
 import com.documaster.validator.storage.core.Storage;
 import com.documaster.validator.storage.model.Item;
 import com.documaster.validator.storage.model.ItemDef;
-import com.documaster.validator.validation.noark53.provider.ValidationGroup;
+import com.documaster.validator.validation.noark5.provider.ValidationGroup;
 import org.apache.commons.lang.Validate;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

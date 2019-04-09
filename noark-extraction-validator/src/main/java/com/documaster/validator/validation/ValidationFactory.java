@@ -20,7 +20,7 @@ package com.documaster.validator.validation;
 import com.documaster.validator.config.commands.Command;
 import com.documaster.validator.config.commands.Noark53Command;
 import com.documaster.validator.exceptions.ValidationException;
-import com.documaster.validator.validation.noark53.Noark53Validator;
+import com.documaster.validator.validation.noark5.noark53.Noark53Validator;
 
 public class ValidationFactory {
 

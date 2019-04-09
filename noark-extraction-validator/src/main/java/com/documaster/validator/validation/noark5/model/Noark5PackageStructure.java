@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation.noark53.model;
+package com.documaster.validator.validation.noark5.model;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,26 +26,26 @@ import java.util.List;
 import org.apache.commons.lang.Validate;
 
 /**
- * The Noark 5.3 extraction package structure represented as a {@link HashMap} implementation.
+ * The Noark extraction package structure represented as a {@link HashMap} implementation.
  * <p/>
- * {@link Noark53PackageStructure} provides support for optional external schemas apart from the Noark ones and the ones
+ * {@link Noark5PackageStructure} provides support for optional external schemas apart from the Noark ones and the ones
  * included in the package.
  * <p/>
  * <b>keys: </b> XML file names<br/>
- * <b>values: </b> {@link Noark53PackageEntity}
+ * <b>values: </b> {@link Noark5PackageEntity}
  */
-public class Noark53PackageStructure extends HashMap<String, Noark53PackageEntity> {
+public class Noark5PackageStructure extends HashMap<String, Noark5PackageEntity> {
 
-	private File extractionDirectory;
-	private File noarkSchemasDirectory;
-	private File customSchemasDirectory;
+	private final File extractionDirectory;
+	private final File noarkSchemasDirectory;
+	private final File customSchemasDirectory;
 
-	public Noark53PackageStructure(File extractionDirectory, File noarkSchemasDirectory) {
+	public Noark5PackageStructure(File extractionDirectory, File noarkSchemasDirectory) {
 
 		this(extractionDirectory, noarkSchemasDirectory, null);
 	}
 
-	public Noark53PackageStructure(File extractionDirectory, File noarkSchemasDirectory, File customSchemasDirectory) {
+	public Noark5PackageStructure(File extractionDirectory, File noarkSchemasDirectory, File customSchemasDirectory) {
 
 		Validate.isTrue(extractionDirectory.isDirectory());
 		Validate.isTrue(noarkSchemasDirectory.isDirectory());
@@ -56,13 +56,13 @@ public class Noark53PackageStructure extends HashMap<String, Noark53PackageEntit
 
 		put(
 				"arkivstruktur.xml",
-				new Noark53PackageEntity(this, "arkivstruktur.xml", false, "arkivstruktur.xsd", "metadatakatalog.xsd"));
-		put("arkivuttrekk.xml", new Noark53PackageEntity(this, "arkivuttrekk.xml", false, "addml.xsd"));
-		put("endringslogg.xml", new Noark53PackageEntity(this, "endringslogg.xml", false, "endringslogg.xsd"));
-		put("loependeJournal.xml", new Noark53PackageEntity(this, "loependeJournal.xml", true, "loependeJournal.xsd"));
+				new Noark5PackageEntity(this, "arkivstruktur.xml", false, "arkivstruktur.xsd", "metadatakatalog.xsd"));
+		put("arkivuttrekk.xml", new Noark5PackageEntity(this, "arkivuttrekk.xml", false, "addml.xsd"));
+		put("endringslogg.xml", new Noark5PackageEntity(this, "endringslogg.xml", false, "endringslogg.xsd"));
+		put("loependeJournal.xml", new Noark5PackageEntity(this, "loependeJournal.xml", true, "loependeJournal.xsd"));
 		put(
 				"offentligJournal.xml",
-				new Noark53PackageEntity(this, "offentligJournal.xml", true, "offentligJournal.xsd"));
+				new Noark5PackageEntity(this, "offentligJournal.xml", true, "offentligJournal.xsd"));
 	}
 
 	public File getExtractionDirectory() {
@@ -84,7 +84,7 @@ public class Noark53PackageStructure extends HashMap<String, Noark53PackageEntit
 
 		List<File> noarkSchemas = new ArrayList<>();
 
-		for (Noark53PackageEntity entity : values()) {
+		for (Noark5PackageEntity entity : values()) {
 			noarkSchemas.addAll(entity.getNoarkSchemas());
 		}
 

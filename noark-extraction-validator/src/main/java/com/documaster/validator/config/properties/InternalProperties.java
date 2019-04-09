@@ -19,19 +19,33 @@ package com.documaster.validator.config.properties;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
+import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 /**
  * An interface for handling properties files bundled with the application.
  */
-public abstract class InternalProperties extends PropertiesConfiguration {
+public abstract class InternalProperties extends CompositeConfiguration {
 
-	public InternalProperties(String command, String file) throws IOException, ConfigurationException {
+	public InternalProperties(List<String> propertyFiles) throws IOException, ConfigurationException {
 
-		try (InputStream is = getClass().getClassLoader().getResourceAsStream(command + "/" + file)) {
-			load(is);
+		if (propertyFiles == null || propertyFiles.isEmpty()) {
+
+			throw new IllegalArgumentException("Property files not specified.");
+		}
+
+		for (String file : propertyFiles) {
+
+			try (InputStream is = getClass().getClassLoader().getResourceAsStream(file)) {
+
+				PropertiesConfiguration configuration = new PropertiesConfiguration();
+				configuration.load(is);
+
+				addConfiguration(configuration);
+			}
 		}
 	}
 }

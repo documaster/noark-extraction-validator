@@ -22,22 +22,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.configuration.ConfigurationException;
 
-public class Noark53Properties extends InternalProperties {
+public class Noark5Properties extends InternalProperties {
 
-	private Map<String, Set<String>> uniqueFieldsMap = new HashMap<>();
+	private final Map<String, Set<String>> uniqueFieldsMap = new HashMap<>();
 
-	private Map<String, Set<String>> extraFieldsMap = new HashMap<>();
+	private final Map<String, Set<String>> extraFieldsMap = new HashMap<>();
 
-	private Map<String, String> checksums = new HashMap<>();
+	private final Map<String, String> checksums = new HashMap<>();
 
-	public Noark53Properties(String command, String file) throws IOException, ConfigurationException {
+	public Noark5Properties(List<String> propertyFiles) throws IOException, ConfigurationException {
 
-		super(command, file);
+		super(propertyFiles);
 
 		setUniqueFieldsPerTable();
 		setExtraFieldsPerTable();

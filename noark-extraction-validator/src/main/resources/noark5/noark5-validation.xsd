@@ -5,7 +5,9 @@
 
 	<xs:complexType name="validation">
 		<xs:sequence>
-			<xs:element name="target" type="xs:string"/>
+			<xs:sequence maxOccurs="unbounded">
+				<xs:element name="target" type="xs:string"/>
+			</xs:sequence>
 			<xs:sequence minOccurs="0" maxOccurs="unbounded">
 				<xs:element name="check" type="check" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="test" type="test" minOccurs="0" maxOccurs="unbounded"/>

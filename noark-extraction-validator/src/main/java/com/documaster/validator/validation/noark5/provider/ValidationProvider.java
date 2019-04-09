@@ -15,25 +15,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation.noark53.provider;
+package com.documaster.validator.validation.noark5.provider;
 
 import java.util.Collections;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.documaster.validator.validation.noark53.provider.rules.Check;
-import com.documaster.validator.validation.noark53.provider.rules.Test;
+import com.documaster.validator.validation.noark5.provider.rules.Check;
+import com.documaster.validator.validation.noark5.provider.rules.Test;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "validation")
 public class ValidationProvider {
 
 	@XmlElement(required = true, name = "target")
-	protected String target;
+	protected List<String> targets;
 
 	@XmlElement(required = true, name = "test")
 	protected List<Test> tests;
@@ -41,9 +40,9 @@ public class ValidationProvider {
 	@XmlElement(required = true, name = "check")
 	protected List<Check> checks;
 
-	public String getTarget() {
+	public List<String> getTargets() {
 
-		return target;
+		return targets;
 	}
 
 	public List<Test> getTests() {
