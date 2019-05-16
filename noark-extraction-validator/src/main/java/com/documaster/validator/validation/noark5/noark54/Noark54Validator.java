@@ -15,25 +15,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.config.commands;
+package com.documaster.validator.validation.noark5.noark54;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameters;
+import com.documaster.validator.config.commands.Noark54Command;
+import com.documaster.validator.validation.Noark5Validator;
 
-@Parameters(commandNames = Noark53Command.COMMAND_NAME,
-		commandDescription = "Validates a Noark 5.3 extraction package.")
-public class Noark53Command extends Noark5Command {
+public class Noark54Validator extends Noark5Validator<Noark54Command> {
 
-	public static final String COMMAND_NAME = "noark53";
-	private static final String NOARK_VERSION = "5.3";
+	public Noark54Validator(Noark54Command command) {
 
-	public Noark53Command() {
-
-		super(COMMAND_NAME, NOARK_VERSION);
-	}
-
-	public Noark53Command(JCommander argParser) {
-
-		super(argParser, COMMAND_NAME, NOARK_VERSION);
+		super(command);
 	}
 }

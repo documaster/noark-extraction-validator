@@ -19,8 +19,10 @@ package com.documaster.validator.validation;
 
 import com.documaster.validator.config.commands.Command;
 import com.documaster.validator.config.commands.Noark53Command;
+import com.documaster.validator.config.commands.Noark54Command;
 import com.documaster.validator.exceptions.ValidationException;
-import com.documaster.validator.validation.noark53.Noark53Validator;
+import com.documaster.validator.validation.noark5.noark53.Noark53Validator;
+import com.documaster.validator.validation.noark5.noark54.Noark54Validator;
 
 public class ValidationFactory {
 
@@ -29,6 +31,8 @@ public class ValidationFactory {
 		switch (validatorType) {
 			case NOARK53:
 				return new Noark53Validator((Noark53Command) command);
+			case NOARK54:
+				return new Noark54Validator((Noark54Command) command);
 			default:
 				throw new ValidationException("Validator not implemented: " + validatorType.getName());
 		}

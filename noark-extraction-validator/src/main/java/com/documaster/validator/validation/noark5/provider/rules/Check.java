@@ -15,25 +15,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.config.commands;
+package com.documaster.validator.validation.noark5.provider.rules;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameters;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-@Parameters(commandNames = Noark53Command.COMMAND_NAME,
-		commandDescription = "Validates a Noark 5.3 extraction package.")
-public class Noark53Command extends Noark5Command {
+import com.documaster.validator.validation.noark5.provider.data.Data;
 
-	public static final String COMMAND_NAME = "noark53";
-	private static final String NOARK_VERSION = "5.3";
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "check")
+public class Check extends Rule {
 
-	public Noark53Command() {
+	@XmlElement(required = true, name = "queries")
+	protected Data data;
 
-		super(COMMAND_NAME, NOARK_VERSION);
-	}
+	public Data getData() {
 
-	public Noark53Command(JCommander argParser) {
-
-		super(argParser, COMMAND_NAME, NOARK_VERSION);
+		return data;
 	}
 }
