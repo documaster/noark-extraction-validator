@@ -21,19 +21,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.documaster.validator.config.commands.Noark53Command;
+import com.documaster.validator.config.commands.Noark54Command;
 
 public enum ValidatorType {
 
-	NOARK53(Noark53Command.COMMAND_NAME);
+	NOARK53(Noark53Command.COMMAND_NAME),
+	NOARK54(Noark54Command.COMMAND_NAME);
 
-	private String name;
+	private final String name;
 
-	private static Map<String, ValidatorType> types;
+	private static final Map<String, ValidatorType> TYPES;
 
 	static {
-		types = new HashMap<>();
+		TYPES = new HashMap<>();
 		for (ValidatorType validatorType : ValidatorType.values()) {
-			types.put(validatorType.getName(), validatorType);
+			TYPES.put(validatorType.getName(), validatorType);
 		}
 	}
 
@@ -49,6 +51,6 @@ public enum ValidatorType {
 
 	public static ValidatorType byName(String name) {
 
-		return types.get(name);
+		return TYPES.get(name);
 	}
 }

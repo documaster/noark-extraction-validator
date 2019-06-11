@@ -1,6 +1,6 @@
 /**
  * Noark Extraction Validator
- * Copyright (C) 2016, Documaster AS
+ * Copyright (C) 2017, Documaster AS
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -15,25 +15,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.config.commands;
+package com.documaster.validator.validation.noark5.provider.data;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameters;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-@Parameters(commandNames = Noark53Command.COMMAND_NAME,
-		commandDescription = "Validates a Noark 5.3 extraction package.")
-public class Noark53Command extends Noark5Command {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "queries")
+public class Data {
 
-	public static final String COMMAND_NAME = "noark53";
-	private static final String NOARK_VERSION = "5.3";
+	@XmlElement(required = true, name = "info")
+	private String infoRequest;
 
-	public Noark53Command() {
+	public String getInfoRequest() {
 
-		super(COMMAND_NAME, NOARK_VERSION);
-	}
-
-	public Noark53Command(JCommander argParser) {
-
-		super(argParser, COMMAND_NAME, NOARK_VERSION);
+		return infoRequest;
 	}
 }

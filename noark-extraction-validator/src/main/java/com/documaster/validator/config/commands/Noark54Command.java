@@ -20,19 +20,19 @@ package com.documaster.validator.config.commands;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameters;
 
-@Parameters(commandNames = Noark53Command.COMMAND_NAME,
-		commandDescription = "Validates a Noark 5.3 extraction package.")
-public class Noark53Command extends Noark5Command {
+@Parameters(commandNames = Noark54Command.COMMAND_NAME,
+		commandDescription = "Validates a Noark 5.4 extraction package.")
+public class Noark54Command extends Noark5Command {
 
-	public static final String COMMAND_NAME = "noark53";
-	private static final String NOARK_VERSION = "5.3";
+	public static final String COMMAND_NAME = "noark54";
+	private static final String NOARK_VERSION = "5.4";
 
-	public Noark53Command() {
+	public Noark54Command() {
 
 		super(COMMAND_NAME, NOARK_VERSION);
 	}
 
-	public Noark53Command(JCommander argParser) {
+	public Noark54Command(JCommander argParser) {
 
 		super(argParser, COMMAND_NAME, NOARK_VERSION);
 	}
