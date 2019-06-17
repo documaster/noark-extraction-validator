@@ -1,0 +1,3415 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+        Noark Extraction Validator
+        Copyright (C) 2016, Documaster AS
+
+        This program is free software: you can redistribute it and/or modify
+        it under the terms of the GNU Affero General Public License as
+        published by the Free Software Foundation, either version 3 of the
+        License, or (at your option) any later version.
+
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU Affero General Public License for more details.
+
+        You should have received a copy of the GNU Affero General Public License
+        along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<validation>
+    <target>Noark 5.5</target>
+
+    <!-- View the associated xsd for more information on the structure of the file. -->
+    <!-- Note that there is a limitation on the possible values of the group element -->
+
+    <!--
+    ============================================================================================================
+    ARKIVUTTREKK
+    ============================================================================================================
+    -->
+    <!-- Tests -->
+
+    <test id="AUT1">
+        <title>arkivstruktur.xml checksum</title>
+        <description>Tests whether the checksum of arkivstruktur.xml matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value'
+                            AND parent_property.name = 'checksum'
+                            AND sibling_property.name = 'name'
+                            AND LOWER(sibling_property.value) = 'arkivstruktur.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'arkivstruktur.xml'
+                        LIMIT 1
+                    )
+                    SELECT 'arkivstruktur.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value'
+                            AND parent_property.name = 'checksum'
+                            AND sibling_property.name = 'name'
+                            AND LOWER(sibling_property.value) = 'arkivstruktur.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'arkivstruktur.xml'
+                        LIMIT 1
+                    )
+                    SELECT 'arkivstruktur.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val
+                        OR arkivuttrekk_checksum.val IS NULL
+                        OR detected_checksum.val IS NULL;
+                ]]>
+            </errors>
+        </queries>
+    </test>
+
+    <test id="AUT2">
+        <title>arkivstruktur.xsd checksum</title>
+        <description>Tests whether the checksum of arkivstruktur.xsd matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'arkivstruktur.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'arkivstruktur.xsd'
+                        LIMIT 1
+                    )
+                    SELECT 'arkivstruktur.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'arkivstruktur.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'arkivstruktur.xsd'
+                        LIMIT 1
+                    )
+                    SELECT 'arkivstruktur.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val
+                        OR arkivuttrekk_checksum.val IS NULL
+                        OR detected_checksum.val IS NULL;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="AUT3">
+        <title>loependeJournal.xml checksum</title>
+        <description>Tests whether the checksum of loependeJournal.xml matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'loependejournal.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'loependeJournal.xml'
+                        LIMIT 1
+                    )
+                    SELECT 'loependeJournal.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'loependejournal.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'loependeJournal.xml'
+                        LIMIT 1
+                    )
+                    SELECT 'loependeJournal.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val;
+                ]]>
+            </errors>
+        </queries>
+    </test>
+
+    <test id="AUT4">
+        <title>loependeJournal.xsd checksum</title>
+        <description>Tests whether the checksum of loependeJournal.xsd matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'loependejournal.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'loependeJournal.xsd'
+                        LIMIT 1
+                    )
+                    SELECT 'loependeJournal.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'loependejournal.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'loependeJournal.xsd'
+                        LIMIT 1
+                    )
+                    SELECT 'loependeJournal.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val
+                        AND arkivuttrekk_checksum.val IS NOT NULL
+                        AND detected_checksum.val IS NOT NULL;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="AUT5">
+        <title>offentligJournal.xml checksum</title>
+        <description>Tests whether the checksum of offentligJournal.xml matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'offentligjournal.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'offentligJournal.xml'
+                        LIMIT 1
+                    )
+                    SELECT 'offentligJournal.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'offentligjournal.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'offentligJournal.xml'
+                        LIMIT 1
+                    )
+                    SELECT 'offentligJournal.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val;
+                ]]>
+            </errors>
+        </queries>
+    </test>
+
+    <test id="AUT6">
+        <title>offentligJournal.xsd checksum</title>
+        <description>Tests whether the checksum of offentligJournal.xsd matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'offentligjournal.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'offentligJournal.xsd'
+                        LIMIT 1
+                    )
+                    SELECT 'offentligJournal.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'offentligjournal.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'offentligJournal.xsd'
+                        LIMIT 1
+                    )
+                    SELECT 'offentligJournal.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val
+                        AND arkivuttrekk_checksum.val IS NOT NULL
+                        AND detected_checksum.val IS NOT NULL;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="AUT7">
+        <title>endringslogg.xml checksum</title>
+        <description>Tests whether the checksum of endringslogg.xml matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'endringslogg.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'endringslogg.xml'
+                        LIMIT 1
+                    )
+                    SELECT 'endringslogg.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'endringslogg.xml'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'endringslogg.xml'
+                        LIMIT 1
+                    )
+                    SELECT 'endringslogg.xml' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val
+                        OR arkivuttrekk_checksum.val IS NULL
+                        OR detected_checksum.val IS NULL;
+                ]]>
+            </errors>
+        </queries>
+    </test>
+
+    <test id="AUT8">
+        <title>endringslogg.xsd checksum</title>
+        <description>Tests whether the checksum of endringslogg.xsd matches the one specified in arkivuttrekk.xml.</description>
+        <group>arkivuttrekk</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'endringslogg.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'endringslogg.xsd'
+                        LIMIT 1
+                    )
+                    SELECT 'endringslogg.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH arkivuttrekk_checksum AS (
+                        SELECT LOWER(property.value) val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.property sibling_property ON sibling_property._parent_id = parent_property._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'checksum' AND sibling_property.name = 'name' AND LOWER(sibling_property.value) = 'endringslogg.xsd'
+                        LIMIT 1
+                    ), detected_checksum AS (
+                        SELECT LOWER(value) val
+                        FROM addml.property
+                        WHERE name = 'endringslogg.xsd'
+                        LIMIT 1
+                    )
+                    SELECT 'endringslogg.xsd' file_name, detected_checksum.val detected_checksum, arkivuttrekk_checksum.val arkivuttrekk_checksum
+                    FROM detected_checksum
+                    LEFT JOIN arkivuttrekk_checksum ON 1=1
+                    WHERE detected_checksum.val <> arkivuttrekk_checksum.val
+                        OR arkivuttrekk_checksum.val IS NULL
+                        OR detected_checksum.val IS NULL;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <!--
+    ============================================================================================================
+    ARKIVSTRUKTUR
+    ============================================================================================================
+    -->
+    <!-- Checks -->
+    <check id="ASC1">
+        <title>Fonds</title>
+        <description>Number of fonds</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT
+                        a.systemid system_id,
+                        a.tittel title,
+                        (_ref_arkiv IS NULL) is_root,
+                        (COUNT(*) - 1) children_count
+                    FROM arkivstruktur.arkiv a
+                    LEFT JOIN arkivstruktur.arkiv b ON a._id = b._parent_id
+                    GROUP BY system_id, title, is_root
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC2">
+        <title>Classification systems</title>
+        <description>Number of classification systems grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT s.systemid series_system_id, COUNT(*) ks_count
+                    FROM arkivstruktur.arkivdel s
+                    JOIN arkivstruktur.klassifikasjonssystem ks ON ks._parent_id = s._id
+                    GROUP BY s.systemid
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC3">
+        <title>Classes</title>
+        <description>Number of classes grouped by classification system</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT ks.systemid ks_system_id, parent.systemid parent_system_id, COUNT(*) number_of_classes
+                    FROM arkivstruktur.klasse k
+                    LEFT JOIN arkivstruktur.klasse parent ON parent.systemid = k._ref_klasse
+                    LEFT JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                    GROUP BY ks.systemid, parent.systemid;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC4">
+        <title>Classes without subclasses, files, or records</title>
+        <description>Number of classes without children of any type, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT ks._ref_arkivdel series_system_id, COUNT(DISTINCT(k.systemid)) classes_without_children
+                    FROM arkivstruktur.klasse k
+                    JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                    WHERE k.systemid NOT IN (SELECT _ref_klasse FROM arkivstruktur.klasse WHERE _ref_klasse IS NOT NULL GROUP BY _ref_klasse)
+                        AND k.systemid NOT IN (SELECT _ref_klasse FROM arkivstruktur.mappe WHERE _ref_klasse IS NOT NULL)
+                        AND k.systemid NOT IN (SELECT _ref_klasse FROM arkivstruktur.registrering WHERE _ref_klasse IS NOT NULL GROUP BY _ref_klasse)
+                    GROUP BY ks._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC5">
+        <title>Files with classes</title>
+        <description>Number of files grouped by class and series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT f._ref_arkivdel series_system_id, f._ref_klasse class_system_id, COUNT(*) number_of_files
+                    FROM arkivstruktur.mappe f
+                    GROUP BY f._ref_arkivdel, f._ref_klasse;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC6">
+        <title>Files without subfiles or records</title>
+        <description>Number of files without children of any type, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT f._ref_arkivdel series_system_id, COUNT(*) empty_file_count
+                    FROM arkivstruktur.mappe f
+                    WHERE f.systemid NOT IN (SELECT _ref_mappe FROM arkivstruktur.mappe WHERE _ref_mappe IS NOT NULL GROUP BY _ref_mappe)
+                        AND f.systemid NOT IN (SELECT _ref_mappe FROM arkivstruktur.registrering WHERE _ref_mappe IS NOT NULL GROUP BY _ref_mappe)
+                    GROUP BY f._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC7">
+        <title>Registry entries without a main document</title>
+        <description>Number of registry entries without a main document, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, r._dtype registry_entry_type, COUNT(*) registry_entries_without_a_main_document
+                    FROM arkivstruktur.registrering r
+                    WHERE r._dtype = 'journalpost' AND r.systemid NOT IN (
+                        SELECT _ref_registrering
+                        FROM arkivstruktur.dokumentbeskrivelse
+                        WHERE tilknyttetregistreringsom = 'Hoveddokument' AND _ref_registrering IS NOT NULL
+                        GROUP BY _ref_registrering
+                    )
+                    GROUP BY r._ref_arkivdel, r._dtype;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC8">
+        <title>Records with classes</title>
+        <description>Number of records with classes, grouped by class and series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, r._ref_klasse class_system_id, COUNT(*) number_of_records
+                    FROM arkivstruktur.registrering r
+                    WHERE r._ref_mappe IS NULL
+                    GROUP BY r._ref_arkivdel, r._ref_klasse;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC9">
+        <title>Records without document descriptions</title>
+        <description>Number of records without document descriptions, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, COUNT(*) records_without_documents
+                    FROM arkivstruktur.registrering r
+                    WHERE r.systemid NOT IN (SELECT _ref_registrering FROM arkivstruktur.dokumentbeskrivelse WHERE _ref_registrering IS NOT NULL GROUP BY _ref_registrering)
+                    GROUP BY r._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC10">
+        <title>Document descriptions</title>
+        <description>Number of document descriptions grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, count(*) number_of_document_description
+                    FROM arkivstruktur.dokumentbeskrivelse d
+                    JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                    GROUP BY r._ref_arkivdel
+
+                    UNION ALL
+
+                    SELECT 'total', count(*)
+                    FROM arkivstruktur.dokumentbeskrivelse;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC11">
+        <title>Document descriptions without document objects</title>
+        <description>Number of document descriptions without document objects, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, COUNT(*) document_descriptions_without_document_objects
+                    FROM arkivstruktur.dokumentbeskrivelse d
+                    JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                    WHERE d.systemid NOT IN (
+                        SELECT _ref_dokumentbeskrivelse
+                        FROM arkivstruktur.dokumentobjekt
+                        WHERE _ref_dokumentbeskrivelse IS NOT NULL
+                        GROUP BY _ref_dokumentbeskrivelse
+                    )
+                    GROUP BY r._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC12">
+        <title>Document objects</title>
+        <description>Number of document objects grouped by series and parent (document description or record)</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT
+                        r._ref_arkivdel series_system_id,
+                        COUNT(*) document_objects,
+                        (d._ref_dokumentbeskrivelse IS NOT NULL) in_document_description,
+                        (d._ref_dokumentbeskrivelse IS NULL) in_record
+                    FROM arkivstruktur.dokumentobjekt d
+                    LEFT JOIN arkivstruktur.dokumentbeskrivelse dd ON dd._id = d._parent_id
+                    LEFT JOIN arkivstruktur.registrering r ON r._id = d._parent_id
+                    GROUP BY series_system_id, in_document_description, in_record
+
+                    UNION ALL
+
+                    SELECT 'total', count(*), TRUE in_document_description, TRUE in_record
+                    FROM arkivstruktur.dokumentobjekt;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC13">
+        <title>Case parties</title>
+        <description>Number of case parties grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT f._ref_arkivdel series_system_id, COUNT(*) number_of_case_parties
+                    FROM arkivstruktur.part cp
+                    JOIN arkivstruktur.mappe f ON f.systemid = cp._ref_mappe
+                    GROUP BY f._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC14">
+        <title>Notes</title>
+        <description>Number of notes associated with files, records, or document descriptions, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT s.systemid series_system_id,
+                        COALESCE(f.val, 0) number_of_file_notes,
+                        COALESCE(r.val, 0) number_of_record_notes,
+                        COALESCE(d.val, 0) number_of_document_notes
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN
+                    (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.merknad n
+                        JOIN arkivstruktur.mappe f ON f.systemid = n._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ) f ON f.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.merknad n
+                        JOIN arkivstruktur.registrering r ON r.systemid = n._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ) r ON r.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.merknad n
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = n._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ) d ON d.series_system_id = s.systemid;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC15">
+        <title>Cross references</title>
+        <description>Number of cross references associated with classes, files, or records, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT s.systemid series_system_id,
+                        COALESCE(k.val, 0) number_of_klass_cross_references,
+                        COALESCE(f.val, 0) number_of_file_cross_references,
+                        COALESCE(r.val, 0) number_of_record_cross_references
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN
+                    (
+                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kryssreferanse cr
+                        JOIN arkivstruktur.klasse k ON k.systemid = cr._ref_klasse
+                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                        GROUP BY ks._ref_arkivdel
+                    ) k ON k.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kryssreferanse cr
+                        JOIN arkivstruktur.mappe f ON f.systemid =  cr._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ) f ON f.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kryssreferanse cr
+                        JOIN arkivstruktur.registrering r ON r.systemid = cr._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ) r ON r.series_system_id = s.systemid;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC16">
+        <title>Precedents</title>
+        <description>Number of precedents associated with files or records, grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT s.systemid series_system_id,
+                        COALESCE(f.val, 0) number_of_file_precedents,
+                        COALESCE(r.val, 0) number_of_record_precedents
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN
+                    (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.presedens p
+                        JOIN arkivstruktur.mappe f ON f.systemid = p._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ) f ON f.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.presedens p
+                        JOIN arkivstruktur.registrering r ON r.systemid = p._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ) r ON r.series_system_id = s.systemid;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC17">
+        <title>Sign-offs</title>
+        <description>Number of sign-offs grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, COUNT(*) number_of_sign_offs
+                    FROM arkivstruktur.registrering r
+                    WHERE r._dtype = 'journalpost' AND r.systemid in (SELECT _ref_registrering FROM arkivstruktur.avskrivning WHERE _ref_registrering IS NOT NULL GROUP BY _ref_registrering)
+                    GROUP BY r._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC18">
+        <title>Document flows</title>
+        <description>Number of document flows grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, COUNT(*) number_of_document_flows
+                    FROM arkivstruktur.registrering r
+                    WHERE r._dtype = 'journalpost' AND r.systemid in (SELECT _ref_registrering FROM arkivstruktur.dokumentflyt WHERE _ref_registrering IS NOT NULL GROUP BY _ref_registrering)
+                    GROUP BY r._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC19">
+        <title>Gradings</title>
+        <description>
+            Number of gradings associated with series, classes,
+            files, records, or document descriptions
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT s.systemid series_system_id,
+                        COALESCE(series.val, 0) number_of_series_gradings,
+                        COALESCE(class.val, 0) number_of_class_gradings,
+                        COALESCE(file.val, 0) number_of_file_gradings,
+                        COALESCE(item.val, 0) number_of_record_gradings,
+                        COALESCE(document.val, 0) number_of_document_descriptions_gradings
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN
+                    (
+                        SELECT g._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.gradering g
+                        GROUP BY g._ref_arkivdel
+                    ) series ON series.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.gradering g
+                        JOIN arkivstruktur.klasse k ON k.systemid = g._ref_klasse
+                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                        GROUP BY ks._ref_arkivdel
+                    ) class ON class.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.gradering g
+                        JOIN arkivstruktur.mappe f ON f.systemid = g._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ) file ON file.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.gradering g
+                        JOIN arkivstruktur.registrering r ON r.systemid = g._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ) item ON item.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.gradering g
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = g._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ) document ON document.series_system_id = s.systemid;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC20">
+        <title>Conversions</title>
+        <description>Number of conversions grouped by series</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, COUNT(*) number_of_conversions
+                    FROM arkivstruktur.konvertering k
+                    JOIN arkivstruktur.dokumentobjekt d ON k._parent_id = d._id
+                    JOIN arkivstruktur.dokumentbeskrivelse dd ON dd.systemid = d._ref_dokumentbeskrivelse
+                    JOIN arkivstruktur.registrering r ON r.systemid = dd._ref_registrering
+                    GROUP BY r._ref_arkivdel;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <check id="ASC21">
+        <title>Deletions (apart from disposals)</title>
+        <description>Number of deletions (apart from disposals)</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT s.systemid series_system_id,
+                        COALESCE(series.val, 0) number_of_series_deletions_apart_from_disposals,
+                        COALESCE(document.val, 0) number_of_document_descriptions_deletions_apart_from_disposals
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN
+                    (
+                        SELECT sl._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.sletting sl
+                        GROUP BY sl._ref_arkivdel
+                    ) series ON series.series_system_id = s.systemid
+                    LEFT JOIN
+                    (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.sletting sl
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = sl._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ) document ON document.series_system_id = s.systemid;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <!-- Tests -->
+
+    <test id="AST1">
+        <title>Extraction-wide systemID uniqueness</title>
+        <description>Tests whether the same systemID has been used for more than one object in the archive.</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT COUNT(*) total_non_unique_or_null_system_ids FROM (
+                        SELECT systemid FROM (
+                                SELECT systemid
+                                FROM arkivstruktur.arkiv
+                            UNION ALL
+                                SELECT systemid
+                                FROM arkivstruktur.arkivdel
+                            UNION ALL
+                                SELECT systemid
+                                FROM arkivstruktur.klassifikasjonssystem
+                                GROUP BY systemid, avsluttetdato, avsluttetav, opprettetdato, _dtype, tittel,
+                                    klassifikasjonstype, opprettetav, beskrivelse
+                            UNION ALL
+                                SELECT systemid
+                                FROM arkivstruktur.klasse
+                                GROUP BY _ref_klasse, systemid, avsluttetdato, _dtype, tittel, klasseid,
+                                    noekkelord, avsluttetav, opprettetdato, opprettetav, beskrivelse
+                            UNION ALL
+                                SELECT systemid
+                                FROM arkivstruktur.mappe
+                            UNION ALL
+                                SELECT systemid
+                                FROM arkivstruktur.registrering
+                            UNION ALL
+                                SELECT systemid
+                                FROM arkivstruktur.dokumentbeskrivelse
+                            UNION ALL
+                                SELECT systemid
+                                FROM arkivstruktur.dokumentobjekt
+                        )
+                        GROUP BY systemid
+                        HAVING COUNT(*) > 1 OR systemid IS NULL
+                    ) non_unique_or_null_systemids
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                    SELECT systemid, count(*) total FROM (
+                            SELECT systemid FROM arkivstruktur.arkiv
+                        UNION ALL
+                            SELECT systemid FROM arkivstruktur.arkivdel
+                        UNION ALL
+                            SELECT systemid FROM arkivstruktur.klassifikasjonssystem
+                            GROUP BY systemid, avsluttetdato, avsluttetav, opprettetdato, _dtype, tittel,
+                                klassifikasjonstype, opprettetav, beskrivelse
+                        UNION ALL
+                            SELECT systemid FROM arkivstruktur.klasse
+                            GROUP BY _ref_klasse, systemid, avsluttetdato, _dtype, tittel, klasseid,
+                                noekkelord, avsluttetav, opprettetdato, opprettetav, beskrivelse
+                        UNION ALL
+                            SELECT systemid FROM arkivstruktur.mappe
+                        UNION ALL
+                            SELECT systemid FROM arkivstruktur.registrering
+                        UNION ALL
+                            SELECT systemid FROM arkivstruktur.dokumentbeskrivelse
+                    )
+                    GROUP BY systemid
+                    HAVING COUNT(*) > 1 OR systemid IS NULL
+                ]]>
+            </errors>
+        </queries>
+    </test>
+
+    <test id="AST2">
+        <title>Series</title>
+        <description>
+            Provides information about the number of series in the archive,
+            and tests whether a fonds without any series exists.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT f.systemid fonds_system_id, COUNT(*) series_count
+                    FROM arkivstruktur.arkiv f
+                    LEFT JOIN arkivstruktur.arkivdel s ON f._id = s._parent_id
+                    GROUP BY f.systemid
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                    SELECT f.systemid fonds_system_id, COUNT(*) series_count
+                    FROM arkivstruktur.arkiv f
+                    LEFT JOIN arkivstruktur.arkivdel s ON f._id = s._parent_id
+                    GROUP BY f.systemid
+                    HAVING COUNT(*) < 1
+                ]]>
+            </errors>
+        </queries>
+    </test>
+
+    <test id="AST3">
+        <title>Fonds period containment</title>
+        <description>
+            Tests whether the created and finalized dates of all fonds
+            are within the archival period specified in arkivuttrekk.xml.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    ), inside_period AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.arkiv, period
+                        WHERE
+                            CAST(opprettetdato AS DATE) >= period.start
+                            AND CAST(avsluttetdato AS DATE) <= period.end
+                            AND opprettetdato IS NOT NULL
+                            AND avsluttetdato IS NOT NULL
+                            AND period.start IS NOT NULL
+                            AND period.end IS NOT NULL
+                    ), outside_period AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.arkiv, period
+                        WHERE
+                            CAST(opprettetdato AS DATE) < period.start
+                            OR CAST(avsluttetdato AS DATE) > period.end
+                            OR opprettetdato IS NULL
+                            OR avsluttetdato IS NULL
+                            OR period.start IS NULL
+                            OR period.end IS NULL
+                    )
+                    SELECT inside_period.val fonds_inside_of_period, outside_period.val fonds_outside_of_period
+                    FROM inside_period, outside_period;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    )
+                    SELECT systemid system_id,
+                        CAST(opprettetdato AS DATE) created_date,
+                        CAST(avsluttetdato AS DATE) finalized_date,
+                        period.start period_start_date,
+                        period.end period_end_date
+                    FROM arkivstruktur.arkiv, period
+                    WHERE CAST(opprettetdato AS DATE) < period.start
+                        OR CAST(avsluttetdato AS DATE) > period.end
+                        OR opprettetdato IS NULL
+                        OR avsluttetdato IS NULL
+                        OR period.start IS NULL
+                        OR period.end IS NULL;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="AST4">
+        <title>Series period containment</title>
+        <description>
+            Tests whether the created and finalized dates of all series
+            are within the archival period specified in arkivuttrekk.xml.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    ), outside_period AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.arkivdel, period
+                        WHERE CAST(opprettetdato AS DATE) < period.start
+                            OR CAST(avsluttetdato AS DATE) > period.end
+                            OR opprettetdato IS NULL
+                            OR avsluttetdato IS NULL
+                            OR period.start IS NULL
+                            OR period.end IS NULL
+                    ), inside_period AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.arkivdel, period
+                        WHERE CAST(opprettetdato AS DATE) >= period.start
+                            AND CAST(avsluttetdato AS DATE) <= period.end
+                            AND opprettetdato IS NOT NULL
+                            AND avsluttetdato IS NOT NULL
+                            AND period.start IS NOT NULL
+                            AND period.end IS NOT NULL
+                    )
+                    SELECT inside_period.val series_inside_of_period, outside_period.val series_outside_of_period
+                    FROM inside_period, outside_period;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    )
+                    SELECT systemid system_id,
+                        CAST(opprettetdato AS DATE) created_date,
+                        CAST(avsluttetdato AS DATE) finalized_date,
+                        period.start period_start_date,
+                        period.end period_end_date
+                    FROM arkivstruktur.arkivdel, period
+                    WHERE CAST(opprettetdato AS DATE) < period.start
+                        OR CAST(avsluttetdato AS DATE) > period.end
+                        OR opprettetdato IS NULL
+                        OR avsluttetdato IS NULL
+                        OR period.start IS NULL
+                        OR period.end IS NULL;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="AST5">
+        <title>Series status</title>
+        <description>
+            Tests whether non-finalized series exist in the archive.
+            A series is considered non-finalized if a finalized date or
+            a finalizing party is not specified, or if the series status is not 'Avsluttet periode'.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH not_closed AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.arkivdel
+                        WHERE arkivdelstatus <> 'Avsluttet periode' OR avsluttetdato IS NULL OR avsluttetav IS NULL
+                    ), closed AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.arkivdel
+                        WHERE arkivdelstatus = 'Avsluttet periode' AND avsluttetdato IS NOT NULL AND avsluttetav IS NOT NULL
+                    )
+                    SELECT not_closed.val not_closed_series, closed.val closed_series
+                    FROM closed, not_closed;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    SELECT systemid system_id, arkivdelstatus status, avsluttetdato finalized_date, avsluttetav finalized_by
+                    FROM arkivstruktur.arkivdel
+                    WHERE arkivdelstatus <> 'Avsluttet periode' OR avsluttetdato IS NULL OR avsluttetav IS NULL;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="AST6">
+        <title>File count</title>
+        <description>
+            Provides information about the number of files per series and
+            tests whether the corresponding number specified in arkivuttrekk.xml is correct.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT f._ref_arkivdel series_system_id, COALESCE(f._dtype, 'mappe') file_type, count(*) number_of_files
+                    FROM arkivstruktur.mappe f
+                    GROUP BY f._ref_arkivdel, f._dtype
+
+                    UNION ALL
+
+                    SELECT 'total', 'total', count(*)
+                    FROM arkivstruktur.mappe;
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                    WITH arkiv_uttrekk_file_count AS (
+                        SELECT property.value val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
+                        JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
+                        JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
+                        JOIN addml.dataobject data_object ON data_object._id = parent_properties3._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'numberOfOccurrences' AND parent_property.value = 'mappe' AND parent_property2.name = 'info' and data_object.name = 'arkivstruktur'
+                        LIMIT 1
+                    ), arkivstruktur_file_count AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.mappe
+                    ), cnt as (
+                        SELECT arkiv_uttrekk_file_count.val uttrekk, arkivstruktur_file_count.val arkivstruktur
+                        FROM arkivstruktur_file_count
+                        LEFT JOIN arkiv_uttrekk_file_count ON 1 = 1
+                    )
+                    SELECT cnt.arkivstruktur arkivstruktur_file_count, cnt.uttrekk arkiv_uttrekk_file_count
+                    FROM cnt
+                    WHERE cnt.arkivstruktur <> cnt.uttrekk OR cnt.uttrekk IS NULL;
+                ]]>
+            </errors>
+        </queries>
+    </test>
+
+    <test id="AST7">
+        <title>File period containment</title>
+        <description>
+            Tests whether the created and finalized dates of all files
+            are within the archival period specified in arkivuttrekk.xml.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    ), inside_period AS (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.mappe f
+                        JOIN arkivstruktur.arkivdel s ON s.systemid = f._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(f.opprettetdato AS DATE) >= period.start
+                                OR s.arkivdelstatus = 'Overlappingsperiode'
+                            )
+                            AND CAST(f.avsluttetdato AS DATE) <= period.end
+                            AND f.opprettetdato IS NOT NULL
+                            AND f.avsluttetdato IS NOT NULL
+                            AND period.start IS NOT NULL
+                            AND period.end IS NOT NULL
+                        GROUP BY f._ref_arkivdel
+                    ), outside_period AS (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.mappe f
+                        JOIN arkivstruktur.arkivdel s ON s.systemid = f._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(f.opprettetdato AS DATE) < period.start
+                                AND s.arkivdelstatus <> 'Overlappingsperiode'
+                            )
+                            OR CAST(f.avsluttetdato AS DATE) > period.end
+                            OR f.opprettetdato IS NULL
+                            OR f.avsluttetdato IS NULL
+                            OR period.start IS NULL
+                            OR period.end IS NULL
+                        GROUP BY f._ref_arkivdel
+                    )
+                    SELECT s.systemid series_system_id,
+                        COALESCE(ip.val, 0) files_inside_period,
+                        COALESCE(op.val, 0) files_outside_period
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN inside_period ip ON s.systemid = ip.series_system_id
+                    LEFT JOIN outside_period op ON s.systemid = op.series_system_id;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    )
+                    SELECT f._ref_arkivdel series_system_id,
+                        f.systemid file_system_id,
+                        f.mappeid file_id,
+                        CAST(f.opprettetdato AS DATE) created_date,
+                        CAST(f.avsluttetdato AS DATE) finalized_date,
+                        period.start period_start_date,
+                        period.end period_end_date
+                    FROM arkivstruktur.mappe f
+                    JOIN arkivstruktur.arkivdel s ON s.systemid = f._ref_arkivdel
+                    CROSS JOIN period
+                    WHERE
+                        (
+                            CAST(f.opprettetdato AS DATE) < period.start
+                            AND s.arkivdelstatus <> 'Overlappingsperiode'
+                        )
+                        OR CAST(f.avsluttetdato AS DATE) > period.end
+                        OR f.opprettetdato IS NULL
+                        OR f.avsluttetdato IS NULL
+                        OR period.start IS NULL
+                        OR period.end IS NULL;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="AST8">
+        <title>Files in leaf classes</title>
+        <description>
+            Provides information about the number of files per series and class,
+            and tests whether any file belongs to a class which has other classes
+            as children (i.e. the file has a class sibling).
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT ks._ref_arkivdel series_system_id, kf._ref_klasse class_system_id, kf.val number_of_files, COALESCE(kk.val, 0) number_of_classes
+                    FROM
+                        (
+                        SELECT _ref_klasse, COUNT(*) val
+                        FROM arkivstruktur.mappe
+                        WHERE _ref_klasse IS NOT NULL
+                        GROUP BY _ref_klasse
+                        ) kf
+                    LEFT JOIN
+                        (
+                        SELECT k1.systemid, COUNT(*) val
+                        FROM arkivstruktur.klasse k1
+                        JOIN arkivstruktur.klasse k2 ON k2._ref_klasse = k1.systemid
+                        GROUP BY k1.systemid
+                        ) kk
+                        ON kk.systemid = kf._ref_klasse
+                    JOIN arkivstruktur.klasse k ON k.systemid = kf._ref_klasse
+                    JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem;
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                    SELECT ks._ref_arkivdel series_system_id, kf._ref_klasse class_system_id, kf.val number_of_files, kk.val number_of_classes
+                    FROM
+                        (
+                        SELECT _ref_klasse, COUNT(*) val
+                        FROM arkivstruktur.mappe
+                        WHERE _ref_klasse IN (SELECT _ref_klasse FROM arkivstruktur.klasse WHERE _ref_klasse IS NOT NULL GROUP BY _ref_klasse)
+                        GROUP BY _ref_klasse
+                        ) kf
+                    JOIN
+                        (
+                        SELECT k1.systemid, COUNT(*) val
+                        FROM arkivstruktur.klasse k1
+                        JOIN arkivstruktur.klasse k2 ON k2._ref_klasse = k1.systemid
+                        GROUP BY k1.systemid
+                        ) kk
+                        ON kk.systemid = kf._ref_klasse
+                    JOIN arkivstruktur.klasse k ON k.systemid = kf._ref_klasse
+                    JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem;
+                ]]>
+            </errors>
+        </queries>
+    </test>
+
+    <test id="AST9">
+        <title>File status</title>
+        <description>
+            Tests whether non-finalized files exists in the archive.
+            A file is considered non-finalized if a finalized date or
+            a finalizing party is not specified, or if the file status is not 'Avsluttet'.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH not_closed AS (
+                        SELECT _ref_arkivdel series_system_id, COALESCE(_dtype, 'mappe') _dtype, COUNT(*) val
+                        FROM arkivstruktur.mappe
+                        WHERE avsluttetdato IS NULL
+                            OR avsluttetav IS NULL
+                            OR (_dtype = 'saksmappe' AND saksstatus <> 'Utgår' AND saksstatus <> 'Avsluttet')
+                        GROUP BY _ref_arkivdel, _dtype
+                    ), closed AS (
+                        SELECT _ref_arkivdel series_system_id, COALESCE(_dtype, 'mappe') _dtype, COUNT(*) val
+                        FROM arkivstruktur.mappe
+                        WHERE avsluttetdato IS NOT NULL
+                            AND avsluttetav IS NOT NULL
+                            OR (_dtype = 'saksmappe' AND saksstatus = 'Utgår' AND saksstatus = 'Avsluttet')
+                        GROUP BY _ref_arkivdel, _dtype
+                    )
+                    SELECT f._ref_arkivdel series_system_id, COALESCE(f._dtype, 'mappe') file_type, COALESCE(c.val, 0) closed_files, COALESCE(nc.val, 0) not_closed_files
+                    FROM arkivstruktur.mappe f
+                    LEFT JOIN not_closed nc ON nc.series_system_id = f._ref_arkivdel AND f._dtype = nc._dtype
+                    LEFT JOIN closed c ON c.series_system_id = f._ref_arkivdel AND f._dtype = c._dtype
+                    GROUP BY f._ref_arkivdel, f._dtype, not_closed_files, closed_files;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    SELECT f._ref_arkivdel series_system_id, COALESCE(f._dtype, 'mappe') file_type, f.systemid file_system_id, f.mappeid file_id, f.avsluttetdato finalized_date, f.avsluttetav finalized_by, f.saksstatus file_status
+                    FROM arkivstruktur.mappe f
+                    WHERE f.avsluttetdato IS NULL
+                        OR f.avsluttetav IS NULL
+                        OR (f._dtype = 'saksmappe' AND f.saksstatus <> 'Utgår' AND f.saksstatus <> 'Avsluttet');
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="AST10">
+        <title>Records</title>
+        <description>
+            Provides information about the number of records per series
+            and tests whether the corresponding number specified in arkivuttrekk.xml is correct.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, COALESCE(r._dtype, 'registrering') record_type, count(*) number_of_records
+                    FROM arkivstruktur.registrering r
+                    GROUP BY r._ref_arkivdel, r._dtype
+
+                    UNION ALL
+
+                    SELECT 'total', 'total', COUNT(*)
+                    FROM arkivstruktur.registrering;
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                    WITH arkivuttrekk_record_count AS (
+                        SELECT property.value val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
+                        JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
+                        JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
+                        JOIN addml.dataobject data_object ON data_object._id = parent_properties3._parent_id
+                        WHERE property.name = 'value' AND parent_property.name = 'numberOfOccurrences' AND parent_property.value = 'registrering' AND parent_property2.name = 'info' AND data_object.name = 'arkivstruktur'
+                        LIMIT 1
+                    ), arkivstruktur_record_count AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.registrering
+                    ), cnt AS (
+                        SELECT uttrekk.val uttrekk, arkivstruktur.val arkivstruktur
+                        FROM arkivstruktur_record_count arkivstruktur
+                        LEFT JOIN arkivuttrekk_record_count uttrekk ON 1 = 1
+                    )
+                    SELECT cnt.arkivstruktur arkivstruktur_record_count, cnt.uttrekk arkivuttrekk_record_count
+                    FROM cnt
+                    WHERE cnt.arkivstruktur <> cnt.uttrekk OR cnt.uttrekk IS NULL;
+                ]]>
+            </errors>
+        </queries>
+    </test>
+
+    <test id="AST11">
+        <title>Record period containment</title>
+        <description>
+            Tests whether the created and finalized dates of all records are
+            within the archival period specified in arkivuttrekk.xml.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    ), outside_period AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.registrering r
+                        JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(r.opprettetdato AS DATE) < period.start
+                                AND s.arkivdelstatus <> 'Overlappingsperiode'
+                            )
+                            OR CAST(r.arkivertdato AS DATE) > period.end
+                            OR r.opprettetdato IS NULL
+                            OR r.arkivertdato IS NULL
+                            OR period.start IS NULL
+                            OR period.end IS NULL
+                        GROUP BY r._ref_arkivdel
+                    ), inside_period AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.registrering r
+                        JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(r.opprettetdato AS DATE) >= period.start
+                                OR s.arkivdelstatus = 'Overlappingsperiode'
+                            )
+                            AND CAST(r.arkivertdato AS DATE) <= period.end
+                            AND r.opprettetdato IS NOT NULL
+                            AND r.arkivertdato IS NOT NULL
+                            AND period.start IS NOT NULL
+                            AND period.end IS NOT NULL
+                        GROUP BY r._ref_arkivdel
+                    )
+                    SELECT s.systemid series_systemid, COALESCE(ip.val, 0) records_inside_period, COALESCE(op.val, 0) records_outside_period
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN outside_period op ON s.systemid = op.series_system_id
+                    LEFT JOIN inside_period ip ON s.systemid = ip.series_system_id;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    )
+                    SELECT r._ref_arkivdel series_system_id,
+                        f.mappeid file_id,
+                        r.systemid record_system_id,
+                        r.registreringsid record_id,
+                        CAST(r.opprettetdato AS DATE) created_date,
+                        CAST(r.arkivertdato AS DATE) finalized_date,
+                        period.start period_start_date,
+                        period.end period_end_date
+                    FROM arkivstruktur.registrering r
+                    JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                    CROSS JOIN period
+                    LEFT JOIN arkivstruktur.mappe f ON f._id = r._parent_id
+                    WHERE
+                        (
+                            CAST(r.opprettetdato AS DATE) < period.start
+                            AND s.arkivdelstatus <> 'Overlappingsperiode'
+                        )
+                        OR CAST(r.arkivertdato AS DATE) > period.end
+                        OR r.opprettetdato IS NULL
+                        OR r.arkivertdato IS NULL
+                        OR period.start IS NULL
+                        OR period.end IS NULL;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="AST12">
+        <title>Records in leaf classes</title>
+        <description>
+            Provides information about the number of records per series and class,
+            and tests whether any record belongs to a class which has other
+            classes as children (i.e. the record has a class sibling).
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT ks._ref_arkivdel series_system_id, kf._ref_klasse class_system_id, kf.val number_of_records, COALESCE(kk.val, 0) number_of_classes
+                    FROM
+                        (
+                        SELECT _ref_klasse, COUNT(*) val
+                        FROM arkivstruktur.registrering
+                        WHERE _ref_klasse IS NOT NULL AND _ref_mappe IS NULL
+                        GROUP BY _ref_klasse
+                        ) kf
+                    LEFT JOIN
+                        (
+                        SELECT k1.systemid, COUNT(*) val
+                        FROM arkivstruktur.klasse k1
+                        JOIN arkivstruktur.klasse k2 ON k2._ref_klasse = k1.systemid
+                        GROUP BY k1.systemid
+                        ) kk
+                        ON kk.systemid = kf._ref_klasse
+                    JOIN arkivstruktur.klasse k ON k.systemid = kf._ref_klasse
+                    JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem;
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                    SELECT ks._ref_arkivdel series_system_id, kf._ref_klasse class_system_id, kf.val number_of_records, kk.val number_of_classes
+                    FROM
+                        (
+                        SELECT _ref_klasse, COUNT(*) val
+                        FROM arkivstruktur.registrering
+                        WHERE _ref_mappe IS NULL AND _ref_klasse IN (SELECT _ref_klasse FROM arkivstruktur.klasse WHERE _ref_klasse IS NOT NULL GROUP BY _ref_klasse)
+                        GROUP BY _ref_klasse
+                        ) kf
+                    JOIN
+                        (
+                        SELECT k1.systemid, COUNT(*) val
+                        FROM arkivstruktur.klasse k1
+                        JOIN arkivstruktur.klasse k2 ON k2._ref_klasse = k1.systemid
+                        GROUP BY k1.systemid
+                        ) kk
+                        ON kk.systemid = kf._ref_klasse
+                    JOIN arkivstruktur.klasse k ON k.systemid = kf._ref_klasse
+                    JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem;
+                ]]>
+            </errors>
+        </queries>
+    </test>
+
+    <test id="AST13">
+        <title>Record status</title>
+        <description>
+            Tests whether non-finalized records exist in the archive.
+            A record is considered non-finalized if a finalized date or a
+            finalizing party is not specified, or if the record status is not 'Arkivert' or 'Utgår'.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH not_closed AS (
+                        SELECT _ref_arkivdel series_system_id, COALESCE(_dtype, 'registrering') _dtype, COUNT(*) val
+                        FROM arkivstruktur.registrering
+                        WHERE arkivertdato IS NULL
+                            OR arkivertav IS NULL
+                            OR (_dtype = 'journalpost' AND journalstatus <> 'Arkivert' AND journalstatus <> 'Utgår')
+                        GROUP BY _ref_arkivdel, _dtype
+                    ), closed AS (
+                        SELECT _ref_arkivdel series_system_id, COALESCE(_dtype, 'registrering') _dtype, COUNT(*) val
+                        FROM arkivstruktur.registrering
+                        WHERE arkivertdato IS NOT NULL
+                            AND arkivertav IS NOT NULL
+                            OR (_dtype = 'journalpost' AND journalstatus = 'Arkivert' AND journalstatus = 'Utgår')
+                        GROUP BY _ref_arkivdel, _dtype
+                    )
+                    SELECT r._ref_arkivdel series_system_id, COALESCE(r._dtype, 'registrering') record_type, COALESCE(c.val, 0) closed_records, COALESCE(nc.val, 0) not_closed_records
+                    FROM arkivstruktur.registrering r
+                    LEFT JOIN not_closed nc ON nc.series_system_id = r._ref_arkivdel AND r._dtype = nc._dtype
+                    LEFT JOIN closed c ON c.series_system_id = r._ref_arkivdel AND r._dtype = c._dtype
+                    GROUP BY r._ref_arkivdel, r._dtype, not_closed_records, closed_records;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, f.mappeid file_id, COALESCE(r._dtype, 'registrering') record_type, r.systemid record_system_id, r.registreringsid record_id, r.arkivertdato finalized_date, r.arkivertav finalized_by, journalstatus record_status
+                    FROM arkivstruktur.registrering r
+                    LEFT JOIN arkivstruktur.mappe f ON f._id = r._parent_id
+                    WHERE r.arkivertdato IS NULL
+                        OR r.arkivertav IS NULL
+                        OR (_dtype = 'journalpost' AND journalstatus <> 'Arkivert' AND journalstatus <> 'Utgår');
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="AST14">
+        <title>Document description status</title>
+        <description>
+            Tests whether non-finalized document descriptions exist in the archive.
+            A document description is considered non-finalized if a finalized date
+            or a finalizing party is not specified, or if the document description
+            status is not 'Dokumentet er ferdigstilt'.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH not_closed AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.dokumentbeskrivelse d
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        WHERE dokumentstatus <> 'Dokumentet er ferdigstilt'
+                        GROUP BY r._ref_arkivdel
+                    ), closed AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.dokumentbeskrivelse d
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        WHERE dokumentstatus = 'Dokumentet er ferdigstilt'
+                        GROUP BY r._ref_arkivdel
+                    )
+                    SELECT r._ref_arkivdel series_system_id, COALESCE(c.val, 0) closed_documents, COALESCE(nc.val, 0) not_closed_documents
+                    FROM arkivstruktur.registrering r
+                    LEFT JOIN not_closed nc ON nc.series_system_id = r._ref_arkivdel
+                    LEFT JOIN closed c ON c.series_system_id = r._ref_arkivdel
+                    GROUP BY r._ref_arkivdel, not_closed_documents, closed_documents;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, f.mappeid file_id, r.registreringsid record_id, d.systemid document_description_system_id, dokumentstatus document_status
+                    FROM arkivstruktur.dokumentbeskrivelse d
+                    JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                    LEFT JOIN arkivstruktur.mappe f ON f._id = r._parent_id
+                    WHERE dokumentstatus <> 'Dokumentet er ferdigstilt';
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="AST15">
+        <title>Document description period containment</title>
+        <description>
+            Tests whether the created and finalized dates of all document descriptions
+            are within the archival period specified in arkivuttrekk.xml.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), outside_period AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.dokumentbeskrivelse d
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period_start_date
+                        WHERE
+                            (
+                                CAST(d.opprettetdato AS DATE) < period_start_date.val
+                                AND s.arkivdelstatus <> 'Overlappingsperiode'
+                            )
+                            OR d.opprettetdato IS NULL
+                            OR period_start_date.val IS NULL
+                        GROUP by r._ref_arkivdel
+                    ), inside_period AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.dokumentbeskrivelse d
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period_start_date
+                        WHERE
+                            (
+                                CAST(d.opprettetdato AS DATE) >= period_start_date.val
+                                OR s.arkivdelstatus = 'Overlappingsperiode'
+                            )
+                            AND d.opprettetdato IS NOT NULL
+                            AND period_start_date.val IS NOT NULL
+                        GROUP by r._ref_arkivdel
+                    )
+                    SELECT s.systemid series_system_id, COALESCE(ip.val, 0) documents_inside_period, COALESCE(op.val, 0) documents_outside_period
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN outside_period op ON s.systemid = op.series_system_id
+                    LEFT JOIN inside_period ip ON ip.series_system_id = s.systemid;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    )
+                    SELECT r._ref_arkivdel series_system_id, f.mappeid file_id,
+                        r.registreringsid record_id, d.systemid document_description_system_id,
+                        CAST(d.opprettetdato AS DATE) created_date,
+                        period_start_date.val period_start_date
+                    FROM arkivstruktur.dokumentbeskrivelse d
+                    JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                    JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                    LEFT JOIN arkivstruktur.mappe f ON f._id = r._parent_id
+                    CROSS JOIN period_start_date
+                    WHERE
+                        (
+                            CAST(d.opprettetdato AS DATE) < period_start_date.val
+                            AND s.arkivdelstatus <> 'Overlappingsperiode'
+                        )
+                        OR d.opprettetdato IS NULL
+                        OR period_start_date.val IS NULL;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="AST16">
+        <title>Document object checksums</title>
+        <description>
+            Tests whether the document object checksums specified in arkivstruktur.xml
+            match the ones that the validator calculated using the SHA256 algorithm.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                   SELECT COUNT(*) documents_with_invalid_checksums
+                   FROM arkivstruktur.dokumentobjekt
+                   WHERE LOWER(sjekksum) <> LOWER(_detected_checksum);
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                   SELECT referansedokumentfil document, sjekksum archive_checksum, _detected_checksum detected_checksum, 'SHA-256' algorithm
+                   FROM arkivstruktur.dokumentobjekt
+                   WHERE LOWER(sjekksum) <> LOWER(_detected_checksum);
+                ]]>
+            </errors>
+        </queries>
+    </test>
+
+    <test id="AST17">
+        <title>Document object file types</title>
+        <description>Tests whether all document objects are valid PDF/A1B documents.</description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                   SELECT COUNT(*) documents_with_invalid_file_type
+                   FROM arkivstruktur.dokumentobjekt
+                   WHERE _is_valid_type <> 'true';
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                   SELECT referansedokumentfil document, formatDetaljer archive_file_type, _detected_type detected_file_type, _is_valid_type is_file_type_valid
+                   FROM arkivstruktur.dokumentobjekt
+                   WHERE _is_valid_type <> 'true';
+                ]]>
+            </errors>
+        </queries>
+    </test>
+
+    <test id="AST18">
+        <title>Correspondence parties</title>
+        <description>
+            Provides information about the number of correspondence parties grouped
+            by series and tests whether any registry entries without correspondence parties exist.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, COUNT(*) number_of_correspondence_parties
+                    FROM arkivstruktur.registrering r
+                    JOIN arkivstruktur.korrespondansepart cp ON r.systemid = cp._ref_registrering
+                    WHERE r._dtype='journalpost'
+                    GROUP BY r._ref_arkivdel;
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                    SELECT r._ref_arkivdel series_system_id, f.mappeid file_id, r.systemid record_system_id, r.registreringsid record_id
+                    FROM arkivstruktur.registrering r
+                    LEFT JOIN arkivstruktur.mappe f ON f._id = r._parent_id
+                    WHERE r._dtype = 'journalpost'
+                        AND  r.systemid NOT IN (SELECT _ref_registrering FROM arkivstruktur.korrespondansepart WHERE _ref_registrering IS NOT NULL GROUP BY _ref_registrering);
+                ]]>
+            </errors>
+        </queries>
+    </test>
+
+    <test id="AST19">
+        <title>Screenings</title>
+        <description>
+            Provides information about the number of screened series, classes,
+            files, records, and document descriptions, and tests whether the corresponding
+            number in arkivuttrekk.xml (inneholderSkjermetInformasjon) is correct.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH arkivuttrekk_screening AS (
+                        SELECT value val
+                        FROM addml.property
+                        WHERE name = 'inneholderSkjermetInformasjon'
+                        LIMIT 1
+                    ), series AS (
+                        SELECT sc._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming sc
+                        GROUP BY sc._ref_arkivdel
+                    ), class AS (
+                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.klasse k ON k.systemid = s._ref_klasse
+                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                        GROUP BY ks._ref_arkivdel
+                    ), file AS (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.mappe f ON f.systemid = s._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ), item AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.registrering r ON r.systemid = s._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ), document AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = s._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    )
+                    SELECT s.systemid series_system_id,
+                        COALESCE(series.val, 0) number_of_series_screenings,
+                        COALESCE(class.val, 0) number_of_class_screenings,
+                        COALESCE(file.val, 0) number_of_file_screenings,
+                        COALESCE(item.val, 0) number_of_record_screenings,
+                        COALESCE(document.val, 0) number_of_document_descriptions_screenings,
+                        arkivuttrekk_screening.val arkivuttrekk_has_screening
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN series ON series.series_system_id = s.systemid
+                    LEFT JOIN class ON class.series_system_id = s.systemid
+                    LEFT JOIN file ON file.series_system_id = s.systemid
+                    LEFT JOIN item ON item.series_system_id = s.systemid
+                    LEFT JOIN document ON document.series_system_id = s.systemid
+                    LEFT JOIN arkivuttrekk_screening ON 1 = 1;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH arkivuttrekk_screening AS (
+                        SELECT value val
+                        FROM addml.property
+                        WHERE name = 'inneholderSkjermetInformasjon'
+                        LIMIT 1
+                    ), series AS (
+                        SELECT sc._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming sc
+                        GROUP BY sc._ref_arkivdel
+                    ), class AS (
+                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.klasse k ON k.systemid = s._ref_klasse
+                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                        GROUP BY ks._ref_arkivdel
+                    ), file AS (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.mappe f ON f.systemid = s._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ), item AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.registrering r ON r.systemid = s._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ), document AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.skjerming s
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = s._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    )
+                    SELECT s.systemid series_system_id,
+                        COALESCE(series.val, 0) number_of_series_screenings,
+                        COALESCE(class.val, 0) number_of_class_screenings,
+                        COALESCE(file.val, 0) number_of_file_screenings,
+                        COALESCE(item.val, 0) number_of_record_screenings,
+                        COALESCE(document.val, 0) number_of_document_descriptions_screenings,
+                        arkivuttrekk_screening.val arkivuttrekk_has_screening
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN series ON series.series_system_id = s.systemid
+                    LEFT JOIN class ON class.series_system_id = s.systemid
+                    LEFT JOIN file ON file.series_system_id = s.systemid
+                    LEFT JOIN item ON item.series_system_id = s.systemid
+                    LEFT JOIN document ON document.series_system_id = s.systemid
+                    LEFT JOIN arkivuttrekk_screening ON 1 = 1
+                    WHERE
+                        (
+                            arkivuttrekk_screening.val = 'false'
+                            AND (
+                                series.val <> 0
+                                OR class.val <> 0
+                                OR file.val <> 0
+                                OR item.val <> 0
+                                OR document.val <> 0
+                            )
+                        )
+                        OR
+                        (
+                            arkivuttrekk_screening.val = 'true'
+                            AND (
+                                series.val = 0
+                                AND class.val = 0
+                                AND file.val = 0
+                                AND item.val =
+                                0 AND document.val = 0
+                            )
+                        )
+                        OR arkivuttrekk_screening.val IS NULL;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="AST20">
+        <title>Disposal decisions</title>
+        <description>
+            Provides information about the number of disposal decisions related to series, classes,
+            files, records, and document descriptions, and tests whether the corresponding
+            number in arkivuttrekk.xml (inneholderDokumenterSomSkalKasseres) is correct.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH arkivuttrekk_disposal_decisions AS (
+                        SELECT value val
+                        FROM addml.property
+                        WHERE name = 'inneholderDokumenterSomSkalKasseres'
+                        LIMIT 1
+                    ), series AS (
+                        SELECT kj._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        GROUP BY kj._ref_arkivdel
+                    ), class AS (
+                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.klasse k ON k.systemid = kj._ref_klasse
+                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                        GROUP BY ks._ref_arkivdel
+                    ), file AS (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.mappe f ON f.systemid = kj._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ), item AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.registrering r ON r.systemid = kj._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ), document AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = kj._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    )
+                    SELECT s.systemid series_system_id,
+                        COALESCE(series.val, 0) number_of_series_disposal_decisions,
+                        COALESCE(class.val, 0) number_of_class_disposal_decisions,
+                        COALESCE(file.val, 0) number_of_file_disposal_decisions,
+                        COALESCE(item.val, 0) number_of_record_disposal_decisions,
+                        COALESCE(document.val, 0) number_of_document_descriptions_disposal_decisions,
+                        arkivuttrekk_disposal_decisions.val arkivuttrekk_has_disposal_decisions
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN series ON series.series_system_id = s.systemid
+                    LEFT JOIN class ON class.series_system_id = s.systemid
+                    LEFT JOIN file ON file.series_system_id = s.systemid
+                    LEFT JOIN item ON item.series_system_id = s.systemid
+                    LEFT JOIN document ON document.series_system_id = s.systemid
+                    LEFT JOIN arkivuttrekk_disposal_decisions ON 1 = 1;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH arkivuttrekk_disposal_decisions AS (
+                        SELECT value val
+                        FROM addml.property
+                        WHERE name = 'inneholderDokumenterSomSkalKasseres'
+                        LIMIT 1
+                    ), series AS (
+                        SELECT kj._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        GROUP BY kj._ref_arkivdel
+                    ), class AS (
+                        SELECT ks._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.klasse k ON k.systemid = kj._ref_klasse
+                        JOIN arkivstruktur.klassifikasjonssystem ks ON ks.systemid = k._ref_klassifikasjonssystem
+                        GROUP BY ks._ref_arkivdel
+                    ), file AS (
+                        SELECT f._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.mappe f ON f.systemid = kj._ref_mappe
+                        GROUP BY f._ref_arkivdel
+                    ), item AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.registrering r ON r.systemid = kj._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    ), document AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.kassasjon kj
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = kj._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    )
+                    SELECT s.systemid series_system_id,
+                        COALESCE(series.val, 0) number_of_series_disposal_decisions,
+                        COALESCE(class.val, 0) number_of_class_disposal_decisions,
+                        COALESCE(file.val, 0) number_of_file_disposal_decisions,
+                        COALESCE(item.val, 0) number_of_record_disposal_decisions,
+                        COALESCE(document.val, 0) number_of_document_descriptions_disposal_decisions,
+                        arkivuttrekk_disposal_decisions.val arkivuttrekk_has_disposal_decisions
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN series ON series.series_system_id = s.systemid
+                    LEFT JOIN class ON class.series_system_id = s.systemid
+                    LEFT JOIN file ON file.series_system_id = s.systemid
+                    LEFT JOIN item ON item.series_system_id = s.systemid
+                    LEFT JOIN document ON document.series_system_id = s.systemid
+                    LEFT JOIN arkivuttrekk_disposal_decisions ON 1 = 1
+                    WHERE
+                        (
+                            arkivuttrekk_disposal_decisions.val = 'false'
+                            AND (
+                                series.val <> 0
+                                OR class.val <> 0
+                                OR file.val <> 0
+                                OR item.val <> 0
+                                OR document.val <> 0
+                            )
+                        )
+                        OR
+                        (
+                            arkivuttrekk_disposal_decisions.val = 'true'
+                            AND (
+                                series.val = 0
+                                AND class.val = 0
+                                AND file.val = 0
+                                AND item.val = 0
+                                AND document.val = 0
+                            )
+                        )
+                        OR arkivuttrekk_disposal_decisions.val IS NULL;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="AST21">
+        <title>Disposals</title>
+        <description>
+            Provides information about the number of disposals of series
+            and document descriptions, and tests whether the corresponding
+            number in arkivuttrekk.xml (omfatterDokumenterSomErKassert) is correct.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH arkivuttrekk_disposals AS (
+                        SELECT value val
+                        FROM addml.property
+                        WHERE name = 'omfatterDokumenterSomErKassert'
+                        LIMIT 1
+                    ), series AS (
+                        SELECT kj._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.utfoertkassasjon kj
+                        GROUP BY kj._ref_arkivdel
+                    ), document AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.utfoertkassasjon kj
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = kj._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    )
+                    SELECT s.systemid series_system_id,
+                        COALESCE(series.val, 0) number_of_series_disposals,
+                        COALESCE(document.val, 0) number_of_document_descriptions_disposals,
+                        arkivuttrekk_disposals.val arkivuttrekk_has_disposals
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN series ON series.series_system_id = s.systemid
+                    LEFT JOIN document ON document.series_system_id = s.systemid
+                    LEFT JOIN arkivuttrekk_disposals ON 1 = 1;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH arkivuttrekk_disposals AS (
+                        SELECT value val
+                        FROM addml.property
+                        WHERE name = 'omfatterDokumenterSomErKassert'
+                        LIMIT 1
+                    ), series AS (
+                        SELECT kj._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.utfoertkassasjon kj
+                        GROUP BY kj._ref_arkivdel
+                    ), document AS (
+                        SELECT r._ref_arkivdel series_system_id, COUNT(*) val
+                        FROM arkivstruktur.utfoertkassasjon kj
+                        JOIN arkivstruktur.dokumentbeskrivelse d ON d.systemid = kj._ref_dokumentbeskrivelse
+                        JOIN arkivstruktur.registrering r ON r.systemid = d._ref_registrering
+                        GROUP BY r._ref_arkivdel
+                    )
+                    SELECT s.systemid series_system_id,
+                        COALESCE(series.val, 0) number_of_series_disposals,
+                        COALESCE(document.val, 0) number_of_document_descriptions_disposals,
+                        arkivuttrekk_disposals.val arkivuttrekk_has_disposals
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN series ON series.series_system_id = s.systemid
+                    LEFT JOIN document ON document.series_system_id = s.systemid
+                    LEFT JOIN arkivuttrekk_disposals ON 1 = 1
+                    WHERE
+                        (
+                            arkivuttrekk_disposals.val = 'false'
+                            AND (
+                                series.val <> 0
+                                OR document.val <> 0
+                            )
+                        )
+                        OR
+                        (
+                            arkivuttrekk_disposals.val = 'true'
+                            AND (
+                                series.val = 0
+                                AND document.val = 0
+                            )
+                        )
+                        OR arkivuttrekk_disposals.val IS NULL;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+	<test id="AST22">
+		<title>Personal name fields</title>
+		<description>
+			Checks whether all name fields contain seemingly valid personal names. The regular expressions used for
+            the purpose are "^[\p{L}\s-'.]*$" and "^[\p{L}\s-'.]+$" depending on whether the value can be blank or not.
+            The validated fields are: saksansvarlig (M306), kontaktperson (M412), korrespondansepartNavn (M400),
+            partNavn (M302), moeteDeltakerNavn (M372), arkivertAv (M605), avskrevetAv (M618), tilknyttetAv (M621),
+            merknadRegistrertAv (M612), kassertAv (M631), slettetAv (M614), gradertAv (M625), presedensGodkjentAv (M629),
+            verifisertAv (M623), nedgradertAv (M627), opprettetAv (M601), avsluttetAv (M603).
+		</description>
+		<group>arkivstruktur</group>
+		<queries>
+			<info>
+				<![CDATA[
+                    WITH case_responsible AS (
+						SELECT 'arkivstruktur' file, 'mappe' entity, 'saksansvarlig (M306)' field_name,
+						    COUNT(*) total
+						FROM arkivstruktur.mappe
+						WHERE (saksansvarlig IS NULL OR
+						    NOT REGEXP_MATCHES(saksansvarlig, '^[\p{L}\s-''.]+$')) AND _dtype = 'saksmappe'
+					), correspondence_contact_person AS (
+					    SELECT 'arkivstruktur' file, 'korrespondansepart' entity, 'kontaktperson (M412)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.korrespondansepart
+						WHERE NOT REGEXP_MATCHES(kontaktperson, '^[\p{L}\s-''.]*$')
+					), correspondence_party_name AS (
+					    SELECT 'arkivstruktur' file, 'korrespondansepart' entity,
+					        'korrespondansepartNavn (M400)' field_name, COUNT(*) total
+						FROM arkivstruktur.korrespondansepart
+						WHERE korrespondansepartNavn IS NULL OR korrespondansepartNavn = ''
+					), case_contact_person AS (
+					    SELECT 'arkivstruktur' file, 'part' entity, 'kontaktperson (M412)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.part
+						WHERE NOT REGEXP_MATCHES(kontaktperson, '^[\p{L}\s-''.]*$')
+					), case_party_name AS (
+					    SELECT 'arkivstruktur' file, 'part' entity, 'partnavn (M302)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.part
+						WHERE partnavn IS NULL OR partnavn = ''
+					), meeting_party_name AS (
+					    SELECT 'arkivstruktur' file, 'moetedeltaker' entity, 'moetedeltakerNavn (M372)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.moetedeltaker
+						WHERE moetedeltakerNavn IS NULL OR NOT REGEXP_MATCHES(moetedeltakerNavn, '^[\p{L}\s-''.]+$')
+					), record_archived_by AS (
+					    SELECT 'arkivstruktur' file, 'registrering' entity, 'arkivertAv (M605)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.registrering
+						WHERE NOT REGEXP_MATCHES(arkivertAv, '^[\p{L}\s-''.]*$')
+					), signed_off_by AS (
+					    SELECT 'arkivstruktur' file, 'avskrivning' entity, 'avskrevetav (M618)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.avskrivning
+						WHERE NOT REGEXP_MATCHES(avskrevetav, '^[\p{L}\s-''.]*$')
+					), document_associated_by AS (
+					    SELECT 'arkivstruktur' file, 'dokumentbeskrivelse' entity, 'tilknyttetAv (M621)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.dokumentbeskrivelse
+						WHERE NOT REGEXP_MATCHES(tilknyttetAv, '^[\p{L}\s-''.]*$')
+					), note_registered_by AS (
+					    SELECT 'arkivstruktur' file, 'merknad' entity, 'merknadRegistrertAv (M612)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.merknad
+						WHERE NOT REGEXP_MATCHES(merknadRegistrertAv, '^[\p{L}\s-''.]*$')
+					), disposed_by AS (
+					    SELECT 'arkivstruktur' file, 'utfoertKassasjon' entity, 'kassertAv (M631)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.utfoertKassasjon
+						WHERE NOT REGEXP_MATCHES(kassertAv, '^[\p{L}\s-''.]*$')
+					), deleted_by AS (
+					    SELECT 'arkivstruktur' file, 'sletting' entity, 'slettetAv (M614)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.sletting
+						WHERE NOT REGEXP_MATCHES(slettetAv, '^[\p{L}\s-''.]*$')
+					), graded_by AS (
+					    SELECT 'arkivstruktur' file, 'gradering' entity, 'gradertAv (M625)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.gradering
+						WHERE NOT REGEXP_MATCHES(gradertAv, '^[\p{L}\s-''.]*$')
+					), precedent_authorized_by AS (
+					    SELECT 'arkivstruktur' file, 'presedens' entity, 'presedensGodkjentAv (M629)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.presedens
+						WHERE NOT REGEXP_MATCHES(presedensGodkjentAv, '^[\p{L}\s-''.]*$')
+					), signature_verified_by AS (
+					    SELECT 'arkivstruktur' file, 'elektroniskSignatur' entity, 'verifisertAv (M623)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.elektroniskSignatur
+						WHERE verifisertAv IS NULL OR NOT REGEXP_MATCHES(verifisertAv, '^[\p{L}\s-''.]+$')
+					), downgraded_by AS (
+					    SELECT 'arkivstruktur' file, 'gradering' entity, 'nedgradertAv (M627)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.gradering
+						WHERE NOT REGEXP_MATCHES(nedgradertAv, '^[\p{L}\s-''.]+$')
+					), archive_created_by AS (
+					    SELECT 'arkivstruktur' file, 'arkiv' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.arkiv
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), series_created_by AS (
+					    SELECT 'arkivstruktur' file, 'arkivdel' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.arkivdel
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), ks_created_by AS (
+					    SELECT 'arkivstruktur' file, 'klassifikasjonssystem' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.klassifikasjonssystem
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), class_created_by AS (
+					    SELECT 'arkivstruktur' file, 'klasse' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.klasse
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), file_created_by AS (
+					    SELECT 'arkivstruktur' file, 'mappe' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.mappe
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), record_created_by AS (
+					    SELECT 'arkivstruktur' file, 'registrering' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.registrering
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), document_description_created_by AS (
+					    SELECT 'arkivstruktur' file, 'dokumentbeskrivelse' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.dokumentbeskrivelse
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), document_object_created_by AS (
+					    SELECT 'arkivstruktur' file, 'dokumentobjekt' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.dokumentobjekt
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), precedent_created_by AS (
+					    SELECT 'arkivstruktur' file, 'presedens' entity, 'opprettetAv (M601)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.presedens
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+					), archive_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'arkiv' entity, 'avsluttetAv (M603)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.arkiv
+						WHERE avsluttetAv IS NULL OR NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]+$')
+					), series_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'arkivdel' entity, 'avsluttetAv (M603)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.arkivdel
+						WHERE avsluttetAv IS NULL OR NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]+$')
+					), ks_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'klassifikasjonssystem' entity, 'avsluttetAv (M603)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.klassifikasjonssystem
+						WHERE NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]*$')
+					), class_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'klasse' entity, 'avsluttetAv (M603)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.klasse
+						WHERE NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]*$')
+					), file_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'mappe' entity, 'avsluttetAv (M603)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.mappe
+						WHERE avsluttetAv IS NULL OR NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]+$')
+					), precedent_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'presedens' entity, 'avsluttetAv (M603)' field_name,
+					        COUNT(*) total
+						FROM arkivstruktur.presedens
+						WHERE NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]*$')
+					)
+					SELECT * FROM case_responsible
+					UNION ALL
+					SELECT * FROM correspondence_contact_person
+					UNION ALL
+					SELECT * FROM correspondence_party_name
+					UNION ALL
+					SELECT * FROM case_contact_person
+					UNION ALL
+					SELECT * FROM case_party_name
+					UNION ALL
+					SELECT * FROM meeting_party_name
+					UNION ALL
+					SELECT * FROM record_archived_by
+					UNION ALL
+					SELECT * FROM signed_off_by
+					UNION ALL
+					SELECT * FROM document_associated_by
+					UNION ALL
+					SELECT * FROM note_registered_by
+					UNION ALL
+					SELECT * FROM disposed_by
+					UNION ALL
+					SELECT * FROM deleted_by
+					UNION ALL
+					SELECT * FROM graded_by
+					UNION ALL
+					SELECT * FROM precedent_authorized_by
+					UNION ALL
+					SELECT * FROM signature_verified_by
+					UNION ALL
+					SELECT * FROM downgraded_by
+					UNION ALL
+					SELECT * FROM archive_created_by
+					UNION ALL
+					SELECT * FROM series_created_by
+					UNION ALL
+					SELECT * FROM ks_created_by
+					UNION ALL
+					SELECT * FROM class_created_by
+					UNION ALL
+					SELECT * FROM file_created_by
+					UNION ALL
+					SELECT * FROM record_created_by
+					UNION ALL
+					SELECT * FROM document_description_created_by
+					UNION ALL
+					SELECT * FROM document_object_created_by
+					UNION ALL
+					SELECT * FROM precedent_created_by
+					UNION ALL
+					SELECT * FROM archive_finalized_by
+					UNION ALL
+					SELECT * FROM series_finalized_by
+					UNION ALL
+					SELECT * FROM ks_finalized_by
+					UNION ALL
+					SELECT * FROM class_finalized_by
+					UNION ALL
+					SELECT * FROM file_finalized_by
+					UNION ALL
+					SELECT * FROM precedent_finalized_by;
+				]]>
+			</info>
+			<warnings>
+				<![CDATA[
+				    WITH case_responsible AS (
+						SELECT 'arkivstruktur' file, 'mappe' entity, 'saksansvarlig (M306)' field_name,
+						    saksansvarlig field_value, COUNT(*) total
+						FROM arkivstruktur.mappe
+						WHERE (saksansvarlig IS NULL OR
+						    NOT REGEXP_MATCHES(saksansvarlig, '^[\p{L}\s-''.]+$')) AND _dtype = 'saksmappe'
+						GROUP BY saksansvarlig ORDER BY saksansvarlig
+					), correspondence_contact_person AS (
+					    SELECT 'arkivstruktur' file, 'korrespondansepart' entity, 'kontaktperson (M412)' field_name,
+					        kontaktperson field_value, COUNT(*) total
+						FROM arkivstruktur.korrespondansepart
+						WHERE NOT REGEXP_MATCHES(kontaktperson, '^[\p{L}\s-''.]*$')
+						GROUP BY kontaktperson ORDER BY kontaktperson
+					), correspondence_party_name AS (
+					    SELECT 'arkivstruktur' file, 'korrespondansepart' entity,
+					        'korrespondansepartNavn (M400)' field_name, korrespondansepartNavn field_value,
+					        COUNT(*) total
+						FROM arkivstruktur.korrespondansepart
+						WHERE korrespondansepartNavn IS NULL OR korrespondansepartNavn = ''
+						GROUP BY korrespondansepartNavn ORDER BY korrespondansepartNavn
+					), case_contact_person AS (
+					    SELECT 'arkivstruktur' file, 'part' entity, 'kontaktperson (M412)' field_name,
+					        kontaktperson field_value, COUNT(*) total
+						FROM arkivstruktur.part
+						WHERE NOT REGEXP_MATCHES(kontaktperson, '^[\p{L}\s-''.]*$')
+						GROUP BY kontaktperson ORDER BY kontaktperson
+					), case_party_name AS (
+					    SELECT 'arkivstruktur' file, 'part' entity, 'partnavn (M302)' field_name,
+					        partnavn field_value, COUNT(*) total
+						FROM arkivstruktur.part
+						WHERE partnavn IS NULL OR partnavn = ''
+						GROUP BY partnavn ORDER BY partnavn
+					), meeting_party_name AS (
+					    SELECT 'arkivstruktur' file, 'moetedeltaker' entity, 'moetedeltakerNavn (M372)' field_name,
+					        moetedeltakerNavn field_value, COUNT(*) total
+						FROM arkivstruktur.moetedeltaker
+						WHERE moetedeltakerNavn IS NULL OR NOT REGEXP_MATCHES(moetedeltakerNavn, '^[\p{L}\s-''.]+$')
+						GROUP BY moetedeltakerNavn ORDER BY moetedeltakerNavn
+					), record_archived_by AS (
+					    SELECT 'arkivstruktur' file, 'registrering' entity, 'arkivertAv (M605)' field_name,
+					        arkivertAv field_value, COUNT(*) total
+						FROM arkivstruktur.registrering
+						WHERE NOT REGEXP_MATCHES(arkivertAv, '^[\p{L}\s-''.]*$')
+						GROUP BY arkivertAv ORDER BY arkivertAv
+					), signed_off_by AS (
+					    SELECT 'arkivstruktur' file, 'avskrivning' entity, 'avskrevetav (M618)' field_name,
+					        avskrevetav field_value, COUNT(*) total
+						FROM arkivstruktur.avskrivning
+						WHERE NOT REGEXP_MATCHES(avskrevetav, '^[\p{L}\s-''.]*$')
+						GROUP BY avskrevetav ORDER BY avskrevetav
+					), document_associated_by AS (
+					    SELECT 'arkivstruktur' file, 'dokumentbeskrivelse' entity, 'tilknyttetAv (M621)' field_name,
+					        tilknyttetAv field_value, COUNT(*) total
+						FROM arkivstruktur.dokumentbeskrivelse
+						WHERE NOT REGEXP_MATCHES(tilknyttetAv, '^[\p{L}\s-''.]*$')
+						GROUP BY tilknyttetAv ORDER BY tilknyttetAv
+					), note_registered_by AS (
+					    SELECT 'arkivstruktur' file, 'merknad' entity, 'merknadRegistrertAv (M612)' field_name,
+					        merknadRegistrertAv field_value, COUNT(*) total
+						FROM arkivstruktur.merknad
+						WHERE NOT REGEXP_MATCHES(merknadRegistrertAv, '^[\p{L}\s-''.]*$')
+						GROUP BY merknadRegistrertAv ORDER BY merknadRegistrertAv
+					), disposed_by AS (
+					    SELECT 'arkivstruktur' file, 'utfoertKassasjon' entity, 'kassertAv (M631)' field_name,
+					        kassertAv field_value, COUNT(*) total
+						FROM arkivstruktur.utfoertKassasjon
+						WHERE NOT REGEXP_MATCHES(kassertAv, '^[\p{L}\s-''.]*$')
+						GROUP BY kassertAv ORDER BY kassertAv
+					), deleted_by AS (
+					    SELECT 'arkivstruktur' file, 'sletting' entity, 'slettetAv (M614)' field_name,
+					        slettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.sletting
+						WHERE NOT REGEXP_MATCHES(slettetAv, '^[\p{L}\s-''.]*$')
+						GROUP BY slettetAv ORDER BY slettetAv
+					), graded_by AS (
+					    SELECT 'arkivstruktur' file, 'gradering' entity, 'gradertAv (M625)' field_name,
+					        gradertAv field_value, COUNT(*) total
+						FROM arkivstruktur.gradering
+						WHERE NOT REGEXP_MATCHES(gradertAv, '^[\p{L}\s-''.]*$')
+						GROUP BY gradertAv ORDER BY gradertAv
+					), precedent_authorized_by AS (
+					    SELECT 'arkivstruktur' file, 'presedens' entity, 'presedensGodkjentAv (M629)' field_name,
+					        presedensGodkjentAv field_value, COUNT(*) total
+						FROM arkivstruktur.presedens
+						WHERE NOT REGEXP_MATCHES(presedensGodkjentAv, '^[\p{L}\s-''.]*$')
+						GROUP BY presedensGodkjentAv ORDER BY presedensGodkjentAv
+					), signature_verified_by AS (
+					    SELECT 'arkivstruktur' file, 'elektroniskSignatur' entity, 'verifisertAv (M623)' field_name,
+					        verifisertAv field_value, COUNT(*) total
+						FROM arkivstruktur.elektroniskSignatur
+						WHERE verifisertAv IS NULL OR NOT REGEXP_MATCHES(verifisertAv, '^[\p{L}\s-''.]+$')
+						GROUP BY verifisertAv ORDER BY verifisertAv
+					), downgraded_by AS (
+					    SELECT 'arkivstruktur' file, 'gradering' entity, 'nedgradertAv (M627)' field_name,
+					        nedgradertAv field_value, COUNT(*) total
+						FROM arkivstruktur.gradering
+						WHERE NOT REGEXP_MATCHES(nedgradertAv, '^[\p{L}\s-''.]+$')
+						GROUP BY nedgradertAv ORDER BY nedgradertAv
+					), archive_created_by AS (
+					    SELECT 'arkivstruktur' file, 'arkiv' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.arkiv
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), series_created_by AS (
+					    SELECT 'arkivstruktur' file, 'arkivdel' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.arkivdel
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), ks_created_by AS (
+					    SELECT 'arkivstruktur' file, 'klassifikasjonssystem' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.klassifikasjonssystem
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), class_created_by AS (
+					    SELECT 'arkivstruktur' file, 'klasse' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.klasse
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), file_created_by AS (
+					    SELECT 'arkivstruktur' file, 'mappe' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.mappe
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), record_created_by AS (
+					    SELECT 'arkivstruktur' file, 'registrering' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.registrering
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), document_description_created_by AS (
+					    SELECT 'arkivstruktur' file, 'dokumentbeskrivelse' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.dokumentbeskrivelse
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), document_object_created_by AS (
+					    SELECT 'arkivstruktur' file, 'dokumentobjekt' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.dokumentobjekt
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), precedent_created_by AS (
+					    SELECT 'arkivstruktur' file, 'presedens' entity, 'opprettetAv (M601)' field_name,
+					        opprettetAv field_value, COUNT(*) total
+						FROM arkivstruktur.presedens
+						WHERE opprettetAv IS NULL OR NOT REGEXP_MATCHES(opprettetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY opprettetAv ORDER BY opprettetAv
+					), archive_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'arkiv' entity, 'avsluttetAv (M603)' field_name,
+					        avsluttetAv field_value, COUNT(*) total
+						FROM arkivstruktur.arkiv
+						WHERE avsluttetAv IS NULL OR NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY avsluttetAv ORDER BY avsluttetAv
+					), series_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'arkivdel' entity, 'avsluttetAv (M603)' field_name,
+					        avsluttetAv field_value, COUNT(*) total
+						FROM arkivstruktur.arkivdel
+						WHERE avsluttetAv IS NULL OR NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY avsluttetAv ORDER BY avsluttetAv
+					), ks_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'klassifikasjonssystem' entity, 'avsluttetAv (M603)' field_name,
+					        avsluttetAv field_value, COUNT(*) total
+						FROM arkivstruktur.klassifikasjonssystem
+						WHERE NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]*$')
+						GROUP BY avsluttetAv ORDER BY avsluttetAv
+					), class_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'klasse' entity, 'avsluttetAv (M603)' field_name,
+					        avsluttetAv field_value, COUNT(*) total
+						FROM arkivstruktur.klasse
+						WHERE NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]*$')
+						GROUP BY avsluttetAv ORDER BY avsluttetAv
+					), file_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'mappe' entity, 'avsluttetAv (M603)' field_name,
+					        avsluttetAv field_value, COUNT(*) total
+						FROM arkivstruktur.mappe
+						WHERE avsluttetAv IS NULL OR NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]+$')
+						GROUP BY avsluttetAv ORDER BY avsluttetAv
+					), precedent_finalized_by AS (
+					    SELECT 'arkivstruktur' file, 'presedens' entity, 'avsluttetAv (M603)' field_name,
+					        avsluttetAv field_value, COUNT(*) total
+						FROM arkivstruktur.presedens
+						WHERE NOT REGEXP_MATCHES(avsluttetAv, '^[\p{L}\s-''.]*$')
+						GROUP BY avsluttetAv ORDER BY avsluttetAv
+					)
+					SELECT * FROM case_responsible
+					UNION ALL
+					SELECT * FROM correspondence_contact_person
+					UNION ALL
+					SELECT * FROM correspondence_party_name
+					UNION ALL
+					SELECT * FROM case_contact_person
+					UNION ALL
+					SELECT * FROM case_party_name
+					UNION ALL
+					SELECT * FROM meeting_party_name
+					UNION ALL
+					SELECT * FROM record_archived_by
+					UNION ALL
+					SELECT * FROM signed_off_by
+					UNION ALL
+					SELECT * FROM document_associated_by
+					UNION ALL
+					SELECT * FROM note_registered_by
+					UNION ALL
+					SELECT * FROM disposed_by
+					UNION ALL
+					SELECT * FROM deleted_by
+					UNION ALL
+					SELECT * FROM graded_by
+					UNION ALL
+					SELECT * FROM precedent_authorized_by
+					UNION ALL
+					SELECT * FROM signature_verified_by
+					UNION ALL
+					SELECT * FROM downgraded_by
+					UNION ALL
+					SELECT * FROM archive_created_by
+					UNION ALL
+					SELECT * FROM series_created_by
+					UNION ALL
+					SELECT * FROM ks_created_by
+					UNION ALL
+					SELECT * FROM class_created_by
+					UNION ALL
+					SELECT * FROM file_created_by
+					UNION ALL
+					SELECT * FROM record_created_by
+					UNION ALL
+					SELECT * FROM document_description_created_by
+					UNION ALL
+					SELECT * FROM document_object_created_by
+					UNION ALL
+					SELECT * FROM precedent_created_by
+					UNION ALL
+					SELECT * FROM archive_finalized_by
+					UNION ALL
+					SELECT * FROM series_finalized_by
+					UNION ALL
+					SELECT * FROM ks_finalized_by
+					UNION ALL
+					SELECT * FROM class_finalized_by
+					UNION ALL
+					SELECT * FROM file_finalized_by
+					UNION ALL
+					SELECT * FROM precedent_finalized_by;
+				]]>
+			</warnings>
+		</queries>
+	</test>
+
+    <!--
+    ============================================================================================================
+    LOEPENDEJOURNAL
+    ============================================================================================================
+    -->
+    <!-- Checks -->
+
+    <check id="LJC1">
+        <title>Screened registry entries</title>
+        <description>Number of screened registry entries found in loependeJournal.xml</description>
+        <group>loependejournal</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT COUNT(tilgangsrestriksjon) screened_registry_entries
+                    FROM loependejournal.journalpost;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <!-- Tests -->
+
+    <test id="LJT1">
+        <title>Registry entries</title>
+        <description>
+            Provides information about the number of registry entries found in loependeJournal.xml
+            and tests whether it matches the number of registry entries found in arkivstruktur.xml.
+        </description>
+        <group>loependejournal</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH arkivuttrekk_count AS (
+                        SELECT property.value val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
+                        JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
+                        JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
+                        JOIN addml.dataobject parent_data_object ON parent_properties3._parent_id = parent_data_object._id
+                        WHERE property.name = 'value'
+                            AND parent_property.name = 'numberOfOccurrences'
+                            AND parent_property.value = 'journalregistrering'
+                            AND parent_data_object.name = 'loependeJournal'
+                        LIMIT 1
+                    ), loependejournal_count AS (
+                        SELECT COUNT(*) val
+                        FROM loependejournal.journalpost
+                    ), struktur_count AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.registrering
+                        WHERE _dtype = 'journalpost'
+                    )
+                    SELECT ljc.val running_journal_count, sc.val arkivstruktur_count, uc.val arkivuttrekk_count
+                    FROM loependejournal_count ljc, struktur_count sc
+                    LEFT JOIN arkivuttrekk_count uc ON 1 = 1;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH arkivuttrekk_count AS (
+                        SELECT property.value val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
+                        JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
+                        JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
+                        JOIN addml.dataobject parent_data_object ON parent_properties3._parent_id = parent_data_object._id
+                        WHERE property.name = 'value'
+                            AND parent_property.name = 'numberOfOccurrences'
+                            AND parent_property.value = 'journalregistrering'
+                            AND parent_data_object.name = 'loependeJournal'
+                        LIMIT 1
+                    ), loependejournal_count AS (
+                        SELECT COUNT(*) val
+                        FROM loependejournal.journalpost
+                    ), struktur_count AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.registrering
+                        WHERE _dtype = 'journalpost'
+                    )
+                    SELECT ljc.val running_journal_count, sc.val arkivstruktur_count, uc.val arkivuttrekk_count
+                    FROM loependejournal_count ljc, struktur_count sc
+                    LEFT JOIN arkivuttrekk_count uc ON 1 = 1
+                    WHERE
+                        (uc.val IS NULL AND ljc.val > 0)
+                        OR
+                        (uc.val IS NOT NULL AND ljc.val <> uc.val);
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="LJT2">
+        <title>Period containment of registry entries</title>
+        <description>
+            Tests whether the created and finalized dates of all registry entries in loependeJournal.xml
+            are within the archival period specified in arkivuttrekk.xml, and whether the same registry entries
+            (same systemIDs) can be found in arkivstruktur.xml.
+        </description>
+        <group>loependejournal</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    ), outside_period AS (
+                        SELECT s.systemid series_systemid, COUNT(*) val
+                        FROM loependejournal.journalpost j
+                        LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
+                        LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(journaldato AS DATE) < period.start
+                                AND s.arkivdelstatus <> 'Overlappingsperiode'
+                            )
+                            OR CAST(journaldato AS DATE) > period.end
+                            OR s.systemid IS NULL
+                            OR period.start IS NULL
+                            OR period.end IS NULL
+                        GROUP BY s.systemid
+                    ), inside_period AS (
+                        SELECT s.systemid series_systemid, COUNT(*) val
+                        FROM loependejournal.journalpost j
+                        LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
+                        LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(journaldato AS DATE) >= period.start
+                                OR s.arkivdelstatus = 'Overlappingsperiode'
+                            )
+                            AND CAST(journaldato AS DATE) <= period.end
+                            AND s.systemid IS NOT NULL
+                            AND period.start IS NOT NULL
+                            AND period.end IS NOT NULL
+                        GROUP BY s.systemid
+                    )
+                    SELECT s.systemid series_system_id, COALESCE(ip.val, 0) registry_entries_inside_period, COALESCE(op.val, 0) registry_entries_outside_period
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN outside_period op ON op.series_systemid = s.systemid
+                    LEFT JOIN inside_period ip ON ip.series_systemid = s.systemid;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    )
+                    SELECT s.systemid series_system_id,
+                        j.systemid registry_entry_system_id,
+                        COALESCE(NULLIF(j.journalaar || '/' || j.journalsekvensnummer, '/'), 'N/A') record_id,
+                        CAST(journaldato AS DATE) registry_entry_date,
+                        period.start period_start_date,
+                        period.end period_end_date
+                    FROM loependejournal.journalpost j
+                    LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
+                    LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                    CROSS JOIN period
+                    WHERE
+                        (
+                            CAST(journaldato AS DATE) < period.start
+                            AND s.arkivdelstatus <> 'Overlappingsperiode'
+                        )
+                        OR CAST(journaldato AS DATE) > period.end
+                        OR period.start IS NULL
+                        OR period.end IS NULL
+                        OR s.systemid IS NULL
+                    ORDER BY journaldato;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <!--
+    ============================================================================================================
+    OFFENTLIGJOURNAL
+    ============================================================================================================
+    -->
+    <!-- Tests -->
+
+    <test id="OJT1">
+        <title>Registry entries</title>
+        <description>
+            Provides information about the number of registry entries found in offentligJournal.xml
+            and tests whether it matches the number of registry entries found in arkivstruktur.xml.
+        </description>
+        <group>offentligjournal</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH arkivuttrekk_count AS (
+                        SELECT property.value val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
+                        JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
+                        JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
+                        JOIN addml.dataobject parent_data_object ON parent_properties3._parent_id = parent_data_object._id
+                        WHERE property.name = 'value'
+                            AND parent_property.name = 'numberOfOccurrences'
+                            AND parent_property.value = 'journalregistrering'
+                            AND parent_data_object.name = 'offentligJournal'
+                        LIMIT 1
+                    ), public_journal_count AS (
+                        SELECT count(*) val
+                        FROM offentligjournal.journalpost
+                    ), arkivstruktur_count AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.registrering
+                        WHERE _dtype = 'journalpost'
+                    )
+                    SELECT ljc.val public_journal_count, sc.val arkivstruktur_count, uc.val arkivuttrekk_count
+                    FROM public_journal_count ljc, arkivstruktur_count sc
+                    LEFT JOIN arkivuttrekk_count uc ON 1 = 1;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH arkivuttrekk_count AS (
+                        SELECT property.value val
+                        FROM addml.property property
+                        JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                        JOIN addml.property parent_property ON parent_properties._parent_id = parent_property._id
+                        JOIN addml.properties parent_properties2 ON parent_property._parent_id = parent_properties2._id
+                        JOIN addml.property parent_property2 ON parent_properties2._parent_id = parent_property2._id
+                        JOIN addml.properties parent_properties3 ON parent_property2._parent_id = parent_properties3._id
+                        JOIN addml.dataobject parent_data_object ON parent_properties3._parent_id = parent_data_object._id
+                        WHERE property.name = 'value'
+                            AND parent_property.name = 'numberOfOccurrences'
+                            AND parent_property.value = 'journalregistrering'
+                            AND parent_data_object.name = 'offentligJournal'
+                        LIMIT 1
+                    ), public_journal_count AS (
+                        SELECT count(*) val
+                        FROM offentligjournal.journalpost
+                    ), arkivstruktur_count AS (
+                        SELECT COUNT(*) val
+                        FROM arkivstruktur.registrering
+                        WHERE _dtype = 'journalpost'
+                    )
+                    SELECT ljc.val public_journal_count, sc.val arkivstruktur_count, uc.val arkivuttrekk_count
+                    FROM public_journal_count ljc, arkivstruktur_count sc
+                    LEFT JOIN arkivuttrekk_count uc ON 1 = 1
+                    WHERE
+                        (uc.val IS NULL AND ljc.val > 0)
+                        OR
+                        (uc.val IS NOT NULL AND ljc.val <> uc.val);
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <test id="OJT2">
+        <title>Period containment of registry entries</title>
+        <description>
+            Tests whether the created and finalized dates of all registry entries in offentligJournal.xml
+            are within the archival period specified in arkivuttrekk.xml, and whether the same registry entries
+            (same systemIDs) can be found in arkivstruktur.xml.
+        </description>
+        <group>offentligjournal</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    ), outside_period AS (
+                        SELECT s.systemid series_systemid, COUNT(*) val
+                        FROM offentligjournal.journalpost j
+                        LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
+                        LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(journaldato AS DATE) < period.start
+                                AND s.arkivdelstatus <> 'Overlappingsperiode'
+                            )
+                            OR CAST(journaldato AS DATE) > period.end
+                            OR s.systemid IS NULL
+                            OR period.start IS NULL
+                            OR period.end IS NULL
+                        GROUP BY s.systemid
+                    ), inside_period AS (
+                        SELECT s.systemid series_systemid, COUNT(*) val
+                        FROM offentligjournal.journalpost j
+                        LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
+                        LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                        CROSS JOIN period
+                        WHERE
+                            (
+                                CAST(journaldato AS DATE) >= period.start
+                                OR s.arkivdelstatus = 'Overlappingsperiode'
+                            )
+                            AND CAST(journaldato AS DATE) <= period.end
+                            AND s.systemid IS NOT NULL
+                            AND period.start IS NOT NULL
+                            AND period.end IS NOT NULL
+                        GROUP BY s.systemid
+                    )
+                    SELECT s.systemid series_system_id, COALESCE(ip.val, 0) registry_entries_inside_period, COALESCE(op.val, 0) registry_entries_outside_period
+                    FROM arkivstruktur.arkivdel s
+                    LEFT JOIN outside_period op ON op.series_systemid = s.systemid
+                    LEFT JOIN inside_period ip ON ip.series_systemid = s.systemid;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    WITH period_start_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'startDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period_end_date AS (
+                        SELECT (
+                            SELECT CAST(property.value AS DATE) val
+                            FROM addml.property property
+                            JOIN addml.properties parent_properties ON property._parent_id = parent_properties._id
+                            JOIN addml.additionalelement parent_element ON parent_properties._parent_id = parent_element._id
+                            WHERE property.name = 'endDate' AND parent_element.name = 'archivalPeriod'
+                            LIMIT 1
+                        ) AS val
+                    ), period AS (
+                        SELECT s.val start, e.val end
+                        FROM period_start_date s, period_end_date e
+                    )
+                    SELECT s.systemid series_system_id, j.systemid registry_entry_system_id,
+                        COALESCE(NULLIF(j.journalaar || '/' || j.journalsekvensnummer, '/'), 'N/A') record_id,
+                        CAST(journaldato AS DATE) registry_entry_date,
+                        period.start period_start_date,
+                        period.end period_end_date
+                    FROM offentligjournal.journalpost j
+                    LEFT JOIN arkivstruktur.registrering r ON r.systemid = j.systemid
+                    LEFT JOIN arkivstruktur.arkivdel s ON s.systemid = r._ref_arkivdel
+                    CROSS JOIN period
+                    WHERE
+                        (
+                            CAST(journaldato AS DATE) < period.start
+                            AND s.arkivdelstatus <> 'Overlappingsperiode'
+                        )
+                        OR CAST(journaldato AS DATE) > period.end
+                        OR s.systemid IS NULL
+                        OR period.start IS NULL
+                        OR period.end IS NULL
+                    ORDER BY journaldato;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+    <!--
+    ============================================================================================================
+    ENDRINGSLOGG
+    ============================================================================================================
+    -->
+    <!-- Checks -->
+
+    <check id="ELC1">
+        <title>Change log entries</title>
+        <description>Provides information about the number of change log entries in endringslogg.xml.</description>
+        <group>endringslogg</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT COUNT(*) change_count
+                    FROM endringslogg.endring;
+                ]]>
+            </info>
+        </queries>
+    </check>
+
+    <!-- Tests -->
+
+    <test id="ELT1">
+        <title>Change log references</title>
+        <description>
+            Tests whether all objects referenced in the change log can be found
+            by their systemID in arkivstruktur.xml.
+        </description>
+        <group>endringslogg</group>
+        <queries>
+            <info>
+                <![CDATA[
+                    SELECT COUNT(*) systemids_not_in_arkivstruktur
+                    FROM endringslogg.endring e
+                    LEFT JOIN (
+                        SELECT systemid
+                            FROM
+                                (SELECT systemid FROM arkivstruktur.arkiv)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.arkiv WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.arkivdel)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.arkivdel WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.klassifikasjonssystem)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.klassifikasjonssystem WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid systemid FROM arkivstruktur.klasse)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.klasse WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid systemid FROM arkivstruktur.mappe)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.mappe WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid systemid FROM arkivstruktur.registrering)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.registrering WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid systemid FROM arkivstruktur.dokumentbeskrivelse)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.dokumentbeskrivelse WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid systemid FROM arkivstruktur.dokumentobjekt)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.dokumentobjekt WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT arkivskaperid FROM arkivstruktur.arkivskaper)
+                            UNION ALL
+                                (SELECT arkivskaperid FROM arkivstruktur.arkivskaper WHERE arkivskaperid IS NULL)
+                    ) all_system_ids ON all_system_ids.systemid = e.referansearkivenhet
+                    WHERE all_system_ids.systemid IS NULL;
+                ]]>
+            </info>
+            <warnings>
+                <![CDATA[
+                    SELECT e.referansearkivenhet systemids_not_found_in_arkivstruktur
+                    FROM endringslogg.endring e
+                    LEFT JOIN (
+                        SELECT systemid
+                            FROM
+                                (SELECT systemid FROM arkivstruktur.arkiv)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.arkiv WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.arkivdel)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.arkivdel WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.klassifikasjonssystem)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.klassifikasjonssystem WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.klasse)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.klasse WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.mappe)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.mappe WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.registrering)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.registrering WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.dokumentbeskrivelse)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.dokumentbeskrivelse WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.dokumentobjekt)
+                            UNION ALL
+                                (SELECT systemid FROM arkivstruktur.dokumentobjekt WHERE systemid IS NULL)
+                            UNION ALL
+                                (SELECT arkivskaperid FROM arkivstruktur.arkivskaper)
+                            UNION ALL
+                                (SELECT arkivskaperid FROM arkivstruktur.arkivskaper WHERE arkivskaperid IS NULL)
+                    ) all_system_ids ON all_system_ids.systemid = e.referansearkivenhet
+                    WHERE all_system_ids.systemid IS NULL;
+                ]]>
+            </warnings>
+        </queries>
+    </test>
+
+</validation>

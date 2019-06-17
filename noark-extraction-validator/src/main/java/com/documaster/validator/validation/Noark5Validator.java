@@ -319,7 +319,7 @@ public abstract class Noark5Validator<T extends Noark5Command> extends Validator
 	private void runValidationQueries() throws Exception {
 
 		LOGGER.info("Validating extraction ...");
-		
+
 		String validationFileLocation = "noark5"
 						+ File.separator + getCommand().getName()
 						+ File.separator + getCommand().getName() + "-validation.xml";
