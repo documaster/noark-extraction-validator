@@ -1,0 +1,10 @@
+Source: documaster-noark-extraction-validator
+Section: misc
+Priority: optional
+Maintainer: Documaster Support <support@documaster.no>
+Build-Depends: debhelper (>=9), dh-systemd, dh-exec
+
+Package: documaster-noark-extraction-validator
+Architecture: any
+Depends: openjdk-8-jdk
+Description: Documaster Noark Extraction Validator

@@ -1,0 +1,7 @@
+#!/bin/sh
+if [ "$1" = "remove" ]; then
+
+  # pre-removal script
+  echo "Removing 'Documaster Noark Extraction Validator'" 1>&2
+  echo "Done" 1>&2
+fi

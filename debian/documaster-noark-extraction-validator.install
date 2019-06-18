@@ -1,0 +1,4 @@
+#! /usr/bin/dh-exec
+noark-extraction-validator/target/noark-extraction-validator-*.jar opt/documaster/noark-extraction-validator/
+README.md opt/documaster/noark-extraction-validator/
+noark-extraction-validator/config/log4j2.xml etc/documaster/noark-extraction-validator/

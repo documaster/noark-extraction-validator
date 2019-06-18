@@ -1,0 +1,14 @@
+#!/bin/sh
+
+case "$1" in
+  configure)
+
+    # post installation script
+    echo "Installing 'Documaster Noark Extraction Validator'" 1>&2
+    echo "Done" 1>&2
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
