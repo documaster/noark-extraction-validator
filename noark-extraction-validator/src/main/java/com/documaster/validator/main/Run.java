@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.documaster.validator.config.commands.Noark54Command;
+import com.documaster.validator.config.commands.Noark55Command;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +71,7 @@ public class Run {
 		Map<String, Command> commands = new HashMap<>();
 		commands.put(Noark53Command.COMMAND_NAME, new Noark53Command(argParser));
 		commands.put(Noark54Command.COMMAND_NAME, new Noark54Command(argParser));
+		commands.put(Noark55Command.COMMAND_NAME, new Noark55Command(argParser));
 		for (Command command : commands.values()) {
 			argParser.addCommand(command);
 		}

@@ -15,44 +15,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.documaster.validator.validation;
+package com.documaster.validator.validation.noark5.noark55;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.documaster.validator.config.commands.Noark53Command;
-import com.documaster.validator.config.commands.Noark54Command;
 import com.documaster.validator.config.commands.Noark55Command;
+import com.documaster.validator.validation.Noark5Validator;
 
-public enum ValidatorType {
+public class Noark55Validator extends Noark5Validator<Noark55Command> {
 
-	NOARK53(Noark53Command.COMMAND_NAME),
-	NOARK54(Noark54Command.COMMAND_NAME),
-	NOARK55(Noark55Command.COMMAND_NAME);
+	public Noark55Validator(Noark55Command command) {
 
-	private final String name;
-
-	private static final Map<String, ValidatorType> TYPES;
-
-	static {
-		TYPES = new HashMap<>();
-		for (ValidatorType validatorType : ValidatorType.values()) {
-			TYPES.put(validatorType.getName(), validatorType);
-		}
-	}
-
-	ValidatorType(String name) {
-
-		this.name = name;
-	}
-
-	public String getName() {
-
-		return name;
-	}
-
-	public static ValidatorType byName(String name) {
-
-		return TYPES.get(name);
+		super(command);
 	}
 }

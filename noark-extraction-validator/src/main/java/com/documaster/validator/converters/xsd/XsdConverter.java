@@ -275,6 +275,10 @@ public class XsdConverter implements Converter {
 				// Basic Java type
 				itemDef.addField(field.getName(), Field.FieldType.getFromJavaType(fieldCls));
 
+			} else if (field.getName().equalsIgnoreCase("systemid")) {
+
+				// Otherwise it would be detected as a reference
+				itemDef.addField(field.getName(), Field.FieldType.getFromJavaType(String.class));
 			} else if (Collection.class.isAssignableFrom(field.getType())) {
 
 				// Collection
