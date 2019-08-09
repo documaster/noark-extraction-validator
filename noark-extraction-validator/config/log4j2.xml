@@ -2,7 +2,8 @@
 <configuration status="WARN">
 
 	<properties>
-		<property name="filename">noark-extraction-validator.log</property>
+		<property name="log.dir">/var/log/documaster/noark-extraction-validator</property>
+		<property name="filename">${log.dir}/noark-extraction-validator.log</property>
 	</properties>
 
 	<appenders>
