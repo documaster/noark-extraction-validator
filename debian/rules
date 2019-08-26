@@ -15,7 +15,7 @@
 
 
 %:
-	dh $@ --with systemd
+	dh $@
 
 
 # dh_make generated override targets
@@ -24,5 +24,3 @@
 #       dh_auto_configure -- #  -DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH)
 override_dh_auto_install:
 	dh_auto_install
-	dh_systemd_enable || true
-	dh_systemd_start || true
