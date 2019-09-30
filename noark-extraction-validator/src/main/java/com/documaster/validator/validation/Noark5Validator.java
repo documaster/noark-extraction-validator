@@ -320,9 +320,7 @@ public abstract class Noark5Validator<T extends Noark5Command> extends Validator
 
 		LOGGER.info("Validating extraction ...");
 
-		String validationFileLocation = "noark5"
-						+ File.separator + getCommand().getName()
-						+ File.separator + getCommand().getName() + "-validation.xml";
+		String validationFileLocation = MessageFormat.format("noark5/{0}/{0}-validation.xml", getCommand().getName());
 
 		JAXBContext jaxbContext = JAXBContext
 				.newInstance(ValidationProvider.class, Data.class, ValidationData.class, ValidationGroup.class,
