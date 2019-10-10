@@ -1994,31 +1994,6 @@
     </test>
 
     <test id="AST18">
-        <title>Document object file sizes</title>
-        <description>
-            Tests whether the document object file sizes specified in arkivstruktur.xml
-            match the ones with the physical files on the file system.
-        </description>
-        <group>arkivstruktur</group>
-        <queries>
-            <info>
-                <![CDATA[
-                   SELECT COUNT(*) documents_with_mismatched_file_sizes
-                   FROM arkivstruktur.dokumentobjekt
-                   WHERE filstoerrelse <> _detected_file_size;
-                ]]>
-            </info>
-            <errors>
-                <![CDATA[
-                   SELECT referansedokumentfil document, filstoerrelse recorded_document_file_size, _detected_file_size detected_file_size
-                   FROM arkivstruktur.dokumentobjekt
-                   WHERE filstoerrelse <> _detected_file_size;
-                ]]>
-            </errors>
-        </queries>
-    </test>
-
-    <test id="AST19">
         <title>Correspondence parties</title>
         <description>
             Provides information about the number of correspondence parties grouped
@@ -2047,7 +2022,7 @@
         </queries>
     </test>
 
-    <test id="AST20">
+    <test id="AST19">
         <title>Screenings</title>
         <description>
             Provides information about the number of screened series, classes,
@@ -2182,7 +2157,7 @@
         </queries>
     </test>
 
-    <test id="AST21">
+    <test id="AST20">
         <title>Disposal decisions</title>
         <description>
             Provides information about the number of disposal decisions related to series, classes,
@@ -2317,7 +2292,7 @@
         </queries>
     </test>
 
-    <test id="AST22">
+    <test id="AST21">
         <title>Disposals</title>
         <description>
             Provides information about the number of disposals of series
@@ -2402,7 +2377,7 @@
         </queries>
     </test>
 
-	<test id="AST23">
+	<test id="AST22">
 		<title>Personal name fields</title>
 		<description>
 			Checks whether all name fields contain seemingly valid personal names. The regular expressions used for
@@ -2893,6 +2868,30 @@
 		</queries>
 	</test>
 
+    <test id="AST23">
+        <title>Document object file sizes</title>
+        <description>
+            Tests whether the document object file sizes specified in arkivstruktur.xml
+            match the ones with the physical files on the file system.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                   SELECT COUNT(*) documents_with_mismatched_file_sizes
+                   FROM arkivstruktur.dokumentobjekt
+                   WHERE filstoerrelse <> _detected_file_size;
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                   SELECT referansedokumentfil document, filstoerrelse recorded_document_file_size, _detected_file_size detected_file_size
+                   FROM arkivstruktur.dokumentobjekt
+                   WHERE filstoerrelse <> _detected_file_size;
+                ]]>
+            </errors>
+        </queries>
+    </test>
     <!--
     ============================================================================================================
     LOEPENDEJOURNAL
