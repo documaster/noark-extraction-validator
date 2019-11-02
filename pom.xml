@@ -37,7 +37,7 @@
         <version.tika>1.6</version.tika>
         <version.jaxb>2.2.11</version.jaxb>
         <version.apache-poi>3.14</version.apache-poi>
-        <version.pdfbox>2.0.2</version.pdfbox>
+        <version.pdfbox>2.0.17</version.pdfbox>
         <version.bouncy-castle>1.54</version.bouncy-castle>
         <version.hsqldb>2.3.4</version.hsqldb>
         <version.jcommander>1.48</version.jcommander>
