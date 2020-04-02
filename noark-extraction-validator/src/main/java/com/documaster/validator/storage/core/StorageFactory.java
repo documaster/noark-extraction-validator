@@ -48,6 +48,21 @@ public final class StorageFactory {
 
 				return persistence;
 
+			case HSQLDB_FILE:
+				DatabaseStorage filePersistence = new DatabaseStorage();
+				// Postgres syntax
+				// Allow column and table names beginning with underscore
+				filePersistence.setConnectionString(MessageFormat.format(
+						"jdbc:hsqldb:file:{0}/{1};hsqldb.write_delay=false;shutdown=true;sql.syntax_pgs=true;sql.regular_names=false;",
+						config.getDatabaseDirLocation(),
+						config.getDatabaseName()));
+				filePersistence.setDriver("org.hsqldb.jdbc.JDBCDriver");
+				filePersistence.setUsername("SA");
+				filePersistence.setPassword("");
+				filePersistence.setRole("dba");
+
+				return filePersistence;
+
 			case HSQLDB_SERVER:
 				DatabaseStorage serverPersistence = new DatabaseStorage();
 
