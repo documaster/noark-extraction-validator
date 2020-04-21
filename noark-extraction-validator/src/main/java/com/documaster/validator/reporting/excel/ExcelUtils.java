@@ -29,6 +29,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 
 public class ExcelUtils {
 
@@ -102,8 +103,14 @@ public class ExcelUtils {
 
 	private static Hyperlink createHyperLinkTo(Cell cell) {
 
-		Hyperlink link = cell.getSheet().getWorkbook().getCreationHelper().createHyperlink(Hyperlink.LINK_DOCUMENT);
-		link.setAddress(MessageFormat.format("''{0}''!{1}", cell.getSheet().getSheetName(), cell.getAddress()));
+		return createHyperLinkTo(cell.getSheet(), MessageFormat.format(
+				"''{0}''!{1}", cell.getSheet().getSheetName(), cell.getAddress()));
+	}
+
+	public static Hyperlink createHyperLinkTo(Sheet sheet, String linkAddress) {
+
+		Hyperlink link = sheet.getWorkbook().getCreationHelper().createHyperlink(Hyperlink.LINK_DOCUMENT);
+		link.setAddress(linkAddress);
 
 		return link;
 	}
@@ -171,6 +178,10 @@ public class ExcelUtils {
 	public static void autoSizeColumns(Sheet sheet, int startCol, int endCol, Integer maxWidth) {
 
 		for (int i = startCol; i <= endCol; i++) {
+			if (sheet instanceof SXSSFSheet) {
+				// Columns need explicit tracking when using SXSSFSheet.class for 'streaming' report generation
+				((SXSSFSheet) sheet).trackColumnForAutoSizing(i);
+			}
 			sheet.autoSizeColumn(i);
 			if (maxWidth != null && maxWidth > 0 && sheet.getColumnWidth(i) > maxWidth) {
 				sheet.setColumnWidth(i, maxWidth);

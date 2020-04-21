@@ -92,15 +92,26 @@ You can also change the persistence settings:
 ```
 java -jar noark-extraction-validator-0.4.0.jar <noark-version> -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -db-name myDBName -storage hsqldb_server -server-location http://my.hsqldb.server.com
 ```
-*Do not modify* the persistence settings unless:
-* You would like to run several instances of the validator at the same time
-  * In this case, you need to modify the target database name to avoid conflicts (-db-name).
-* You would like to persist the database created by the validator
+If you would like to run several instances of the validator at the same time, you will have to use the *hsqldb_server* or *hsqldb_file* persistence settings and specify a different DB name / DB file location for each instance:
+* For *hsqldb_file* change the `-db-dir-location` argument
+* For *hsqldb_server* change the `-db-name` argument
+
+If you would like to persist the database created by the validator then it's best to use *hsqldb_server*:
   * In this case, you need to create a server instance of HSQLDB 1.8.0. Refer to [HSQLDB's page](http://hsqldb.org/) for more information and to [HSQLDB 1.8.0](https://sourceforge.net/projects/hsqldb/files/) for the binaries. Running the server would include:
     ```
     java -cp hsqldb.jar org.hsqldb.Server -database.0 file:mydb -dbname.0 xdb
     ```
     where **xdb** is the name of the default database.
+    
+In case of huge extractions you can also specify the storage type to be *hsqldb_file* like so:
+```
+java -jar noark-extraction-validator-0.4.0.jar <noark-version> -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -storage hsqldb_file
+```
+Keep in mind that this will make the validation run slower (2 times or more), but could be the only option when having to deal with extremely large extractions and still generate an EXCEL_XLS report.
+Note that by default the database storage directory is called *"noark-extraction-validator-db"* and is situated in the OS temporary dir, but can be specified via the *-db-dir-location* flag:
+```
+java -jar noark-extraction-validator-0.4.0.jar <noark-version> -extraction /path/to/uttrekk/directory -output-dir /path/to/report/output/directory -storage hsqldb_file -db-dir-location /path/to/desired/db-storage/direcotry
+```
 
 Making the validation process less strict is also possible. The default behavior of the validator is to stop execution if an XML file does not comply with the corresponding Noark XSD schema. To continue execution instead:
 ```

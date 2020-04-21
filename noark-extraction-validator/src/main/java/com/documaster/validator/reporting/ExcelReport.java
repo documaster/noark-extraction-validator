@@ -46,6 +46,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends Report<T> {
 
@@ -70,7 +71,7 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 		File report = new File(getConfig().getReportConfiguration().getOutputDir(), getDefaultReportName() + extension);
 
 		try (
-				Workbook wb = isXlsx ? new XSSFWorkbook() : new HSSFWorkbook();
+				Workbook wb = createAccordingWorkbook(isXlsx);
 				FileOutputStream out = new FileOutputStream(report)) {
 
 			workbook = wb;
@@ -79,6 +80,23 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 			createSheets();
 
 			wb.write(out);
+		}
+	}
+
+	private Workbook createAccordingWorkbook(boolean isXlsx) {
+
+		if (isXlsx) {
+
+			if (getConfig().getReportConfiguration().isInMemoryXlsxReport()) {
+
+				return new XSSFWorkbook();
+			} else {
+
+				return new SXSSFWorkbook(SXSSFWorkbook.DEFAULT_WINDOW_SIZE);
+			}
+		} else {
+
+			return new HSSFWorkbook();
 		}
 	}
 
@@ -486,14 +504,20 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 				// Index
 				int indexRowNumber = resultSheet.getLastRowNum() + 1;
 				CellStyle linkStyle = styles.get(StyleName.LINK);
+				int[] indexItemCounts = new int[] {
+						result.getSummary().size(),
+						result.getInformation().size(),
+						result.getWarnings().size(),
+						result.getErrors().size()
+				};
 				String[] index = new String[] {
-						String.format("Summary (%d)", result.getSummary().size()),
-						String.format("Information (%d)", result.getInformation().size()),
-						String.format("Warnings (%d)", result.getWarnings().size()),
-						String.format("Errors (%d)", result.getErrors().size())
+						String.format("Summary (%d)", indexItemCounts[0]),
+						String.format("Information (%d)", indexItemCounts[1]),
+						String.format("Warnings (%d)", indexItemCounts[2]),
+						String.format("Errors (%d)", indexItemCounts[3])
 				};
 				IntStream.range(0, index.length).forEach(
-						ix -> ExcelUtils.createCell(index[ix], 0, linkStyle, ExcelUtils.createRow(resultSheet)));
+						ix -> createCellWithAheadOfTimeHyperlink(index, ix, linkStyle, resultSheet, indexItemCounts));
 
 				// Description
 				Row descriptionRow = ExcelUtils.createStyledRow(resultSheet, styles.get(StyleName.RESULT_DESCRIPTION));
@@ -505,20 +529,16 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 				TotalsPerResultCells totalsPerResultCells = totalsPerResultCellRefs.get(result.getId());
 
 				insertDetailedEntries( // Summary
-						resultSheet, result.getSummary(), index[0],
-						resultSheet.getRow(indexRowNumber).getCell(0), totalsPerResultCells.getSummaryCell());
+						resultSheet, result.getSummary(), index[0], totalsPerResultCells.getSummaryCell());
 
 				insertDetailedEntries( // Information
-						resultSheet, result.getInformation(), index[1],
-						resultSheet.getRow(indexRowNumber + 1).getCell(0), totalsPerResultCells.getInfoCell());
+						resultSheet, result.getInformation(), index[1], totalsPerResultCells.getInfoCell());
 
 				insertDetailedEntries( // Warnings
-						resultSheet, result.getWarnings(), index[2],
-						resultSheet.getRow(indexRowNumber + 2).getCell(0), totalsPerResultCells.getWarningsCell());
+						resultSheet, result.getWarnings(), index[2], totalsPerResultCells.getWarningsCell());
 
 				insertDetailedEntries( // Errors
-						resultSheet, result.getErrors(), index[3],
-						resultSheet.getRow(indexRowNumber + 3).getCell(0), totalsPerResultCells.getErrorsCell());
+						resultSheet, result.getErrors(), index[3], totalsPerResultCells.getErrorsCell());
 
 				// Automatically resize all columns in the sheet. The number is arbitrarily chosen
 				// since we have no easy way of retrieving the result with maximum number of columns.
@@ -528,6 +548,24 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 				ExcelUtils.freezePanes(resultSheet, indexRowNumber + index.length, 0);
 			}
 		}
+	}
+
+	private void createCellWithAheadOfTimeHyperlink(
+			String[] index, int ix, CellStyle linkStyle, Sheet resultSheet, int[] indexItemCounts) {
+
+		int rowsToSkip = 0;
+
+		for (int i = 0; i < ix; i++) {
+
+			rowsToSkip += indexItemCounts[i];
+		}
+
+		// 'A' is the column (always the first one) and 8 is the starting row for the 'Summary' information
+		String linkAddress = "A" + (8 + rowsToSkip + ix * 3);
+
+		Cell cell = ExcelUtils.createCell(index[ix], 0, linkStyle, ExcelUtils.createRow(resultSheet));
+		// Sets a link to another cell that is not yet but will be created
+		cell.setHyperlink(ExcelUtils.createHyperLinkTo(resultSheet, linkAddress));
 	}
 
 	/**
@@ -551,22 +589,16 @@ public class ExcelReport<T extends Command<?> & ConfigurableReporting> extends R
 	 * 		The list of entries to insert
 	 * @param header
 	 * 		The header to use for the entries
-	 * @param indexCellRef
-	 * 		The {@link Cell} in the index of the "Details" sheet corresponding to these entries. A hyperlink will be
-	 * 		created from that cell to the entries.
 	 * @param summaryCellRef
 	 * 		The corresponding Info, Warnings, Errors, etc. {@link Cell} in the "Summary" sheet from which to create a
 	 * 		hyperlink to the entries.
 	 */
 	private void insertDetailedEntries(
-			Sheet sheet, List<BaseItem> entries, String header, Cell indexCellRef, Cell summaryCellRef) {
+			Sheet sheet, List<BaseItem> entries, String header, Cell summaryCellRef) {
 
 		// Create a header cell
 		Cell headerCell = ExcelUtils
 				.createCell(header, 0, styles.get(StyleName.RESULT_TYPE), ExcelUtils.createRow(25, sheet));
-
-		// Create a hyperlink from the index in this sheet to these entries
-		ExcelUtils.addHyperLink(indexCellRef, headerCell);
 
 		// Create a hyperlink from the "Summary" sheet to these entries
 		ExcelUtils.addHyperLink(summaryCellRef, headerCell);

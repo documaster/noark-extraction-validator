@@ -125,11 +125,17 @@ public abstract class Noark5Validator<T extends Noark5Command> extends Validator
 				FileUtils.deleteQuietly(structure.getNoarkSchemasDirectory());
 			}
 
-			ReportFactory.generateReports(getCommand(), getCollector(), getArchiveTitle());
+			try {
+				// The code below could throw an Error and the file database (if present) will not get deleted
+				ReportFactory.generateReports(getCommand(), getCollector(), getArchiveTitle());
 
-			if (Storage.get() != null) {
-				Storage.get().stopWriter();
-				Storage.get().destroy();
+				if (Storage.get() != null) {
+					Storage.get().stopWriter();
+					Storage.get().destroy();
+				}
+			} finally {
+
+				FileUtils.deleteQuietly(new File(getCommand().getStorageConfiguration().getDatabaseDirLocation()));
 			}
 		}
 

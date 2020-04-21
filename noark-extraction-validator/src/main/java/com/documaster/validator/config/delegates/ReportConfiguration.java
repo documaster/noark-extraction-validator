@@ -45,6 +45,11 @@ public class ReportConfiguration implements Delegate {
 			description = "The output type of the validation report. Possible values: XML, EXCEL_XLS, EXCEL_XLSX")
 	private List<ReportType> outputTypes = defaultReportTypes;
 
+	private static final String IN_MEMORY_XLSX_REPORT = "-in-memory-xlsx-report";
+	@Parameter(names = IN_MEMORY_XLSX_REPORT, description = "Generate the XLSX report using the older, more " +
+			"memory consuming fashion (can be used for backwards compatibility)", hidden = true)
+	private boolean inMemoryXlsxReport;
+
 	static {
 		defaultReportTypes = new ArrayList<>();
 		defaultReportTypes.add(EXCEL_XLSX);
@@ -68,6 +73,16 @@ public class ReportConfiguration implements Delegate {
 	public void setOutputTypes(List<ReportType> outputTypes) {
 
 		this.outputTypes = outputTypes;
+	}
+
+	public boolean isInMemoryXlsxReport() {
+
+		return inMemoryXlsxReport;
+	}
+
+	public void setInMemoryXlsxReport(boolean inMemoryXlsxReport) {
+
+		this.inMemoryXlsxReport = inMemoryXlsxReport;
 	}
 
 	@Override

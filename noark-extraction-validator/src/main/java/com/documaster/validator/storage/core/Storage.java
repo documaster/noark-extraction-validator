@@ -161,6 +161,6 @@ public abstract class Storage {
 
 	public enum StorageType {
 
-		HSQLDB_IN_MEMORY, HSQLDB_SERVER
+		HSQLDB_IN_MEMORY, HSQLDB_FILE, HSQLDB_SERVER
 	}
 }
