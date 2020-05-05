@@ -1,4 +1,4 @@
-documaster-noark-extraction-validator (0.7.0-1%%TARGET%%%%BUILD_NUMBER%%-%%COMMIT_HASH%%) stable; urgency=medium
+documaster-noark-extraction-validator (0.8.0-1%%TARGET%%%%BUILD_NUMBER%%-%%COMMIT_HASH%%) stable; urgency=medium
 
     Documaster Noark Extraction Validator
 
