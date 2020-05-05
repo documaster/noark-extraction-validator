@@ -82,6 +82,10 @@ public abstract class Noark5Validator<T extends Noark5Command> extends Validator
 		Noark5PackageStructure structure = null;
 
 		try {
+
+			// Storage won't initialize if database file is populated
+			deleteDatabaseDirIfStorageTypeIsFile();
+
 			structure = prepareStructure();
 			validateStructure(structure);
 
@@ -125,15 +129,34 @@ public abstract class Noark5Validator<T extends Noark5Command> extends Validator
 				FileUtils.deleteQuietly(structure.getNoarkSchemasDirectory());
 			}
 
-			ReportFactory.generateReports(getCommand(), getCollector(), getArchiveTitle());
+			try {
+				// The code below could throw an Error and the file database (if present) will not get deleted
+				ReportFactory.generateReports(getCommand(), getCollector(), getArchiveTitle());
 
-			if (Storage.get() != null) {
-				Storage.get().stopWriter();
-				Storage.get().destroy();
+				if (Storage.get() != null) {
+					Storage.get().stopWriter();
+					Storage.get().destroy();
+				}
+			} finally {
+
+				if (!getCommand().getStorageConfiguration().getPreserveFileDb()) {
+
+					deleteDatabaseDirIfStorageTypeIsFile();
+				}
 			}
 		}
 
 		return getCollector();
+	}
+
+	private void deleteDatabaseDirIfStorageTypeIsFile() throws Exception {
+
+		if (getCommand().getStorageConfiguration().getStorageType() == Storage.StorageType.HSQLDB_FILE) {
+
+			LOGGER.info("Deleting file database storage directory");
+
+			FileUtils.deleteDirectory(new File(getCommand().getStorageConfiguration().getDatabaseDirLocation()));
+		}
 	}
 
 	/**

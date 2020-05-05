@@ -32,6 +32,15 @@ public class StorageConfiguration implements Delegate {
 	@Parameter(names = DATABASE_NAME, description = "The name of the database")
 	private String databaseName = "xdb";
 
+	private static final String DATABASE_DIR_LOCATION = "-db-dir-location";
+	@Parameter(names = DATABASE_DIR_LOCATION, description = "The location of the dir where the database will be stored")
+	private String databaseDirLocation = System.getProperty("java.io.tmpdir") + "/noark-extraction-validator-db";
+
+	private static final String PRESERVE_FILE_DATABASE = "-preserve-file-db";
+	@Parameter(names = PRESERVE_FILE_DATABASE,
+			description = "Preserve (do not delete) the file database dir after execution finishes")
+	private boolean preserveFileDb = false;
+
 	private static final String SERVER_LOCATION = "-server-location";
 	@Parameter(names = SERVER_LOCATION, description = "The server location")
 	private String serverLocation = "localhost";
@@ -54,6 +63,26 @@ public class StorageConfiguration implements Delegate {
 	public void setDatabaseName(String databaseName) {
 
 		this.databaseName = databaseName;
+	}
+
+	public String getDatabaseDirLocation() {
+
+		return databaseDirLocation;
+	}
+
+	public void setDatabaseDirLocation(String databaseDirLocation) {
+
+		this.databaseDirLocation = databaseDirLocation;
+	}
+
+	public boolean getPreserveFileDb() {
+
+		return preserveFileDb;
+	}
+
+	public void setPreserveFileDb(boolean preserveFileDb) {
+
+		this.preserveFileDb = preserveFileDb;
 	}
 
 	public String getServerLocation() {
@@ -79,6 +108,10 @@ public class StorageConfiguration implements Delegate {
 			case HSQLDB_SERVER:
 				if (serverLocation == null) {
 					throw new ParameterException(SERVER_LOCATION + " must be specified");
+				}
+			case HSQLDB_FILE:
+				if (databaseDirLocation == null) {
+					throw new ParameterException(DATABASE_DIR_LOCATION + " must be specified");
 				}
 			case HSQLDB_IN_MEMORY:
 				if (databaseName == null) {
