@@ -2871,6 +2871,30 @@
 		</queries>
 	</test>
 
+    <test id="AST23">
+        <title>Document object file sizes</title>
+        <description>
+            Tests whether the document object file sizes specified in arkivstruktur.xml
+            match the ones with the physical files on the file system.
+        </description>
+        <group>arkivstruktur</group>
+        <queries>
+            <info>
+                <![CDATA[
+                   SELECT COUNT(*) documents_with_mismatched_file_sizes
+                   FROM arkivstruktur.dokumentobjekt
+                   WHERE filstoerrelse <> _detected_file_size;
+                ]]>
+            </info>
+            <errors>
+                <![CDATA[
+                   SELECT referansedokumentfil document, filstoerrelse recorded_document_file_size, _detected_file_size detected_file_size
+                   FROM arkivstruktur.dokumentobjekt
+                   WHERE filstoerrelse <> _detected_file_size;
+                ]]>
+            </errors>
+        </queries>
+    </test>
     <!--
     ============================================================================================================
     LOEPENDEJOURNAL
