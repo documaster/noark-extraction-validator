@@ -29,18 +29,18 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Properties used to specify artifact versions -->
-        <version.slf4j>1.7.5</version.slf4j>
-        <version.log4j>2.16.0</version.log4j>
-        <version.commons-io>2.4</version.commons-io>
-        <version.commons-configuration>1.8</version.commons-configuration>
-        <version.commons-codec>1.9</version.commons-codec>
-        <version.tika>1.6</version.tika>
-        <version.jaxb>2.2.11</version.jaxb>
-        <version.apache-poi>3.14</version.apache-poi>
-        <version.pdfbox>2.0.2</version.pdfbox>
-        <version.bouncy-castle>1.54</version.bouncy-castle>
-        <version.hsqldb>2.3.4</version.hsqldb>
-        <version.jcommander>1.48</version.jcommander>
+        <version.slf4j>2.0.13</version.slf4j>
+        <version.log4j>2.23.1</version.log4j>
+        <version.commons-io>2.16.1</version.commons-io>
+		<version.commons-lang>3.14.0</version.commons-lang>
+		<version.commons-configuration>2.10.1</version.commons-configuration>
+        <version.tika>2.9.2</version.tika>
+        <version.jaxb>4.0.5</version.jaxb>
+        <version.apache-poi>5.2.5</version.apache-poi>
+        <version.pdfbox>2.0.31</version.pdfbox>
+        <version.bouncy-castle>1.78</version.bouncy-castle>
+        <version.hsqldb>2.7.2</version.hsqldb>
+        <version.jcommander>1.82</version.jcommander>
     </properties>
 
     <modules>
@@ -95,15 +95,21 @@
 			<!-- XJC (XSD schema converter) -->
 
 			<dependency>
-				<groupId>com.sun.xml.bind</groupId>
+				<groupId>org.glassfish.jaxb</groupId>
 				<artifactId>jaxb-xjc</artifactId>
 				<version>${version.jaxb}</version>
 			</dependency>
 
 			<dependency>
-				<groupId>com.sun.xml.bind</groupId>
-				<artifactId>jaxb-core</artifactId>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
 				<version>${version.jaxb}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>jakarta.xml.bind</groupId>
+				<artifactId>jakarta.xml.bind-api</artifactId>
+				<version>4.0.2</version>
 			</dependency>
 
 			<!-- Apache Commons libraries -->
@@ -115,8 +121,8 @@
 			</dependency>
 
 			<dependency>
-				<groupId>commons-configuration</groupId>
-				<artifactId>commons-configuration</artifactId>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-configuration2</artifactId>
 				<version>${version.commons-configuration}</version>
 				<exclusions>
 					<exclusion>
@@ -127,10 +133,18 @@
 			</dependency>
 
 			<dependency>
-				<groupId>commons-codec</groupId>
-				<artifactId>commons-codec</artifactId>
-				<version>${version.commons-codec}</version>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>1.9.4</version>
 			</dependency>
+
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${version.commons-lang}</version>
+			</dependency>
+
 
 			<!-- Tika content type detection -->
 
@@ -162,6 +176,12 @@
 				<version>${version.pdfbox}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>jakarta.activation</groupId>
+				<artifactId>jakarta.activation-api</artifactId>
+				<version>2.0.1</version>
+			</dependency>
+
 			<!--- Apache Preflight -->
 
 			<dependency>
@@ -170,17 +190,23 @@
 				<version>${version.pdfbox}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.sun.activation</groupId>
+				<artifactId>javax.activation</artifactId>
+				<version>1.2.0</version>
+			</dependency>
+
 			<!--- Bouncy Castle -->
 
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcprov-jdk15on</artifactId>
+				<artifactId>bcprov-jdk18on</artifactId>
 				<version>${version.bouncy-castle}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcmail-jdk15on</artifactId>
+				<artifactId>bcmail-jdk18on</artifactId>
 				<version>${version.bouncy-castle}</version>
 			</dependency>
 
