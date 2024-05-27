@@ -17,20 +17,21 @@
  */
 package com.documaster.validator.config.properties;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
-import org.apache.commons.configuration.CompositeConfiguration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration2.CompositeConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 /**
  * An interface for handling properties files bundled with the application.
  */
 public abstract class InternalProperties extends CompositeConfiguration {
 
-	public InternalProperties(List<String> propertyFiles) throws IOException, ConfigurationException {
+	public InternalProperties(List<String> propertyFiles) throws ConfigurationException {
 
 		if (propertyFiles == null || propertyFiles.isEmpty()) {
 
@@ -39,13 +40,15 @@ public abstract class InternalProperties extends CompositeConfiguration {
 
 		for (String file : propertyFiles) {
 
-			try (InputStream is = getClass().getClassLoader().getResourceAsStream(file)) {
+			PropertiesConfiguration configuration =
+					new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class)
+							.configure(new Parameters()
+									.properties()
+									.setURL(this.getClass().getResource(file))
+									.setListDelimiterHandler(new DefaultListDelimiterHandler(',')))
+							.getConfiguration();
 
-				PropertiesConfiguration configuration = new PropertiesConfiguration();
-				configuration.load(is);
-
-				addConfiguration(configuration);
-			}
+			addConfiguration(configuration);
 		}
 	}
 }
