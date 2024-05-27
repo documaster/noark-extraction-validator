@@ -17,8 +17,8 @@
  */
 package com.documaster.validator.storage.model;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 
 /**
  * An extension of {@link BaseItem} that adds explicit support for ID, Type, and Parent and that is connected to an

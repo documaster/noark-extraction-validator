@@ -24,7 +24,7 @@ import java.util.Map;
 import com.documaster.validator.storage.model.Item;
 import com.documaster.validator.storage.model.ItemDef;
 import com.documaster.validator.validation.noark5.provider.ValidationGroup;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;

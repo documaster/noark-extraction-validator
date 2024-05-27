@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 /**
  * Represents a construct of the {@link Noark5PackageStructure}, i.e. an XML file and its corresponding XSD schemas.
