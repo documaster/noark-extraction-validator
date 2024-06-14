@@ -27,16 +27,6 @@
 			<appender-ref ref="File" level="debug"/>
 		</root>
 
-		<!-- Suppress PDFA Validator -->
-		<logger name="org.apache.fontbox" additivity="false" level="off">
-			<appender-ref ref="Console"/>
-		</logger>
-
-		<!-- Suppress PDFBox -->
-		<logger name="org.apache.pdfbox" additivity="false" level="off">
-			<appender-ref ref="Console"/>
-		</logger>
-
 	</loggers>
 
 </configuration>

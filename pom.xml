@@ -37,7 +37,6 @@
         <version.tika>2.9.2</version.tika>
         <version.jaxb>4.0.5</version.jaxb>
         <version.apache-poi>5.2.5</version.apache-poi>
-        <version.pdfbox>2.0.31</version.pdfbox>
         <version.bouncy-castle>1.78</version.bouncy-castle>
         <version.hsqldb>2.7.2</version.hsqldb>
         <version.jcommander>1.82</version.jcommander>
@@ -162,38 +161,12 @@
 				<version>${version.apache-poi}</version>
 			</dependency>
 
-			<!--- Apache PDFBox (Preflight dependencies) -->
+			<!--- PDF/A validation -->
 
 			<dependency>
-				<groupId>org.apache.pdfbox</groupId>
-				<artifactId>xmpbox</artifactId>
-				<version>${version.pdfbox}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.apache.pdfbox</groupId>
-				<artifactId>pdfbox</artifactId>
-				<version>${version.pdfbox}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>jakarta.activation</groupId>
-				<artifactId>jakarta.activation-api</artifactId>
-				<version>2.0.1</version>
-			</dependency>
-
-			<!--- Apache Preflight -->
-
-			<dependency>
-				<groupId>org.apache.pdfbox</groupId>
-				<artifactId>preflight</artifactId>
-				<version>${version.pdfbox}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.sun.activation</groupId>
-				<artifactId>javax.activation</artifactId>
-				<version>1.2.0</version>
+				<groupId>org.verapdf</groupId>
+				<artifactId>validation-model</artifactId>
+				<version>1.26.1</version>
 			</dependency>
 
 			<!--- Bouncy Castle -->

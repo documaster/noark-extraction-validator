@@ -88,33 +88,11 @@
 			<artifactId>poi-ooxml</artifactId>
 		</dependency>
 
-        <!--- Apache PDFBox (Preflight dependencies) -->
+        <!--- Apache VeraPDF -->
 
 		<dependency>
-			<groupId>org.apache.pdfbox</groupId>
-			<artifactId>xmpbox</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.pdfbox</groupId>
-			<artifactId>pdfbox</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.sun.activation</groupId>
-			<artifactId>javax.activation</artifactId>
-		</dependency>
-
-        <!--- Apache Preflight -->
-
-		<dependency>
-			<groupId>org.apache.pdfbox</groupId>
-			<artifactId>preflight</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>jakarta.activation</groupId>
-			<artifactId>jakarta.activation-api</artifactId>
+			<groupId>org.verapdf</groupId>
+			<artifactId>validation-model</artifactId>
 		</dependency>
 
 		<!--- Bouncy Castle -->
