@@ -32,7 +32,7 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.ParametersDelegate;
 import com.documaster.validator.config.delegates.Delegate;
 import com.documaster.validator.config.properties.InternalProperties;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public abstract class Command<T extends InternalProperties> {
 

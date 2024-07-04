@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import com.documaster.validator.exceptions.aggregation.SAXParseExceptionAggregator;
 import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.validation.utils.AbstractReusableXMLHandler;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXParseException;
 

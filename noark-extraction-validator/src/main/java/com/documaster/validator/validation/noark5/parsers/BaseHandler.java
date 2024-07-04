@@ -24,7 +24,7 @@ import com.documaster.validator.storage.core.Storage;
 import com.documaster.validator.storage.model.Item;
 import com.documaster.validator.storage.model.ItemDef;
 import com.documaster.validator.validation.noark5.provider.ValidationGroup;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;

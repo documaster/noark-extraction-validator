@@ -24,7 +24,7 @@ import java.util.Date;
 import com.documaster.validator.config.commands.Command;
 import com.documaster.validator.config.delegates.ConfigurableReporting;
 import com.documaster.validator.validation.collector.ValidationCollector;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public abstract class Report<T extends Command<?> & ConfigurableReporting> {
 

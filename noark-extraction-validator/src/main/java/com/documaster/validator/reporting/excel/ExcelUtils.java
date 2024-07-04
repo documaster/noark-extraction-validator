@@ -21,13 +21,18 @@ import java.text.MessageFormat;
 import java.util.EnumSet;
 
 import com.documaster.validator.exceptions.ReportingException;
+import org.apache.poi.common.usermodel.HyperlinkType;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 
@@ -109,7 +114,7 @@ public class ExcelUtils {
 
 	public static Hyperlink createHyperLinkTo(Sheet sheet, String linkAddress) {
 
-		Hyperlink link = sheet.getWorkbook().getCreationHelper().createHyperlink(Hyperlink.LINK_DOCUMENT);
+		Hyperlink link = sheet.getWorkbook().getCreationHelper().createHyperlink(HyperlinkType.DOCUMENT);
 		link.setAddress(linkAddress);
 
 		return link;
@@ -119,8 +124,8 @@ public class ExcelUtils {
 
 		CellStyle style = wb.createCellStyle();
 
-		style.setAlignment(CellStyle.ALIGN_LEFT);
-		style.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+		style.setAlignment(HorizontalAlignment.LEFT);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		return style;
 	}
@@ -132,19 +137,19 @@ public class ExcelUtils {
 			switch (position) {
 
 				case TOP:
-					style.setBorderTop(CellStyle.BORDER_THIN);
+					style.setBorderTop(BorderStyle.THIN);
 					style.setTopBorderColor(color.getIndex());
 					break;
 				case BOTTOM:
-					style.setBorderBottom(CellStyle.BORDER_THIN);
+					style.setBorderBottom(BorderStyle.THIN);
 					style.setBottomBorderColor(color.getIndex());
 					break;
 				case LEFT:
-					style.setBorderLeft(CellStyle.BORDER_THIN);
+					style.setBorderLeft(BorderStyle.THIN);
 					style.setLeftBorderColor(color.getIndex());
 					break;
 				case RIGHT:
-					style.setBorderRight(CellStyle.BORDER_THIN);
+					style.setBorderRight(BorderStyle.THIN);
 					style.setRightBorderColor(color.getIndex());
 					break;
 				default:
@@ -156,7 +161,7 @@ public class ExcelUtils {
 	public static void addSolidFillToStyle(CellStyle style, IndexedColors color) {
 
 		style.setFillForegroundColor(color.getIndex());
-		style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 	}
 
 	public static Font createDefaultFont(Workbook wb, short size, boolean bold) {

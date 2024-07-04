@@ -6,5 +6,5 @@ Build-Depends: debhelper (>=9)
 
 Package: documaster-noark-extraction-validator
 Architecture: any
-Depends: openjdk-8-jdk
+Depends: openjdk-17-jdk
 Description: Documaster Noark Extraction Validator

@@ -23,7 +23,7 @@ import java.util.Map;
 
 import com.documaster.validator.config.commands.Noark54Command;
 import com.documaster.validator.config.commands.Noark55Command;
-import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

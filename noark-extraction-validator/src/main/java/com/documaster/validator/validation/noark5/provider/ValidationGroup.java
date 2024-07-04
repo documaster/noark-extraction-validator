@@ -17,11 +17,10 @@
  */
 package com.documaster.validator.validation.noark5.provider;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlType;
-
 import com.documaster.validator.validation.collector.ValidationCollector;
+import jakarta.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlEnumValue;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(name = "group")
 @XmlEnum

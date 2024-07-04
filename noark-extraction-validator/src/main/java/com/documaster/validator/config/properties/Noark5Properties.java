@@ -17,7 +17,6 @@
  */
 package com.documaster.validator.config.properties;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 public class Noark5Properties extends InternalProperties {
 
@@ -36,7 +35,7 @@ public class Noark5Properties extends InternalProperties {
 
 	private final Map<String, String> checksums = new HashMap<>();
 
-	public Noark5Properties(List<String> propertyFiles) throws IOException, ConfigurationException {
+	public Noark5Properties(List<String> propertyFiles) throws ConfigurationException {
 
 		super(propertyFiles);
 
