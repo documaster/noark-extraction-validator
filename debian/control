@@ -3,7 +3,7 @@ Section: misc
 Priority: optional
 Maintainer: Documaster Support <support@documaster.no>
 Homepage: https://github.com/documaster/noark-extraction-validator
-Build-Depends: debhelper (>=9)
+Build-Depends: debhelper (>=13), debhelper-compat (=13)
 
 Package: documaster-noark-extraction-validator
 Architecture: any
