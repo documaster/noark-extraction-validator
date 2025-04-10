@@ -36,7 +36,7 @@
 		<version.commons-configuration>2.10.1</version.commons-configuration>
         <version.tika>2.9.2</version.tika>
         <version.jaxb>4.0.5</version.jaxb>
-        <version.apache-poi>5.2.5</version.apache-poi>
+        <version.apache-poi>5.4.0</version.apache-poi>
         <version.bouncy-castle>1.78</version.bouncy-castle>
         <version.hsqldb>2.7.2</version.hsqldb>
         <version.jcommander>1.82</version.jcommander>
