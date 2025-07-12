@@ -32,7 +32,7 @@
         <version.slf4j>2.0.13</version.slf4j>
         <version.log4j>2.23.1</version.log4j>
         <version.commons-io>2.16.1</version.commons-io>
-		<version.commons-lang>3.14.0</version.commons-lang>
+		<version.commons-lang>3.18.0</version.commons-lang>
 		<version.commons-configuration>2.10.1</version.commons-configuration>
         <version.tika>2.9.2</version.tika>
         <version.jaxb>4.0.5</version.jaxb>
