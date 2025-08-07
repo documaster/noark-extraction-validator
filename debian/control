@@ -2,9 +2,17 @@ Source: documaster-noark-extraction-validator
 Section: misc
 Priority: optional
 Maintainer: Documaster Support <support@documaster.no>
-Build-Depends: debhelper (>=9)
+Homepage: https://github.com/documaster/noark-extraction-validator
+Build-Depends: debhelper (>=13), debhelper-compat (=13)
 
 Package: documaster-noark-extraction-validator
 Architecture: any
-Depends: openjdk-8-jdk
+Depends: openjdk-17-jdk
 Description: Documaster Noark Extraction Validator
+ Provides validating for Noark (5.x) extraction packages according to
+ the requirements specified by the Noark 5 standard. The tool is a
+ console application that:
+ * parses a given extraction package;
+ * stores its contents in a temporary in-memory (or file) database;
+ * validates metadata and documents, and collects information.
+ * generates a report that summarizes the results.

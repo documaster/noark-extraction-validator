@@ -10,7 +10,7 @@ The Noark Extraction Validator provides a means for validating Noark (5.x) extra
 
 # Prerequisites
 **Required**
-* JDK 8
+* JDK 17
 
 **Optional**
 * Maven
@@ -124,7 +124,7 @@ This, however, is a bad practice that we would *advise strongly against* - the r
 Similar to the above but note that Windows uses a different path separator:
 
 ```
-"c:\Program Files\Java\jdk1.8.0_111\bin\java" -jar noark-extraction-validator-0.4.0.jar <noark-version> -extraction c:\path\to\uttrekk -output-dir c:\path\to\output\reports\dir
+"/path/to/jdk17/bin/java" -jar noark-extraction-validator-0.4.0.jar <noark-version> -extraction /path/to/uttrekk -output-dir /path/to/output/reports/dir
 ```
 
 Also note that the above command specifies the path to Java explicitly to make sure that we are using a JDK, not a JRE (if one is installed). There are other ways to achieve the same thing.

@@ -38,8 +38,8 @@ import com.documaster.validator.storage.model.BaseItem;
 import com.documaster.validator.storage.model.Field;
 import com.documaster.validator.storage.model.Item;
 import com.documaster.validator.storage.model.ItemDef;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

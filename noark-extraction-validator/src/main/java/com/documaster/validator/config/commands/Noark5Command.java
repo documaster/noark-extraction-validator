@@ -158,8 +158,8 @@ public abstract class Noark5Command extends Command<Noark5Properties>
 
 		if (properties == null) {
 
-			String noark5BaseProperties = "noark5/noark5.properties";
-			String commandSpecificProperties = String.format("noark5/%s/%s.properties", commandName, commandName);
+			String noark5BaseProperties = "/noark5/noark5.properties";
+			String commandSpecificProperties = String.format("/noark5/%s/%s.properties", commandName, commandName);
 
 			properties = new Noark5Properties(Arrays.asList(noark5BaseProperties, commandSpecificProperties));
 		}

@@ -23,8 +23,8 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
 public class StreamRedirection extends OutputStream {

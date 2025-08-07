@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.documaster.validator.exceptions.ConversionException;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 /**
  * An {@link Item} definition describing its fields, name, and type.

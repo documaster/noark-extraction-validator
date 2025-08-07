@@ -17,11 +17,10 @@
  */
 package com.documaster.validator.validation.noark5.provider.rules;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-
 import com.documaster.validator.validation.noark5.provider.ValidationGroup;
-import org.apache.commons.lang.StringUtils;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import org.apache.commons.lang3.StringUtils;
 
 public class Rule {
 
