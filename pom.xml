@@ -30,7 +30,7 @@
 
         <!-- Properties used to specify artifact versions -->
         <version.slf4j>2.0.13</version.slf4j>
-        <version.log4j>2.23.1</version.log4j>
+        <version.log4j>2.25.3</version.log4j>
         <version.commons-io>2.16.1</version.commons-io>
 		<version.commons-lang>3.14.0</version.commons-lang>
 		<version.commons-configuration>2.10.1</version.commons-configuration>
