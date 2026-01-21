@@ -32,6 +32,7 @@ public class Field {
 
 	public static final String INTERNAL_ID = "_id";
 	public static final String DETECTED_CHECKSUM = "_detected_checksum";
+	public static final String DETECTED_FILE_SIZE = "_detected_file_size";
 	public static final String DETECTED_FILE_TYPE = "_detected_type";
 	public static final String IS_VALID_FILE_TYPE = "_is_valid_type";
 

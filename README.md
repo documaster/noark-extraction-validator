@@ -290,6 +290,7 @@ Below are all validation rules ordered by their execution priority (every test i
 |Test|Info,Warning|AST20|Disposal decisions|Provides information about the number of disposal decisions related to series, classes, files, records, and document descriptions, and tests whether the corresponding value in arkivuttrekk.xml (inneholderDokumenterSomSkalKasseres) is correct.|
 |Test|Info,Warning|AST21|Disposals|Provides information about the number of disposals of series and document descriptions, and tests whether the corresponding value in arkivuttrekk.xml (omfatterDokumenterSomErKassert) is correct.|
 |Test|Info,Warning|AST22|Personal name fields|Checks whether all name fields contain seemingly valid personal names. The regular expressions used for the purpose are "\^[\p{L}\s-'.]*$" and "\^[\p{L}\s-'.]+$" depending on whether the value can be blank or not. The validated fields are: saksansvarlig (M306), kontaktperson (M412), korrespondansepartNavn (M400), sakspartNavn (M302), moeteDeltakerNavn (M372), arkivertAv (M605), avskrevetAv (M618), tilknyttetAv (M621), merknadRegistrertAv (M612), kassertAv (M631), slettetAv (M614), gradertAv (M625), presedensGodkjentAv (M629), verifisertAv (M623), nedgradertAv (M627), opprettetAv (M601), avsluttetAv (M603).|
+|Test|Info,Error|AST23|Document object file sizes|Tests whether the recorded file size in arkivstruktur.xml is exactly the same as the one of the referenced physical file on the system.|
 
 **loependejournal:**
 

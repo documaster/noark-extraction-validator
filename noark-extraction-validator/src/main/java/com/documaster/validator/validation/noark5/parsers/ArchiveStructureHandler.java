@@ -121,6 +121,7 @@ class ArchiveStructureHandler extends BaseHandler {
 
 				String contentType = isValidPdfA ? PDFAValidator.VALID_FILE_TYPE : PDFAValidator.getFileType(document);
 
+				getItem().add(Field.DETECTED_FILE_SIZE, document.length());
 				getItem().add(Field.DETECTED_FILE_TYPE, contentType);
 				getItem().add(Field.DETECTED_CHECKSUM, checksum);
 				getItem().add(Field.IS_VALID_FILE_TYPE, isValidPdfA);
